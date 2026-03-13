@@ -129,7 +129,7 @@ This simulates decentralized storage similar to blockchain systems.
 
 Clone the repository
 
-git clone https://github.com/yourusername/zk-kyc.git
+git clone https://github.com/MeghanaPerada/stealth-zk-kyc
 
 Install dependencies
 
