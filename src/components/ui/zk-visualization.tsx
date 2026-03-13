@@ -3,23 +3,80 @@
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Lock, FileJson, CheckCircle2, ShieldCheck, ArrowRight, ScanLine } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { Lock, FileJson, CheckCircle2, ShieldCheck, ArrowRight, ScanLine, Globe, Settings, Shield, Info } from "lucide-react";
 import { GlowingCard } from "@/components/ui/glowing-card";
 
 export function ZkVisualization() {
-  const [step, setStep] = useState<0 | 1 | 2>(0); 
+  const [step, setStep] = useState<0 | 1 | 2 | 3>(0); 
+  const [anchoringStatus, setAnchoringStatus] = useState("");
   // 0: Initial (Raw Data)
   // 1: Generating (Scanning/Hashing)
-  // 2: Complete (Proof Generated)
+  // 2: Anchoring (Algorand Submission)
+  // 3: Complete (Proof Verified & Anchored)
 
   const handleGenerate = () => {
     setStep(1);
-    setTimeout(() => setStep(2), 3000);
+    
+    // Sequence: Generate -> Anchor -> Complete
+    setTimeout(() => {
+      setStep(2);
+      const statuses = [
+        "Connecting to Algorand Testnet...",
+        "Submitting proof hash...",
+        "Transaction confirmed on Algorand."
+      ];
+      
+      statuses.forEach((status, i) => {
+        setTimeout(() => setAnchoringStatus(status), i * 1000);
+      });
+
+      setTimeout(() => setStep(3), 3500);
+    }, 3000);
   }
 
   const handleReset = () => {
     setStep(0);
+    setAnchoringStatus("");
   }
+
+  // Flow Stage Component
+  const FlowStage = ({ icon: Icon, label, active, pulse }: { icon: any, label: string, active: boolean, pulse?: boolean }) => (
+    <div className="flex flex-col items-center gap-3 relative z-10">
+      <motion.div 
+        animate={{ 
+          scale: active ? 1.1 : 1,
+          borderColor: active ? "rgba(52,211,153,0.5)" : "rgba(255,255,255,0.1)",
+          backgroundColor: active ? "rgba(52,211,153,0.1)" : "rgba(255,255,255,0.02)"
+        }}
+        className={`w-16 h-16 rounded-2xl border flex items-center justify-center transition-all duration-500 shadow-2xl ${active ? 'text-primary shadow-[0_0_20px_rgba(52,211,153,0.3)]' : 'text-zinc-500'}`}
+      >
+        <Icon className={`w-8 h-8 ${pulse ? 'animate-pulse' : ''}`} />
+      </motion.div>
+      <span className={`text-[10px] uppercase tracking-widest font-bold whitespace-nowrap transition-colors duration-500 ${active ? 'text-primary' : 'text-zinc-500'}`}>
+        {label}
+      </span>
+    </div>
+  );
+
+  // Animated Arrow Component
+  const FlowArrow = ({ active }: { active: boolean }) => (
+    <div className="hidden lg:flex flex-1 items-center justify-center px-4 mb-6">
+      <div className="relative w-full h-1 bg-zinc-800 rounded-full overflow-hidden">
+        <AnimatePresence>
+          {active && (
+            <motion.div 
+              initial={{ left: "-100%" }}
+              animate={{ left: "100%" }}
+              transition={{ repeat: Infinity, duration: 1.5, ease: "linear" }}
+              className="absolute top-0 w-1/2 h-full bg-gradient-to-r from-transparent via-primary to-transparent"
+            />
+          )}
+        </AnimatePresence>
+      </div>
+      <ArrowRight className={`w-4 h-4 ml-2 transition-colors duration-500 ${active ? 'text-primary' : 'text-zinc-800'}`} />
+    </div>
+  );
 
   return (
     <section className="py-24 relative overflow-hidden text-left z-10 w-full">
@@ -40,9 +97,28 @@ export function ZkVisualization() {
              <span className="text-sm font-semibold tracking-wide uppercase">Interactive Explainer</span>
           </div>
           <h2 className="text-4xl md:text-5xl font-black tracking-tight mb-6">See Zero Knowledge in Action</h2>
-          <p className="text-muted-foreground text-xl max-w-3xl mx-auto leading-relaxed">
-            Experience how our protocol verifies your real-world identity attributes mathematically, isolating sensitive data entirely on your local device.
-          </p>
+          
+          {/* Flow Visualization */}
+          <div className="max-w-4xl mx-auto mb-16 px-4">
+            <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-0 relative">
+               <FlowStage icon={Lock} label="User Identity" active={step >= 0} />
+               <FlowArrow active={step === 1} />
+               <FlowStage icon={Settings} label="ZK Proof Generator" active={step >= 1} pulse={step === 1} />
+               <FlowArrow active={step >= 2} />
+               <FlowStage icon={Shield} label="Proof Verification" active={step >= 2} pulse={step === 2} />
+               <FlowArrow active={step === 3} />
+               <FlowStage icon={Globe} label="Public Verifier" active={step === 3} />
+            </div>
+            
+            <motion.p 
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              className="mt-8 text-sm text-zinc-500 font-medium tracking-wide uppercase"
+            >
+              Personal identity data remains on the user's device. <br className="md:hidden" />
+              <span className="text-primary italic">Only a zero-knowledge proof is shared and verified.</span>
+            </motion.p>
+          </div>
         </motion.div>
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 lg:gap-8 items-stretch relative z-10 w-full min-h-[450px]">
@@ -121,79 +197,107 @@ export function ZkVisualization() {
               )}
               
               <div className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-6 transition-colors duration-500 border border-primary/20 ${step === 1 ? 'bg-primary/20 text-primary shadow-[0_0_20px_rgba(52,211,153,0.3)]' : 'bg-primary/5 text-primary/60'}`}>
-                 {step === 1 ? <ScanLine className="w-8 h-8 animate-pulse drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" /> : <ShieldCheck className="w-8 h-8" />}
+                 {step === 1 ? <ScanLine className="w-8 h-8 animate-pulse drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" /> : <Settings className="w-8 h-8" />}
               </div>
               <h3 className={`font-bold text-xl mb-4 ${step === 1 ? 'text-zinc-100' : 'text-zinc-400'}`}>ZK Circuit Evaluator</h3>
               
               <div className="space-y-3 text-sm font-mono text-left bg-black/60 p-4 rounded-xl border border-white/5 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)] w-full">
                  <div className="flex items-center justify-between">
                    <span className={step >= 1 ? "text-zinc-300" : "text-zinc-600"}>Age &ge; 18</span>
-                   {step >= 1 && <motion.span initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5}} className={step===2?"text-primary font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]":"text-amber-500 animate-pulse"}>{step===2?"TRUE":"Evaluating..."}</motion.span>}
+                   {step >= 1 && <motion.span initial={{opacity:0}} animate={{opacity:1}} transition={{delay:0.5}} className={step>=2?"text-primary font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]":"text-amber-500 animate-pulse"}>{step>=2?"TRUE":"Evaluating..."}</motion.span>}
                  </div>
                  <div className="flex items-center justify-between">
                    <span className={step >= 1 ? "text-zinc-300" : "text-zinc-600"}>Not Sanctioned</span>
-                   {step >= 1 && <motion.span initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.5}} className={step===2?"text-primary font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]":"text-amber-500 animate-pulse"}>{step===2?"TRUE":"Evaluating..."}</motion.span>}
+                   {step >= 1 && <motion.span initial={{opacity:0}} animate={{opacity:1}} transition={{delay:1.5}} className={step>=2?"text-primary font-bold drop-shadow-[0_0_5px_rgba(52,211,153,0.8)]":"text-amber-500 animate-pulse"}>{step>=2?"TRUE":"Evaluating..."}</motion.span>}
                  </div>
               </div>
+
+              {step === 2 && (
+                <motion.div 
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  className="mt-6 w-full text-center"
+                >
+                  <p className="text-[10px] text-primary uppercase tracking-[0.2em] font-black animate-pulse mb-1">Anchoring Proof to Algorand</p>
+                  <p className="text-[10px] text-zinc-400 font-mono truncate">{anchoringStatus}</p>
+                </motion.div>
+              )}
             </motion.div>
           </div>
 
           {/* Step 3: Verified Output (Network Level) */}
-          <GlowingCard glowColor={step === 2 ? "primary" : "none"} className={`p-6 flex flex-col h-full transition-all duration-700 bg-black/40 border-primary/10 ${step === 2 ? 'shadow-[0_0_30px_rgba(52,211,153,0.2)] border-primary/40' : ''}`}>
+          <GlowingCard glowColor={step === 3 ? "primary" : "none"} className={`p-6 flex flex-col h-full transition-all duration-700 bg-black/40 border-primary/10 ${step === 3 ? 'shadow-[0_0_30px_rgba(52,211,153,0.2)] border-primary/40' : ''}`}>
              <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
-                  <div className={`p-2 rounded-lg ${step === 2 ? 'bg-primary/20 text-primary' : 'bg-white/10 text-zinc-500'}`}>
+                  <div className={`p-2 rounded-lg ${step === 3 ? 'bg-primary/20 text-primary' : 'bg-white/10 text-zinc-500'}`}>
                      <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h3 className={`font-bold text-lg ${step === 2 ? 'text-zinc-100' : 'text-zinc-400'}`}>Verifier Node</h3>
+                  <h3 className={`font-bold text-lg ${step === 3 ? 'text-zinc-100' : 'text-zinc-400'}`}>Verifier Node</h3>
                 </div>
-                <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded ${step === 2 ? 'bg-primary/20 text-primary' : 'bg-zinc-800 text-zinc-500'}`}>Public</span>
+                {step === 3 ? (
+                  <Badge className="bg-primary/20 text-primary border-primary/30 uppercase tracking-tighter text-[9px] px-2 h-5">Algorand Testnet Verified</Badge>
+                ) : (
+                  <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded bg-zinc-800 text-zinc-500`}>Public</span>
+                )}
              </div>
             
             <div className="space-y-6 flex flex-col flex-1 mt-auto">
-               <div className={`bg-black/60 border ${step === 2 ? 'border-primary/40 shadow-[inset_0_0_30px_rgba(52,211,153,0.15)]' : 'border-white/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]'} rounded-xl p-5 flex flex-col items-center justify-center text-center flex-1 transition-all duration-500 relative overflow-hidden`}>
+               <div className={`bg-black/60 border ${step === 3 ? 'border-primary/40 shadow-[inset_0_0_30px_rgba(52,211,153,0.15)]' : 'border-white/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)]'} rounded-xl p-5 flex flex-col items-center justify-center text-center flex-1 transition-all duration-500 relative overflow-hidden`}>
                   
-                  {step === 2 && (
+                  {step === 3 && (
                     <div className="absolute top-0 right-0 w-32 h-32 bg-primary/20 rounded-full blur-[50px] pointer-events-none" />
                   )}
 
                   <AnimatePresence mode="wait">
-                    {step === 2 ? (
+                    {step === 3 ? (
                       <motion.div key="success" initial={{ scale: 0.8, opacity: 0 }} animate={{ scale: 1, opacity: 1 }} transition={{ type: "spring" }} className="space-y-4 w-full relative z-10">
                          <div className="w-16 h-16 rounded-full bg-primary/20 text-primary mx-auto flex items-center justify-center mb-3 shadow-[0_0_30px_rgba(52,211,153,0.4)] border border-primary/30">
                             <ShieldCheck className="w-8 h-8 drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
                          </div>
                          <h4 className="font-bold text-xl text-primary drop-shadow-md">Proof Validated</h4>
                          
-                         <div className="bg-black/80 rounded-lg p-3 border border-primary/20 flex flex-col items-start text-left w-full space-y-2 mt-4 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]">
-                             <div className="text-[10px] text-zinc-500 uppercase tracking-widest font-bold">Generated SNARK</div>
-                             <div className="font-mono text-xs text-primary/80 break-all leading-relaxed">
-                                prf_0x8f72c9a9b1c3d4e5f6a<br/>7b8c9d0e1f2a3b4c5d6e7f8a...
-                             </div>
+                         <div className="bg-black/80 rounded-lg p-3 border border-primary/20 flex flex-col gap-2 w-full text-left shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]">
+                            <div className="space-y-1">
+                               <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-black">Algorand TX ID</div>
+                               <div className="font-mono text-[10px] text-primary/70 break-all truncate">TX_7D9F2...A4B1</div>
+                            </div>
+                            <div className="space-y-1">
+                               <div className="text-[9px] text-zinc-500 uppercase tracking-widest font-black">Proof Hash</div>
+                               <div className="font-mono text-[10px] text-primary/70 break-all truncate">prf_0x8f72c...f8a</div>
+                            </div>
                          </div>
+                         
+                         <p className="text-[9px] text-zinc-500 font-bold uppercase tracking-wider text-center mt-2">Verification secured by Algorand blockchain</p>
                       </motion.div>
                     ) : (
                       <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-primary/60 space-y-4">
                          <div className="w-16 h-16 rounded-full bg-primary/5 flex items-center justify-center mx-auto border border-primary/20">
-                           <Lock className="w-8 h-8 opacity-60" />
+                           <Globe className="w-8 h-8 opacity-60" />
                          </div>
-                         <p className="text-sm font-medium tracking-wide uppercase px-4">Awaiting Cryptographic Proof</p>
+                         <p className="text-sm font-medium tracking-wide uppercase px-4">Awaiting Network Sync</p>
                       </motion.div>
                     )}
                   </AnimatePresence>
                </div>
                
                <div className="h-12 flex flex-col justify-end">
-                 {step === 2 && (
-                   <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
-                     <Button onClick={handleReset} variant="outline" className="w-full h-12 border-primary/30 bg-primary/5 hover:bg-primary/20 text-primary font-bold tracking-wide transition-all shadow-[0_0_15px_rgba(52,211,153,0.1)]">
-                        Reset Demo
-                     </Button>
-                   </motion.div>
+                 {step === 3 && (
+                    <motion.div initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.5 }}>
+                      <Button onClick={handleReset} variant="outline" className="w-full h-12 border-primary/30 bg-primary/5 hover:bg-primary/20 text-primary font-bold tracking-wide transition-all shadow-[0_0_15px_rgba(52,211,153,0.1)]">
+                         Reset Demo
+                      </Button>
+                    </motion.div>
                  )}
                </div>
             </div>
           </GlowingCard>
+        </div>
+
+        <div className="mt-12 text-center max-w-2xl mx-auto border-t border-white/5 pt-8">
+           <p className="text-xs text-zinc-500 leading-relaxed">
+             <Info className="h-3 w-3 inline mr-2 text-primary opacity-60" />
+             Only the cryptographic proof hash is anchored on Algorand. <span className="text-primary font-medium">Personal identity data never leaves the user's device.</span>
+           </p>
         </div>
       </div>
     </section>

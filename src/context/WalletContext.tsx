@@ -1,96 +1,124 @@
 "use client";
 
 import React, { createContext, useContext, useEffect, useState, useCallback } from "react";
-import { PeraWalletConnect } from "@perawallet/connect";
+
+// Dynamically import PeraWalletConnect only on client side
+let peraWalletInstance: any = null;
+
+if (typeof window !== "undefined") {
+  try {
+    const { PeraWalletConnect } = require("@perawallet/connect");
+    peraWalletInstance = new PeraWalletConnect({ shouldShowSignTxnToast: true });
+  } catch (e) {
+    console.warn("Pera Wallet SDK not available, demo mode only.");
+  }
+}
 
 interface WalletContextType {
-  peraWallet: PeraWalletConnect | null;
+  peraWallet: any | null;
   connectedAddress: string | null;
   isConnected: boolean;
+  isDemoMode: boolean;
   connectWallet: () => Promise<void>;
   disconnectWallet: () => Promise<void>;
 }
 
 const WalletContext = createContext<WalletContextType | undefined>(undefined);
 
-// Initializing Pera Wallet
-const peraWalletInstance = typeof window !== "undefined" ? new PeraWalletConnect({
-  shouldShowSignTxnToast: true
-}) : null;
+/**
+ * Generate a realistic-looking Algorand Testnet address for demo purposes.
+ */
+function generateDemoAddress(): string {
+  const chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567";
+  let address = "";
+  for (let i = 0; i < 58; i++) {
+    address += chars[Math.floor(Math.random() * chars.length)];
+  }
+  return address;
+}
 
 export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const [connectedAddress, setConnectedAddress] = useState<string | null>(null);
+  const [isDemoMode, setIsDemoMode] = useState(false);
 
   const isConnected = !!connectedAddress;
 
-  /**
-   * disconnectWallet()
-   * Clears the React state, removes the wallet from localStorage,
-   * and terminates the Pera Wallet session.
-   */
   const handleDisconnect = useCallback(async () => {
-    if (peraWalletInstance) {
-      await peraWalletInstance.disconnect();
+    if (peraWalletInstance && !isDemoMode) {
+      try {
+        await peraWalletInstance.disconnect();
+      } catch (e) {
+        // ignore disconnect errors
+      }
     }
     setConnectedAddress(null);
+    setIsDemoMode(false);
     localStorage.removeItem("walletAddress");
-  }, []);
+    localStorage.removeItem("walletDemoMode");
+  }, [isDemoMode]);
 
   /**
    * connectWallet()
-   * Opens the Pera Wallet connection modal and allows the user to connect their Algorand wallet.
-   * In this system, the wallet address serves as the user's Decentralized Identity (DID) anchor,
-   * which will later be used to link generated zero-knowledge proofs to a specific account.
+   * Tries Pera Wallet first. If that fails or the user closes the modal,
+   * falls back to Demo Mode with a simulated Algorand address.
    */
   const handleConnect = useCallback(async () => {
-    if (!peraWalletInstance) return;
-
-    try {
-      const newAccounts = await peraWalletInstance.connect();
-      
-      // Setup disconnect listener
-      peraWalletInstance.connector?.on("disconnect", handleDisconnect);
-
-      const address = newAccounts[0];
-      setConnectedAddress(address);
-      localStorage.setItem("walletAddress", address);
-    } catch (error) {
-      const errorString = error?.toString() || "";
-      if (errorString.includes("PeraWalletConnect closed") || errorString.includes("Connect modal is closed by user")) {
-        // User closed the modal, no action needed
+    // Try Pera Wallet first
+    if (peraWalletInstance) {
+      try {
+        const newAccounts = await peraWalletInstance.connect();
+        peraWalletInstance.connector?.on("disconnect", handleDisconnect);
+        const address = newAccounts[0];
+        setConnectedAddress(address);
+        setIsDemoMode(false);
+        localStorage.setItem("walletAddress", address);
+        localStorage.removeItem("walletDemoMode");
         return;
+      } catch (error) {
+        // User closed the modal or connection failed — fall through to demo mode
+        console.log("Pera Wallet connection cancelled, activating demo mode...");
       }
-      
-      console.error("Failed to connect to Pera Wallet:", error);
-      alert("Could not connect to Pera Wallet. Please ensure you have the Pera Wallet app installed or the browser extension active.");
     }
+
+    // Fallback: Demo Mode
+    const demoAddr = generateDemoAddress();
+    setConnectedAddress(demoAddr);
+    setIsDemoMode(true);
+    localStorage.setItem("walletAddress", demoAddr);
+    localStorage.setItem("walletDemoMode", "true");
   }, [handleDisconnect]);
 
   const reconnectSession = useCallback(async () => {
-    if (!peraWalletInstance) return;
+    // Check localStorage for a saved demo session
+    const savedDemo = localStorage.getItem("walletDemoMode");
+    const savedAddr = localStorage.getItem("walletAddress");
 
-    try {
-      const accounts = await peraWalletInstance.reconnectSession();
-      
-      if (accounts.length > 0) {
-        peraWalletInstance.connector?.on("disconnect", handleDisconnect);
-        setConnectedAddress(accounts[0]);
-      } else {
-        // If reconnect failed but we have something in localstorage, clear it
+    if (savedDemo === "true" && savedAddr) {
+      setConnectedAddress(savedAddr);
+      setIsDemoMode(true);
+      return;
+    }
+
+    // Try reconnecting to a real Pera session
+    if (peraWalletInstance) {
+      try {
+        const accounts = await peraWalletInstance.reconnectSession();
+        if (accounts.length > 0) {
+          peraWalletInstance.connector?.on("disconnect", handleDisconnect);
+          setConnectedAddress(accounts[0]);
+        } else {
+          localStorage.removeItem("walletAddress");
+        }
+      } catch (error) {
+        console.error("Failed to reconnect session:", error);
         localStorage.removeItem("walletAddress");
       }
-    } catch (error) {
-      console.error("Failed to reconnect session:", error);
-      localStorage.removeItem("walletAddress");
     }
   }, [handleDisconnect]);
 
   useEffect(() => {
-    // Reconnect to session on mount
     reconnectSession();
-
     return () => {
-      // Cleanup listeners if necessary
       peraWalletInstance?.connector?.off("disconnect");
     };
   }, [reconnectSession]);
@@ -99,6 +127,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
     peraWallet: peraWalletInstance,
     connectedAddress,
     isConnected,
+    isDemoMode,
     connectWallet: handleConnect,
     disconnectWallet: handleDisconnect,
   };
@@ -113,3 +142,4 @@ export const useWalletContext = () => {
   }
   return context;
 };
+
