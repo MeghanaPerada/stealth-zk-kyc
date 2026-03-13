@@ -1,36 +1,166 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+🔐 AlgoPlonk ZK-KYC
+Privacy-Preserving Identity Verification
 
-## Getting Started
+🚀 A modern Zero-Knowledge based KYC platform that verifies user identity without storing or exposing sensitive personal data.
 
-First, run the development server:
+Traditional KYC systems require users to upload personal documents which are then stored by companies — creating security and privacy risks.
 
-```bash
+AlgoPlonk ZK-KYC solves this using cryptographic proofs instead of raw data.
+
+Built using Zero-Knowledge Proof concepts and inspired by the PLONK proving system.
+
+✨ Key Idea
+
+Instead of sharing sensitive identity data like:
+
+Aadhaar number
+
+Date of birth
+
+Address
+
+Users generate a cryptographic proof that confirms statements like:
+
+Age ≥ 18
+User is KYC Verified
+Country = India
+
+The platform verifies the proof without ever seeing the actual data.
+
+This aligns with the data minimization principle of the Digital Personal Data Protection Act, 2023.
+
+🧠 How It Works
+User Identity Data
+       ↓
+Proof Generator
+       ↓
+Zero Knowledge Proof
+       ↓
+Verification System
+       ↓
+Platform confirms identity
+(without seeing private data)
+Step-by-Step Flow
+
+1️⃣ User submits identity attributes
+2️⃣ System generates a ZK proof
+3️⃣ Proof contains verification statements only
+4️⃣ Platform verifies proof instantly
+5️⃣ Personal data is never stored
+
+🏗 System Architecture
+Frontend (Next.js)
+        ↓
+API Routes
+        ↓
+Proof Generator (Mock ZK)
+        ↓
+Supabase Database
+        ↓
+Mock Blockchain Explorer
+
+Future version can store proofs on Algorand blockchain.
+
+⚡ Features
+
+🔐 Privacy-Preserving KYC
+🧠 Zero-Knowledge Proof Simulation
+📊 Verification Dashboard
+⛓ Mock Blockchain Explorer
+⚡ Fast Proof Verification
+🎨 Modern Web3 UI
+
+🖥 Tech Stack
+Frontend
+
+Next.js
+
+React
+
+Tailwind CSS
+
+shadcn/ui
+
+Framer Motion
+
+Backend
+
+Supabase
+
+Deployment
+
+Vercel
+
+Cryptography (Concept Layer)
+
+Zero-Knowledge Proof
+
+PLONK
+
+📊 Example Proof Output
+Proof ID: zk_83921
+Verified Attribute: Age ≥ 18
+Hash: 0x92ab84f7c1
+Timestamp: 2026-03-14
+Status: Verified
+
+Verifier confirms identity without seeing personal information.
+
+⛓ Mock Blockchain Explorer
+
+Each verification is stored as a proof block:
+
+Block #12
+Proof ID: zk_83921
+Status: Verified
+Timestamp: 22:41
+
+This simulates decentralized storage similar to blockchain systems.
+
+🎯 Real-World Use Cases
+
+🏦 Banking KYC
+💰 Crypto exchanges
+🪪 Digital identity systems
+🔞 Age verification platforms
+🌐 Privacy-first Web3 applications
+
+⚡ Getting Started
+
+Clone the repository
+
+git clone https://github.com/MeghanaPerada/stealth-zk-kyc
+
+Install dependencies
+
+npm install
+
+Run development server
+
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open in browser
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+http://localhost:3000
+🚀 Future Improvements
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+Real ZK proof circuits
 
-## Learn More
+Smart contract verification
 
-To learn more about Next.js, take a look at the following resources:
+Blockchain proof storage
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+Decentralized identity wallets
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Multi-platform verification APIs
 
-## Deploy on Vercel
+👩‍💻 Author
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+Meghana Perada
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+🌍 Vision
+
+A world where identity verification does not compromise privacy.
+
+Verify Identity. Protect Data. Empower Users.
+
