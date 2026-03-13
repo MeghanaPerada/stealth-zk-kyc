@@ -164,4 +164,3 @@ A world where identity verification does not compromise privacy.
 
 Verify Identity. Protect Data. Empower Users.
 
-⭐ If you find this project interesting, please star the repository.
