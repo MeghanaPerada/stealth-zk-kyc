@@ -38,7 +38,7 @@ function VerificationDashboardContent() {
 
   return (
     <>
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-secondary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
       <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       <motion.div 
@@ -59,10 +59,10 @@ function VerificationDashboardContent() {
            animate={{ opacity: 1, x: 0 }}
            transition={{ duration: 0.5 }}
         >
-          <GlowingCard glowColor="secondary" className="h-full p-1 border-white/10">
+          <GlowingCard glowColor="primary" className="h-full p-1 border-white/10">
             <div className="bg-background/80 backdrop-blur-2xl rounded-lg h-full p-8 md:p-10 flex flex-col">
               <div className="flex items-center gap-4 mb-8">
-                <div className="p-3 bg-secondary/20 rounded-2xl text-secondary shadow-[0_0_20px_rgba(124,58,237,0.3)]">
+                <div className="p-3 bg-primary/20 rounded-2xl text-primary shadow-[0_0_20px_rgba(52,211,153,0.3)]">
                   <Search className="h-7 w-7" />
                 </div>
                 <div>
@@ -73,17 +73,17 @@ function VerificationDashboardContent() {
 
               <form onSubmit={handleVerify} className="space-y-6 flex-1 flex flex-col">
                 <div className="space-y-3 group">
-                  <Label htmlFor="proofId" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground group-focus-within:text-secondary transition-colors">
+                  <Label htmlFor="proofId" className="text-xs font-semibold uppercase tracking-wider text-muted-foreground group-focus-within:text-primary transition-colors">
                     Proof Identifier (hash)
                   </Label>
                   <div className="relative">
-                     <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-secondary/50 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity" />
+                     <div className="absolute inset-x-0 -bottom-px h-px bg-gradient-to-r from-transparent via-primary/50 to-transparent opacity-0 group-focus-within:opacity-100 transition-opacity" />
                      <Input
                        id="proofId"
                        placeholder="e.g. prf_0x..."
                        value={proofId}
                        onChange={(e) => setProofId(e.target.value)}
-                       className="bg-black/40 font-mono text-base border-white/10 focus-visible:ring-secondary/50 focus-visible:border-secondary/50 h-14 backdrop-blur-md transition-all placeholder:text-zinc-600 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]"
+                       className="bg-black/40 font-mono text-base border-white/10 focus-visible:ring-primary/50 focus-visible:border-primary/50 h-14 backdrop-blur-md transition-all placeholder:text-zinc-600 shadow-[inset_0_0_15px_rgba(0,0,0,0.5)]"
                        required
                      />
                   </div>
@@ -92,7 +92,7 @@ function VerificationDashboardContent() {
                 <div className="mt-auto pt-8">
                   <Button 
                     type="submit" 
-                    className="w-full h-14 text-lg font-bold tracking-wide bg-secondary hover:bg-secondary/90 text-white shadow-[0_0_30px_rgba(124,58,237,0.3)] hover:shadow-[0_0_50px_rgba(124,58,237,0.5)] transition-all relative overflow-hidden group"
+                    className="w-full h-14 text-lg font-bold tracking-wide bg-primary hover:bg-primary/90 text-black shadow-[0_0_30px_rgba(52,211,153,0.3)] hover:shadow-[0_0_50px_rgba(52,211,153,0.5)] transition-all relative overflow-hidden group"
                     disabled={isVerifying || !proofId}
                   >
                     <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/20 to-transparent -translate-x-[150%] group-hover:translate-x-[150%] transition-transform duration-700 ease-in-out" />
@@ -145,17 +145,17 @@ function VerificationDashboardContent() {
                    exit={{ opacity: 0, scale: 1.05 }}
                    className="h-full"
                 >
-                  <div className="h-full border border-secondary/20 bg-secondary/5 backdrop-blur-xl rounded-2xl flex flex-col items-center justify-center p-10 relative overflow-hidden">
+                  <div className="h-full border border-primary/20 bg-primary/5 backdrop-blur-xl rounded-2xl flex flex-col items-center justify-center p-10 relative overflow-hidden">
                     {/* Scanning line effect */}
                     <motion.div 
-                      className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/10 to-transparent h-[500px]"
+                      className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/10 to-transparent h-[500px]"
                       animate={{ top: ['-100%', '200%'] }}
                       transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                     />
                     
                     <div className="relative w-24 h-24 mb-8">
                       <motion.div 
-                        className="absolute inset-0 rounded-xl border-2 border-secondary/30 shadow-[0_0_20px_rgba(124,58,237,0.4)]"
+                        className="absolute inset-0 rounded-xl border-2 border-primary/30 shadow-[0_0_20px_rgba(52,211,153,0.4)]"
                         animate={{ rotate: [0, 90, 180, 270, 360] }}
                         transition={{ duration: 3, repeat: Infinity, ease: "easeInOut" }}
                       />
@@ -169,7 +169,7 @@ function VerificationDashboardContent() {
                       </div>
                     </div>
                     
-                    <h3 className="text-2xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-secondary to-primary drop-shadow-sm">Executing Verifier Circuit</h3>
+                    <h3 className="text-2xl font-bold mb-3 text-transparent bg-clip-text bg-gradient-to-r from-primary/80 to-primary drop-shadow-sm">Executing Verifier Circuit</h3>
                     <div className="space-y-2 text-center w-full">
                       <p className="text-muted-foreground text-sm font-mono bg-black/40 py-2 px-4 rounded-md border border-white/5 mx-auto max-w-[90%] truncate">Checking pairing equations...</p>
                       <p className="text-zinc-600 text-xs font-mono">e(A,B) == e(α,β) * e(C,δ)</p>

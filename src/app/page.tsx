@@ -130,9 +130,9 @@ export default function Home() {
               { title: "Cryptographic Privacy", icon: Fingerprint, desc: "We generate zk-SNARKs that mathematically guarantee the validity of your attributes without revealing values." },
               { title: "Instant Validation", icon: Zap, desc: "Once your proof is generated, any third party can verify it instantly on-chain in milliseconds." }
             ].map((feat, i) => (
-              <GlowingCard key={i} glowColor="secondary" className="p-8 hover:-translate-y-2 transition-transform duration-300">
+              <GlowingCard key={i} glowColor="primary" className="p-8 hover:-translate-y-2 transition-transform duration-300">
                 <motion.div variants={itemVars}>
-                  <div className="h-14 w-14 rounded-2xl bg-secondary/10 flex items-center justify-center mb-6 text-secondary border border-secondary/20 shadow-[0_0_15px_rgba(124,58,237,0.2)]">
+                  <div className="h-14 w-14 rounded-2xl bg-primary/10 flex items-center justify-center mb-6 text-primary border border-primary/20 shadow-[0_0_15px_rgba(52,211,153,0.2)]">
                     <feat.icon className="h-7 w-7" />
                   </div>
                   <h3 className="text-2xl font-bold mb-3">{feat.title}</h3>
@@ -178,7 +178,7 @@ export default function Home() {
               {[
                 { step: 1, title: "Submit Attributes", icon: FileJson, desc: "Provide identity documents locally in your browser. No data leaves the device.", highlight: "bg-blue-500/10 text-blue-400 border-blue-500/30" },
                 { step: 2, title: "Generate ZK Proof", icon: Lock, desc: "A cryptographic SNARK is computed that verifies your attributes without revealing them.", highlight: "bg-primary/10 text-primary border-primary/40 shadow-[0_0_30px_rgba(52,211,153,0.3)]" },
-                { step: 3, title: "Instant Verification", icon: CheckCircle2, desc: "Submit just the proof to any verifier, which mathematically confirms its validity instantly.", highlight: "bg-secondary/10 text-secondary border-secondary/30" },
+                { step: 3, title: "Instant Verification", icon: CheckCircle2, desc: "Submit just the proof to any verifier, which mathematically confirms its validity instantly.", highlight: "bg-primary/10 text-primary border-primary/40 shadow-[0_0_30px_rgba(52,211,153,0.3)]" },
               ].map((item, i) => (
                 <motion.div key={i} variants={itemVars} className="flex flex-col items-center text-center relative group">
                   <motion.div 

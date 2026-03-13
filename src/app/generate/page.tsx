@@ -223,7 +223,7 @@ export default function ProofGenerator() {
                          transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                        />
                        <motion.div 
-                         className="absolute inset-2 rounded-full border-b-2 border-r-2 border-secondary shadow-[0_0_15px_rgba(124,58,237,0.5)]"
+                         className="absolute inset-2 rounded-full border-b-2 border-r-2 border-primary shadow-[0_0_15px_rgba(52,211,153,0.5)]"
                          animate={{ rotate: -360 }}
                          transition={{ duration: 2, repeat: Infinity, ease: "linear" }}
                        />

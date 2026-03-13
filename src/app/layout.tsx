@@ -4,6 +4,7 @@ import "./globals.css";
 import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ParticlesBackground from "@/components/ui/particles-background";
+import { WalletProvider } from "@/context/WalletContext";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -30,12 +31,14 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased min-h-screen flex flex-col relative overflow-x-hidden`}
       >
-        <ParticlesBackground />
-        <Navbar />
-        <main className="flex-1 relative z-10">
-          {children}
-        </main>
-        <Footer />
+        <WalletProvider>
+          <ParticlesBackground />
+          <Navbar />
+          <main className="flex-1 relative z-10">
+            {children}
+          </main>
+          <Footer />
+        </WalletProvider>
       </body>
     </html>
   );

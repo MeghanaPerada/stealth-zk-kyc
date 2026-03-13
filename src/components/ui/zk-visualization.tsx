@@ -25,7 +25,7 @@ export function ZkVisualization() {
     <section className="py-24 relative overflow-hidden text-left z-10 w-full">
       {/* Background Gradients */}
       <div className="absolute top-1/2 left-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -translate-y-1/2 -z-10 pointer-events-none" />
-      <div className="absolute top-1/2 right-0 w-64 h-64 bg-secondary/10 rounded-full blur-[100px] -translate-y-1/2 -z-10 pointer-events-none" />
+      <div className="absolute top-1/2 right-0 w-64 h-64 bg-primary/10 rounded-full blur-[100px] -translate-y-1/2 -z-10 pointer-events-none" />
 
       <div className="container px-4 mx-auto max-w-screen-xl">
         <motion.div 
@@ -35,7 +35,7 @@ export function ZkVisualization() {
           transition={{ duration: 0.6 }}
           className="text-center mb-16"
         >
-          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-secondary/10 text-secondary border border-secondary/20 mb-6 shadow-[0_0_15px_rgba(124,58,237,0.3)]">
+          <div className="inline-flex items-center gap-2 px-4 py-1.5 rounded-full bg-primary/10 text-primary border border-primary/20 mb-6 shadow-[0_0_15px_rgba(52,211,153,0.3)]">
              <ScanLine className="h-4 w-4" />
              <span className="text-sm font-semibold tracking-wide uppercase">Interactive Explainer</span>
           </div>
@@ -51,13 +51,13 @@ export function ZkVisualization() {
           <GlowingCard glowColor={step === 0 ? "primary" : "none"} className="p-6 relative overflow-hidden flex flex-col h-full shadow-[0_0_30px_rgba(0,0,0,0.5)] bg-black/40">
             <div className="flex items-center justify-between mb-8">
               <div className="flex items-center gap-3">
-                <div className={`p-2 rounded-lg ${step === 0 ? 'bg-primary/20 text-primary' : 'bg-white/10 text-zinc-400'}`}>
-                  <FileJson className="w-6 h-6" />
-                </div>
-                <h3 className={`font-bold text-lg ${step === 0 ? 'text-zinc-100' : 'text-zinc-400'}`}>Local Device Data</h3>
+              <div className={`p-2 rounded-lg ${step === 0 ? 'bg-primary/20 text-primary' : 'bg-primary/10 text-primary/60'}`}>
+                <FileJson className="w-6 h-6" />
               </div>
-              <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded ${step === 0 ? 'bg-red-500/20 text-red-400' : 'bg-zinc-800 text-zinc-500'}`}>Sensitive</span>
+              <h3 className={`font-bold text-lg ${step === 0 ? 'text-zinc-100' : 'text-zinc-400'}`}>Local Device Data</h3>
             </div>
+            <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded ${step === 0 ? 'bg-red-500/20 text-red-100' : 'bg-zinc-800 text-zinc-500'}`}>Sensitive</span>
+          </div>
             
             <div className="space-y-6 relative flex flex-col flex-1 mt-auto">
                <div className="bg-black/60 border border-white/5 rounded-xl p-5 font-mono text-sm relative shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] flex-1">
@@ -101,27 +101,27 @@ export function ZkVisualization() {
 
           {/* Step 2: The Prover Circuit */}
           <div className="flex flex-col relative py-0 h-full">
-            <div className="hidden lg:block absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-primary/30 via-secondary/50 to-primary/30 -z-10 pointer-events-none" />
-            <div className="block lg:hidden absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-primary/30 via-secondary/50 to-primary/30 -z-10 pointer-events-none" />
+            <div className="hidden lg:block absolute left-0 right-0 top-1/2 -translate-y-1/2 h-1 bg-gradient-to-r from-primary/30 via-primary/50 to-primary/30 -z-10 pointer-events-none" />
+            <div className="block lg:hidden absolute top-0 bottom-0 left-1/2 -translate-x-1/2 w-1 bg-gradient-to-b from-primary/30 via-primary/50 to-primary/30 -z-10 pointer-events-none" />
 
             <motion.div 
               animate={{ 
                 scale: step === 1 ? 1.05 : 1,
-                boxShadow: step === 1 ? "0 0 50px rgba(124,58,237,0.4)" : "0 0 15px rgba(0,0,0,0.5)",
-                borderColor: step === 1 ? "rgba(124,58,237,0.5)" : "rgba(255,255,255,0.1)"
+                boxShadow: step === 1 ? "0 0 50px rgba(52,211,153,0.4)" : "0 0 15px rgba(0,0,0,0.5)",
+                borderColor: step === 1 ? "rgba(52,211,153,0.5)" : "rgba(255,255,255,0.1)"
               }}
               className="w-full h-full bg-black/80 backdrop-blur-xl border border-white/10 rounded-2xl p-8 text-center shadow-2xl relative overflow-hidden transition-all duration-300 flex flex-col justify-center items-center"
             >
               {step === 1 && (
                  <motion.div 
-                   className="absolute inset-0 bg-gradient-to-b from-transparent via-secondary/20 to-transparent pointer-events-none"
+                   className="absolute inset-0 bg-gradient-to-b from-transparent via-primary/20 to-transparent pointer-events-none"
                    animate={{ top: ['-100%', '200%'] }}
                    transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
                  />
               )}
               
-              <div className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-6 transition-colors duration-500 border border-t-white/10 ${step === 1 ? 'bg-secondary/20 text-secondary' : 'bg-white/5 text-zinc-500'}`}>
-                 {step === 1 ? <ScanLine className="w-8 h-8 animate-pulse drop-shadow-[0_0_8px_rgba(124,58,237,0.8)]" /> : <ShieldCheck className="w-8 h-8 opacity-50" />}
+              <div className={`w-16 h-16 rounded-full mx-auto flex items-center justify-center mb-6 transition-colors duration-500 border border-primary/20 ${step === 1 ? 'bg-primary/20 text-primary shadow-[0_0_20px_rgba(52,211,153,0.3)]' : 'bg-primary/5 text-primary/60'}`}>
+                 {step === 1 ? <ScanLine className="w-8 h-8 animate-pulse drop-shadow-[0_0_8px_rgba(52,211,153,0.8)]" /> : <ShieldCheck className="w-8 h-8" />}
               </div>
               <h3 className={`font-bold text-xl mb-4 ${step === 1 ? 'text-zinc-100' : 'text-zinc-400'}`}>ZK Circuit Evaluator</h3>
               
@@ -139,13 +139,13 @@ export function ZkVisualization() {
           </div>
 
           {/* Step 3: Verified Output (Network Level) */}
-          <GlowingCard glowColor={step === 2 ? "primary" : "none"} className={`p-6 flex flex-col h-full transition-all duration-700 bg-black/40 ${step === 2 ? 'shadow-[0_0_30px_rgba(52,211,153,0.2)]' : 'opacity-60 saturate-50'}`}>
+          <GlowingCard glowColor={step === 2 ? "primary" : "none"} className={`p-6 flex flex-col h-full transition-all duration-700 bg-black/40 border-primary/10 ${step === 2 ? 'shadow-[0_0_30px_rgba(52,211,153,0.2)] border-primary/40' : ''}`}>
              <div className="flex items-center justify-between mb-8">
                 <div className="flex items-center gap-3">
                   <div className={`p-2 rounded-lg ${step === 2 ? 'bg-primary/20 text-primary' : 'bg-white/10 text-zinc-500'}`}>
                      <CheckCircle2 className="w-6 h-6" />
                   </div>
-                  <h3 className={`font-bold text-lg ${step === 2 ? 'text-zinc-100' : 'text-zinc-500'}`}>Verifier Node</h3>
+                  <h3 className={`font-bold text-lg ${step === 2 ? 'text-zinc-100' : 'text-zinc-400'}`}>Verifier Node</h3>
                 </div>
                 <span className={`text-xs font-bold uppercase tracking-wider px-2 py-1 rounded ${step === 2 ? 'bg-primary/20 text-primary' : 'bg-zinc-800 text-zinc-500'}`}>Public</span>
              </div>
@@ -173,9 +173,9 @@ export function ZkVisualization() {
                          </div>
                       </motion.div>
                     ) : (
-                      <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-zinc-600 space-y-4">
-                         <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mx-auto border border-white/10">
-                           <Lock className="w-8 h-8 opacity-30" />
+                      <motion.div key="waiting" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} className="text-primary/60 space-y-4">
+                         <div className="w-16 h-16 rounded-full bg-primary/5 flex items-center justify-center mx-auto border border-primary/20">
+                           <Lock className="w-8 h-8 opacity-60" />
                          </div>
                          <p className="text-sm font-medium tracking-wide uppercase px-4">Awaiting Cryptographic Proof</p>
                       </motion.div>
