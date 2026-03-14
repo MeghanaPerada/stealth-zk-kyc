@@ -1,166 +1,90 @@
-🔐 AlgoPlonk ZK-KYC
-Privacy-Preserving Identity Verification
+# 🥷 Stealth ZK-KYC
 
-🚀 A modern Zero-Knowledge based KYC platform that verifies user identity without storing or exposing sensitive personal data.
+![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
+![Algorand](https://img.shields.io/badge/Algorand-000000?style=for-the-badge&logo=algorand&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
+![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-Traditional KYC systems require users to upload personal documents which are then stored by companies — creating security and privacy risks.
+**Stealth ZK-KYC** is a privacy-preserving identity verification protocol built on the Algorand blockchain. It enables users to verify their identity or attributes (like "Age Over 18") using Zero-Knowledge Proofs (ZKPs) without ever exposing their sensitive personal data to third parties.
 
-AlgoPlonk ZK-KYC solves this using cryptographic proofs instead of raw data.
+---
 
-Built using Zero-Knowledge Proof concepts and inspired by the PLONK proving system.
+## 🌟 Key Features
 
-✨ Key Idea
+- **🔐 Privacy-First Architecture**: Sensitive PII stays in your browser. Only cryptographic proofs are shared.
+- **👛 Pera Wallet Integration**: Secure identity anchoring using industry-standard Algorand wallets.
+- **⚡ Local ZKP Generation**: Proofs are computed locally on the client-side using a terminal-style prover interface.
+- **⛓️ Immutable Proof Anchoring**: Proof metadata is anchored on Algorand Testnet for public, tamper-proof verifiability.
+- **📡 Real-Time Verification**: Organizations can verify proofs instantly by querying the blockchain directly.
+- **✨ Premium UI/UX**: Futuristic dark-themed aesthetic with glassmorphism and smooth micro-animations.
 
-Instead of sharing sensitive identity data like:
+---
 
-Aadhaar number
+## 🏗️ The 5-Step Identity Flow
 
-Date of birth
+The system follows a decentralized identity lifecycle:
 
-Address
+1.  **Connect Wallet**: Bind your decentralized identity as the ownership anchor.
+2.  **Acquire Credentials**: Fetch cryptographically signed data from an Identity Oracle or upload your own.
+3.  **Generate ZKP**: Compute a mathematical proof that you meet specific criteria without revealing raw data.
+4.  **Anchor to Algorand**: Store the proof hash immutably in a transaction note on the Testnet.
+5.  **Public Verification**: Provide your Proof ID to any organization for instant, math-backed validation.
 
-Users generate a cryptographic proof that confirms statements like:
+---
 
-Age ≥ 18
-User is KYC Verified
-Country = India
+## 🛠️ Technical Stack
 
-The platform verifies the proof without ever seeing the actual data.
+- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
+- **Blockchain**: [Algorand Testnet](https://algorand.co/) (algosdk)
+- **Wallet**: [@txnlab/use-wallet-react](https://github.com/TxnLab/use-wallet) (Pera, Defly, Lute)
+- **Styling**: Tailwind CSS & Vanilla CSS
+- **Animations**: Framer Motion
+- **Icons**: Lucide React
 
-This aligns with the data minimization principle of the Digital Personal Data Protection Act, 2023.
+---
 
-🧠 How It Works
-User Identity Data
-       ↓
-Proof Generator
-       ↓
-Zero Knowledge Proof
-       ↓
-Verification System
-       ↓
-Platform confirms identity
-(without seeing private data)
-Step-by-Step Flow
+## 🚀 Getting Started
 
-1️⃣ User submits identity attributes
-2️⃣ System generates a ZK proof
-3️⃣ Proof contains verification statements only
-4️⃣ Platform verifies proof instantly
-5️⃣ Personal data is never stored
+### Prerequisites
 
-🏗 System Architecture
-Frontend (Next.js)
-        ↓
-API Routes
-        ↓
-Proof Generator (Mock ZK)
-        ↓
-Supabase Database
-        ↓
-Mock Blockchain Explorer
+- [Node.js](https://nodejs.org/) (v18+)
+- [Pera Wallet](https://perawallet.app/) or any supported Algorand wallet correctly configured for **Testnet**.
 
-Future version can store proofs on Algorand blockchain.
+### Installation
 
-⚡ Features
+1. Clone the repository:
+   ```bash
+   git clone https://github.com/MeghanaPerada/stealth-zk-kyc.git
+   cd stealth-zk-kyc
+   ```
 
-🔐 Privacy-Preserving KYC
-🧠 Zero-Knowledge Proof Simulation
-📊 Verification Dashboard
-⛓ Mock Blockchain Explorer
-⚡ Fast Proof Verification
-🎨 Modern Web3 UI
+2. Install dependencies:
+   ```bash
+   npm install
+   ```
 
-🖥 Tech Stack
-Frontend
+3. Run the development server:
+   ```bash
+   npm run dev
+   ```
 
-Next.js
+4. Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-React
+---
 
-Tailwind CSS
+## 🛡️ Security
 
-shadcn/ui
+Stealth ZK-KYC prioritizes user data sovereignty. 
+- **No Database**: We do not store any user data on servers.
+- **Math-Based**: Trust is established through cryptography, not human intermediaries.
+- **Transparent**: Every proof is anchored to a public blockchain for auditability.
 
-Framer Motion
+---
 
-Backend
+## 📄 License
 
-Supabase
+This project is licensed under the MIT License - see the LICENSE file for details.
 
-Deployment
+---
 
-Vercel
-
-Cryptography (Concept Layer)
-
-Zero-Knowledge Proof
-
-PLONK
-
-📊 Example Proof Output
-Proof ID: zk_83921
-Verified Attribute: Age ≥ 18
-Hash: 0x92ab84f7c1
-Timestamp: 2026-03-14
-Status: Verified
-
-Verifier confirms identity without seeing personal information.
-
-⛓ Mock Blockchain Explorer
-
-Each verification is stored as a proof block:
-
-Block #12
-Proof ID: zk_83921
-Status: Verified
-Timestamp: 22:41
-
-This simulates decentralized storage similar to blockchain systems.
-
-🎯 Real-World Use Cases
-
-🏦 Banking KYC
-💰 Crypto exchanges
-🪪 Digital identity systems
-🔞 Age verification platforms
-🌐 Privacy-first Web3 applications
-
-⚡ Getting Started
-
-Clone the repository
-
-git clone https://github.com/MeghanaPerada/stealth-zk-kyc
-
-Install dependencies
-
-npm install
-
-Run development server
-
-npm run dev
-
-Open in browser
-
-http://localhost:3000
-🚀 Future Improvements
-
-Real ZK proof circuits
-
-Smart contract verification
-
-Blockchain proof storage
-
-Decentralized identity wallets
-
-Multi-platform verification APIs
-
-👩‍💻 Author
-
-Meghana Perada
-
-🌍 Vision
-
-A world where identity verification does not compromise privacy.
-
-Verify Identity. Protect Data. Empower Users.
-
+Developed with ❤️ for the decentralized future.
