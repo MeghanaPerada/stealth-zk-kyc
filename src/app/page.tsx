@@ -43,7 +43,7 @@ export default function Home() {
             </motion.h1>
             
             <motion.p variants={itemVars} className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
-              This platform uses Algorand wallets and zero-knowledge cryptography to verify identity attributes without storing or exposing personal data.
+              Connect your decentralized identity through Algorand. We use your wallet solely for <strong className="text-primary">secure identity anchoring</strong> and cryptographic proof generation — not for financial transactions.
             </motion.p>
             
             <motion.div variants={itemVars} className="flex flex-col sm:flex-row items-center justify-center gap-6 w-full sm:w-auto">
@@ -163,7 +163,7 @@ export default function Home() {
               className="grid grid-cols-1 md:grid-cols-5 gap-8 relative z-10"
             >
               {[
-                { title: "Algorand Wallet", icon: Shield, desc: "Connect your Algorand wallet to establish decentralized identity ownership.", color: "primary", href: "/" },
+                { title: "Identity Connection", icon: Shield, desc: "Connect your Algorand identity to establish decentralized ownership without transaction requirements.", color: "primary", href: "/" },
                 { title: "Identity Submission", icon: Lock, desc: "Identity attributes are securely entered and encrypted locally.", color: "blue-500", href: "/kyc" },
                 { title: "Zero Knowledge Proof", icon: Settings, desc: "Generate a proof that validates identity attributes without revealing personal data.", color: "primary", href: "/generate" },
                 { title: "Proof Verification", icon: ShieldCheck, desc: "Verifier nodes validate the proof without accessing sensitive information.", color: "primary", href: "/verify" },

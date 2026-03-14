@@ -1,40 +1,90 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useRef } from "react";
 import { useRouter } from "next/navigation";
-import { motion } from "framer-motion";
+import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { ShieldCheck, ArrowRight, Lock, User, Calendar, MapPin, Fingerprint, Wallet } from "lucide-react";
+import { 
+  ShieldCheck, 
+  ArrowRight, 
+  Lock, 
+  User, 
+  Calendar, 
+  Fingerprint, 
+  FileUp, 
+  FileJson, 
+  CheckCircle2, 
+  Download,
+  Zap,
+  PlusCircle,
+  Upload,
+  Shield
+} from "lucide-react";
 import { GlowingCard } from "@/components/ui/glowing-card";
-import { useWalletContext } from "@/context/WalletContext";
+import { useWallet } from "@/hooks/useWallet";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function KYCSubmission() {
   const router = useRouter();
-  const { isConnected, connectedAddress } = useWalletContext();
-  const [formData, setFormData] = useState({
-    name: "",
-    age: "",
-    country: "",
-    aadhaar: ""
-  });
+  const { isConnected } = useWallet();
+  const [activeTab, setActiveTab] = useState("oracle");
+  const [isFetchingOracle, setIsFetchingOracle] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const [showConnectWarning, setShowConnectWarning] = useState(false);
+  
+  const [manualData, setManualData] = useState({
+    name: "",
+    dob: "",
+    email: ""
+  });
+  
+  const [file, setFile] = useState<File | null>(null);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    if (!isConnected) {
-      setShowConnectWarning(true);
-    } else {
-      setShowConnectWarning(false);
-    }
-  }, [isConnected]);
+  const fetchFromOracle = async () => {
+    setIsFetchingOracle(true);
+    // Simulate high-fidelity oracle retrieval
+    await new Promise(resolve => setTimeout(resolve, 2500));
+    
+    const mockOracleCredential = {
+      credential: "age_over_18_certificate",
+      issuer: "IdentityOracle_v2.1",
+      issuedAt: new Date().toISOString(),
+      hash: "0xec23...a9b1",
+      signature: "0x7d8e...f2a4",
+      attributes: {
+        over_18: true,
+        region: "NA"
+      }
+    };
 
-  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    setFormData({
-      ...formData,
-      [e.target.name]: e.target.value
+    setManualData({
+      name: "Verified User",
+      dob: "1990-01-01",
+      email: "oracle-verified@example.com"
     });
+    setFile(new File([JSON.stringify(mockOracleCredential, null, 2)], "oracle_credential.json", { type: "application/json" }));
+    setIsFetchingOracle(false);
+    
+    // Auto-switch to upload tab to show result
+    setActiveTab("upload");
+    localStorage.setItem("stealth_identity_credential", JSON.stringify(mockOracleCredential));
+  };
+
+  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const uploadedFile = e.target.files?.[0];
+    if (uploadedFile) {
+      setFile(uploadedFile);
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        const text = event.target?.result;
+        if (text) {
+          localStorage.setItem("stealth_identity_credential", text as string);
+        }
+      };
+      reader.readAsText(uploadedFile);
+    }
   };
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -42,195 +92,252 @@ export default function KYCSubmission() {
     if (!isConnected) return;
     setIsSubmitting(true);
     
-    setTimeout(() => {
-      router.push("/generate?attr=age_over_18");
-    }, 1200);
-  };
-
-  const containerVariants = {
-    hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 }
+    if (activeTab === "manual") {
+      const cred = {
+        name: manualData.name,
+        credential: "manual_entry",
+        timestamp: new Date().toISOString(),
+        issuer: "Self-Signed_Local"
+      };
+      localStorage.setItem("stealth_identity_credential", JSON.stringify(cred));
     }
-  };
 
-  const itemVariants = {
-    hidden: { opacity: 0, x: -20 },
-    show: { opacity: 1, x: 0, transition: { type: "spring" as const, stiffness: 300, damping: 24 } }
+    setTimeout(() => {
+      setIsSubmitting(false);
+      router.push("/generate");
+    }, 2000);
   };
 
   return (
-    <div className="container max-w-2xl pt-32 md:pt-40 lg:pt-48 pb-16 px-4 mx-auto relative min-h-[calc(100vh-8rem)] flex flex-col justify-center">
-      {/* Background ambient light */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+    <div className="container max-w-5xl pt-32 md:pt-40 lg:pt-48 pb-16 px-4 mx-auto min-h-[calc(100vh-4rem-200px)] flex flex-col items-center justify-center relative">
+      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="mb-10 text-center"
+        className="mb-12 text-center"
       >
-        <h1 className="text-4xl md:text-5xl font-black mb-4 tracking-tight drop-shadow-md">Secure Identity Submission</h1>
-        <p className="text-muted-foreground text-lg max-w-xl mx-auto">
-          Your data remains entirely on your device. We only generate a cryptographic proof of your attributes.
+        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] font-black uppercase tracking-widest mb-4">
+          <Fingerprint className="w-3 h-3" /> Step 2: Acquire Identity Credentials
+        </div>
+        <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter uppercase">Credential Porter</h1>
+        <p className="text-muted-foreground text-lg max-w-2xl mx-auto italic font-light">
+          Acquire or upload cryptographically signed identity credentials.
         </p>
       </motion.div>
 
-      <motion.div
-        initial={{ opacity: 0, scale: 0.95 }}
-        animate={{ opacity: 1, scale: 1 }}
-        transition={{ duration: 0.5, ease: "easeOut" as const }}
-      >
-        <GlowingCard glowColor={isConnected ? "primary" : "destructive"} className="p-1">
-          <div className="bg-background/60 backdrop-blur-2xl rounded-lg border-t border-white/5 p-8 md:p-10 relative overflow-hidden">
-            {!isConnected && (
-              <div className="absolute inset-0 z-20 bg-black/40 backdrop-blur-[2px] flex items-center justify-center p-6 transition-all duration-500">
-                <div className="bg-zinc-900/90 border border-destructive/30 p-8 rounded-3xl text-center max-w-sm shadow-2xl">
-                  <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-destructive/20 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                    <Wallet className="w-8 h-8 text-destructive" />
-                  </div>
-                  <h3 className="text-xl font-black uppercase tracking-widest mb-3 text-destructive">Wallet Required</h3>
-                  <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-                    Please connect your Algorand wallet to proceed with the identity verification process.
-                  </p>
-                  <Button 
-                    onClick={() => router.push('/')}
-                    variant="outline"
-                    className="border-destructive/30 text-destructive hover:bg-destructive/10 h-12 px-8 font-bold tracking-widest uppercase text-xs rounded-xl"
-                  >
-                    Go to Homepage
-                  </Button>
-                </div>
+      <div className="w-full max-w-3xl relative">
+        {!isConnected && (
+          <div className="absolute inset-x-0 -inset-y-4 z-20 bg-black/40 backdrop-blur-[2px] rounded-3xl flex items-center justify-center p-6 transition-all duration-500">
+            <div className="bg-zinc-900/90 border border-destructive/30 p-8 rounded-3xl text-center max-w-sm shadow-2xl">
+              <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-destructive/20 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
+                <Fingerprint className="w-8 h-8 text-destructive" />
               </div>
+              <h3 className="text-xl font-black uppercase tracking-widest mb-3 text-destructive">Identity Required</h3>
+              <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
+                Please connect your Algorand Identity to proceed with the secure verification process.
+              </p>
+              <Button 
+                onClick={() => router.push('/')}
+                variant="outline"
+                className="border-destructive/30 text-destructive hover:bg-destructive/10 h-12 px-8 font-bold tracking-widest uppercase text-xs rounded-xl"
+              >
+                Connect Identity
+              </Button>
+            </div>
+          </div>
+        )}
+
+        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
+          <TabsList className="grid w-full grid-cols-3 bg-black/40 h-16 rounded-2xl p-1.5 border border-white/5 mb-10 shadow-2xl backdrop-blur-3xl">
+            <TabsTrigger value="oracle" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
+              <Zap className="w-4 h-4 mr-2" /> Identity Oracle
+            </TabsTrigger>
+            <TabsTrigger value="upload" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
+              <FileJson className="w-4 h-4 mr-2" /> Upload VC
+            </TabsTrigger>
+            <TabsTrigger value="manual" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
+              <PlusCircle className="w-4 h-4 mr-2" /> Manual Entry
+            </TabsTrigger>
+          </TabsList>
+
+          <AnimatePresence mode="wait">
+            {activeTab === "oracle" && (
+              <TabsContent key="oracle" value="oracle" className="mt-0" forceMount>
+                <motion.div 
+                  key="oracle-content"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.02 }}
+                >
+                  <GlowingCard glowColor="primary" className="p-1">
+                    <div className="bg-background/40 backdrop-blur-3xl rounded-2xl p-10 flex flex-col items-center text-center border-t border-white/5">
+                        <div className="p-4 bg-primary/10 rounded-2xl text-primary mb-8 border border-primary/20 shadow-[0_0_20px_rgba(52,211,153,0.1)]">
+                          <Zap className="h-10 w-10" />
+                        </div>
+                        <h2 className="text-2xl font-black uppercase tracking-widest mb-4">Identity Oracle v2.1</h2>
+                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-10 max-w-md leading-relaxed">
+                          Fetch a cryptographically signed Verifiable Credential from our trusted oracle network based on your connected Algorand identity.
+                        </p>
+                        
+                        <button 
+                          onClick={fetchFromOracle}
+                          disabled={isFetchingOracle}
+                          className="w-full h-16 text-lg font-black tracking-widest uppercase bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_30px_rgba(52,211,153,0.3)] hover:shadow-[0_0_50px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 rounded-2xl relative overflow-hidden group flex items-center justify-center"
+                        >
+                          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
+                          {isFetchingOracle ? (
+                            <span className="flex items-center">
+                              <span className="w-5 h-5 rounded-full border-2 border-black/40 border-t-black animate-spin mr-3"></span>
+                              Querying Oracles...
+                            </span>
+                          ) : (
+                            "Fetch From Oracle"
+                          )}
+                        </button>
+                    </div>
+                  </GlowingCard>
+                </motion.div>
+              </TabsContent>
             )}
 
-            <div className={`flex items-center gap-4 mb-8 pb-6 border-b border-border/50 transition-opacity duration-300 ${!isConnected ? 'opacity-20' : 'opacity-100'}`}>
-              <div className="p-3 bg-primary/10 rounded-2xl text-primary shadow-[0_0_15px_rgba(52,211,153,0.2)]">
-                <Lock className="w-7 h-7" />
-              </div>
-              <div>
-                <h2 className="text-2xl font-bold tracking-tight uppercase tracking-tighter">Identity Details</h2>
-                <p className="text-muted-foreground text-xs font-medium">Enter your details for decentralized identity anchoring</p>
-              </div>
-              {isConnected && (
-                <div className="ml-auto hidden sm:block">
-                  <div className="bg-primary/10 border border-primary/20 px-3 py-1 rounded-full flex items-center gap-2">
-                    <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
-                    <span className="text-[10px] font-black text-primary uppercase tracking-widest">{connectedAddress?.slice(0, 4)}...{connectedAddress?.slice(-4)}</span>
-                  </div>
-                </div>
-              )}
-            </div>
-            
-            <motion.form 
-              onSubmit={handleSubmit} 
-              className={`space-y-6 transition-all duration-300 ${!isConnected ? 'opacity-10 blur-sm pointer-events-none select-none' : 'opacity-100'}`}
-              variants={containerVariants}
-              initial="hidden"
-              animate="show"
-            >
-              <motion.div variants={itemVariants} className="space-y-2 group">
-                <Label htmlFor="name" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-focus-within:text-primary transition-colors flex items-center gap-2">
-                  <User className="w-3.5 h-3.5" /> Full Legal Name
-                </Label>
-                <div className="relative">
-                  <Input 
-                    id="name" 
-                    name="name"
-                    placeholder="John Doe" 
-                    value={formData.name}
-                    onChange={handleChange}
-                    required={isConnected}
-                    className="bg-black/40 border-white/5 focus-visible:ring-primary/40 focus-visible:border-primary/40 h-14 text-lg backdrop-blur-sm transition-all rounded-xl"
-                  />
-                </div>
-              </motion.div>
-              
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <motion.div variants={itemVariants} className="space-y-2 group">
-                  <Label htmlFor="age" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-focus-within:text-primary transition-colors flex items-center gap-2">
-                    <Calendar className="w-3.5 h-3.5" /> Age
-                  </Label>
-                  <Input 
-                    id="age" 
-                    name="age"
-                    type="number" 
-                    placeholder="e.g. 25" 
-                    min="1"
-                    value={formData.age}
-                    onChange={handleChange}
-                    required={isConnected}
-                    className="bg-black/40 border-white/5 focus-visible:ring-primary/40 focus-visible:border-primary/40 h-14 text-lg backdrop-blur-sm transition-all rounded-xl"
-                  />
-                </motion.div>
-                <motion.div variants={itemVariants} className="space-y-2 group">
-                  <Label htmlFor="country" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-focus-within:text-primary transition-colors flex items-center gap-2">
-                    <MapPin className="w-3.5 h-3.5" /> Country
-                  </Label>
-                  <Input 
-                    id="country" 
-                    name="country"
-                    placeholder="e.g. USA" 
-                    value={formData.country}
-                    onChange={handleChange}
-                    required={isConnected}
-                    className="bg-black/40 border-white/5 focus-visible:ring-primary/40 focus-visible:border-primary/40 h-14 text-lg backdrop-blur-sm transition-all rounded-xl"
-                  />
-                </motion.div>
-              </div>
-
-              <motion.div variants={itemVariants} className="space-y-2 group pt-2">
-                <Label htmlFor="aadhaar" className="text-[10px] font-black uppercase tracking-widest text-zinc-500 group-focus-within:text-primary transition-colors flex items-center gap-2">
-                  <Fingerprint className="w-3.5 h-3.5" /> Government ID Number
-                </Label>
-                <Input 
-                  id="aadhaar" 
-                  name="aadhaar"
-                  type="password"
-                  placeholder="Enter 12-digit number" 
-                  value={formData.aadhaar}
-                  onChange={handleChange}
-                  required={isConnected}
-                  className="bg-black/40 border-white/5 focus-visible:ring-primary/40 focus-visible:border-primary/40 h-14 text-lg font-mono tracking-widest backdrop-blur-sm transition-all rounded-xl"
-                />
-              </motion.div>
-
-              <motion.div variants={itemVariants} className="pt-8">
-                <div className="p-4 rounded-2xl bg-primary/5 border border-primary/10 mb-8 flex items-start gap-4 shadow-[0_0_30px_rgba(52,211,153,0.05)]">
-                  <div className="p-2 bg-primary/10 rounded-lg text-primary mt-0.5">
-                    <ShieldCheck className="w-4 h-4" />
-                  </div>
-                  <div>
-                    <h4 className="text-[10px] font-black uppercase tracking-widest text-primary mb-1">Local Privacy Layer Active</h4>
-                    <p className="text-[11px] text-zinc-400 leading-relaxed">
-                      Your identity data is encrypted locally and never stored on servers. Only the zero-knowledge proof will be shared.
-                    </p>
-                  </div>
-                </div>
-
-                <button 
-                  type="submit" 
-                  className="w-full h-16 text-lg font-black tracking-widest uppercase bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_30px_rgba(52,211,153,0.3)] hover:shadow-[0_0_50px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 relative overflow-hidden group rounded-2xl disabled:opacity-40 disabled:pointer-events-none flex items-center justify-center"
-                  disabled={isSubmitting || !isConnected}
+            {activeTab === "upload" && (
+              <TabsContent key="upload" value="upload" className="mt-0" forceMount>
+                <motion.div
+                  key="upload-content"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.02 }}
                 >
-                  <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
-                  
-                  {isSubmitting ? (
-                    <span className="flex items-center relative z-10">
-                      <span className="animate-spin rounded-full h-6 w-6 border-b-2 border-black/60 mr-4"></span>
-                      Initiating Cryptography...
-                    </span>
-                  ) : (
-                    <span className="flex items-center relative z-10">
-                      Generate ZK Proof <ArrowRight className="ml-3 h-6 w-6 group-hover:translate-x-1 transition-transform" />
-                    </span>
-                  )}
-                </button>
-              </motion.div>
-            </motion.form>
-          </div>
-        </GlowingCard>
-      </motion.div>
+                  <GlowingCard glowColor="primary" className="p-1">
+                    <div className="bg-background/40 backdrop-blur-3xl rounded-2xl p-8 md:p-12 border-t border-white/5">
+                      <div 
+                        className="border-2 border-dashed border-white/10 rounded-3xl p-12 text-center group hover:border-primary/40 transition-all cursor-pointer bg-white/5 relative overflow-hidden"
+                        onClick={() => fileInputRef.current?.click()}
+                      >
+                        <input 
+                          type="file" 
+                          ref={fileInputRef}
+                          className="hidden" 
+                          onChange={handleUpload}
+                          accept=".json"
+                        />
+                        <div className="max-w-xs mx-auto space-y-6">
+                          <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center mx-auto border border-white/5 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all">
+                            {file ? <FileJson className="h-8 w-8 text-primary" /> : <Upload className="h-8 w-8 text-zinc-600 group-hover:text-primary transition-colors" />}
+                          </div>
+                          <div className="space-y-2">
+                            <p className="font-black uppercase tracking-widest text-sm text-zinc-300">
+                              {file ? file.name : "Drop Signed Credential"}
+                            </p>
+                            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Supports .JSON format from trusted oracles</p>
+                          </div>
+                          {file && (
+                            <div className="flex items-center justify-center gap-2 mt-4 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
+                              <CheckCircle2 className="h-4 w-4 text-primary" />
+                              <span className="text-[10px] font-black uppercase tracking-widest text-primary">Credential Loaded</span>
+                            </div>
+                          )}
+                        </div>
+                      </div>
+
+                      <div className="mt-10 flex gap-4">
+                        <Button variant="outline" onClick={() => {
+                          const sample = {
+                            credential: "age_over_18_certificate",
+                            issuer: "Sample_Issuer_0x8f2a",
+                            issuedAt: new Date().toISOString(),
+                            hash: "0xec23...a9b1",
+                            signature: "0x7d8e...f2a4"
+                          };
+                          const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
+                          const dUrl = URL.createObjectURL(blob);
+                          const a = document.createElement('a');
+                          a.href = dUrl;
+                          a.download = "sample_credential.json";
+                          a.click();
+                        }} className="flex-1 h-14 border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all rounded-xl">
+                          Download Sample VC
+                        </Button>
+                        <button 
+                          onClick={handleSubmit}
+                          disabled={!file || isSubmitting}
+                          className="flex-[2] h-14 bg-gradient-to-r from-primary to-emerald-400 text-black font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(52,211,153,0.2)] hover:shadow-[0_0_40px_rgba(52,211,153,0.4)] hover:scale-[1.02] transition-all disabled:opacity-40 disabled:pointer-events-none"
+                        >
+                          {isSubmitting ? "Processing..." : (
+                            <span className="flex items-center justify-center gap-2">
+                              Continue to Generation <ArrowRight className="w-4 h-4" />
+                            </span>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </GlowingCard>
+                </motion.div>
+              </TabsContent>
+            )}
+
+            {activeTab === "manual" && (
+              <TabsContent key="manual" value="manual" className="mt-0" forceMount>
+                <motion.div
+                  key="manual-content"
+                  initial={{ opacity: 0, scale: 0.98 }}
+                  animate={{ opacity: 1, scale: 1 }}
+                  exit={{ opacity: 0, scale: 1.02 }}
+                >
+                  <GlowingCard glowColor="primary" className="p-1">
+                    <div className="bg-background/40 backdrop-blur-3xl rounded-2xl p-8 md:p-12 border-t border-white/5">
+                      <form onSubmit={handleSubmit} className="space-y-8">
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+                          <div className="space-y-3">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Full Legal Name</Label>
+                            <Input 
+                              value={manualData.name}
+                              onChange={(e) => setManualData({...manualData, name: e.target.value})}
+                              placeholder="John Doe" 
+                              className="bg-white/5 border-white/10 h-14 rounded-xl focus-visible:ring-primary/40 focus-visible:border-primary/40 text-sm font-bold placeholder:text-zinc-700 font-mono" 
+                            />
+                          </div>
+                          <div className="space-y-3">
+                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Date of Birth</Label>
+                            <Input 
+                              type="date"
+                              value={manualData.dob}
+                              onChange={(e) => setManualData({...manualData, dob: e.target.value})}
+                              className="bg-white/5 border-white/10 h-14 rounded-xl focus-visible:ring-primary/40 focus-visible:border-primary/40 text-sm font-bold text-zinc-400" 
+                            />
+                          </div>
+                        </div>
+                        <div className="space-y-3">
+                          <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Verified Email Endpoint</Label>
+                          <Input 
+                            type="email" 
+                            value={manualData.email}
+                            onChange={(e) => setManualData({...manualData, email: e.target.value})}
+                            placeholder="vault@identity.secure" 
+                            className="bg-white/5 border-white/10 h-14 rounded-xl focus-visible:ring-primary/40 focus-visible:border-primary/40 text-sm font-bold placeholder:text-zinc-700 font-mono" 
+                          />
+                        </div>
+
+                        <div className="flex gap-4 pt-4">
+                          <Button type="submit" disabled={isSubmitting || !manualData.name} className="w-full h-16 bg-gradient-to-r from-primary to-emerald-400 text-black font-black uppercase tracking-widest text-sm rounded-2xl shadow-[0_0_40px_rgba(52,211,153,0.3)] hover:shadow-[0_0_60px_rgba(52,211,153,0.5)] transition-all hover:scale-[1.02]">
+                            {isSubmitting ? "Encrypting Locally..." : "Proceed to Proof Generation"}
+                          </Button>
+                        </div>
+
+                        <p className="text-center text-[9px] text-zinc-600 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
+                          <Shield className="h-3 w-3" /> Data is only stored in browser memory & local vault
+                        </p>
+                      </form>
+                    </div>
+                  </GlowingCard>
+                </motion.div>
+              </TabsContent>
+            )}
+          </AnimatePresence>
+        </Tabs>
+      </div>
     </div>
   );
 }

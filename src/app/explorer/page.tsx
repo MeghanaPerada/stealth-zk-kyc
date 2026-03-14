@@ -165,7 +165,7 @@ function ExplorerContent() {
               Network Registry
             </h1>
             <p className="text-muted-foreground text-lg max-w-2xl font-light italic">
-              Public audit log of zero-knowledge validations. Secured by Algorand Testnet consensus.
+              Public audit log of zero-knowledge validations and anchored evidence. Secured by Algorand Testnet.
             </p>
           </div>
           

@@ -6,6 +6,7 @@ import { Button } from '@/components/ui/button';
 import { ShieldCheck, LogOut, ChevronDown, Wallet, Zap } from 'lucide-react';
 import { useWallet } from '@/hooks/useWallet';
 import { useState, useRef, useEffect } from 'react';
+import { WalletButton } from '@txnlab/use-wallet-ui-react';
 
 export default function Navbar() {
   const pathname = usePathname();
@@ -16,7 +17,7 @@ export default function Navbar() {
     { name: "Explorer", path: "/explorer" }
   ];
 
-  const { isConnected, address, shortAddress, isDemoMode, connectWallet, disconnectWallet } = useWallet();
+  const { isConnected, address, shortAddress, isDemoMode, disconnectWallet } = useWallet();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
@@ -47,18 +48,37 @@ export default function Navbar() {
           </Link>
         </div>
         
-        {/* Center: Wallet + Nav Links */}
+        {/* Center: Connect Identity + Nav Links */}
         <nav className="hidden md:flex items-center gap-2 bg-black/40 px-2 py-2 rounded-full border border-white/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
-          {/* Connect Wallet — First & Prominent */}
+          {/* Connect Identity — Integrated with use-wallet-ui-react */}
           {!isConnected ? (
-            <button
-              onClick={connectWallet}
-              className="relative flex items-center gap-2.5 px-6 py-2 rounded-full font-bold text-sm tracking-wide transition-all duration-300 bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_25px_rgba(52,211,153,0.4)] hover:shadow-[0_0_40px_rgba(52,211,153,0.6)] hover:scale-[1.03] active:scale-[0.98] overflow-hidden group"
-            >
-              <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
-              <Wallet className="w-4 h-4 relative z-10" />
-              <span className="relative z-10">Connect Wallet</span>
-            </button>
+            <div className="wui-custom-trigger relative group">
+              <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[9px] font-black uppercase tracking-[0.2em] text-primary opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Secure Identity</span>
+              <WalletButton />
+              <style jsx global>{`
+                .wui-custom-trigger button {
+                  position: relative;
+                  display: flex;
+                  align-items: center;
+                  gap: 0.625rem;
+                  padding: 0.5rem 1.5rem;
+                  border-radius: 9999px;
+                  font-weight: 700;
+                  font-size: 0.875rem;
+                  letter-spacing: 0.025em;
+                  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+                  background: linear-gradient(to right, #34d399, #10b981);
+                  color: black;
+                  box-shadow: 0 0 25px rgba(52, 211, 153, 0.4);
+                  border: none;
+                  cursor: pointer;
+                }
+                .wui-custom-trigger button:hover {
+                  box-shadow: 0 0 40px rgba(52, 211, 153, 0.6);
+                  transform: scale(1.03);
+                }
+              `}</style>
+            </div>
           ) : (
             <div className="relative" ref={dropdownRef}>
               <button
@@ -150,13 +170,9 @@ export default function Navbar() {
 
           {/* Mobile-only Connect Button */}
           {!isConnected && (
-            <button
-              onClick={connectWallet}
-              className="md:hidden flex items-center gap-2 px-4 py-2 rounded-full font-bold text-xs tracking-wide bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_20px_rgba(52,211,153,0.3)]"
-            >
-              <Wallet className="w-3.5 h-3.5" />
-              Connect
-            </button>
+            <div className="md:hidden wui-custom-trigger">
+              <WalletButton />
+            </div>
           )}
         </div>
       </div>

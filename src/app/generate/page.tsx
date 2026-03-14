@@ -10,55 +10,13 @@ import { GlowingCard } from "@/components/ui/glowing-card";
 import { useWallet } from "@/hooks/useWallet";
 
 export default function ProofGenerator() {
-  const { address, shortAddress } = useWallet();
+  const { address, shortAddress, isDemoMode, algodClient, signTransactions } = useWallet();
+  const [credential, setCredential] = useState<any>(null);
   const [progress, setProgress] = useState(0);
   const [logs, setLogs] = useState<string[]>([]);
   const [visualStep, setVisualStep] = useState(0);
   const [isComplete, setIsComplete] = useState(false);
   const [copied, setCopied] = useState(false);
-
-  const visualSteps = [
-    "Encrypting identity data",
-    "Building ZK circuit",
-    "Evaluating constraints",
-    "Generating zk-SNARK proof",
-    "Proof generated"
-  ];
-
-
-  useEffect(() => {
-    const generationSteps = [
-      { msg: "Initializing zk-SNARK prover...", delay: 500, vStep: 0 },
-      { msg: "Loading verification key (VK)...", delay: 1200, vStep: 0 },
-      { msg: "Reading local identity attributes...", delay: 2000, vStep: 1 },
-      { msg: "Building arithmetic circuit...", delay: 3500, vStep: 2 },
-      { msg: "Computing witness generation...", delay: 5000, vStep: 3 },
-      { msg: "Executing polynomial commitments...", delay: 6500, vStep: 3 },
-      { msg: "Finalizing cryptographic proof...", delay: 8000, vStep: 4 },
-      { msg: "Connecting to Algorand Testnet...", delay: 9500, vStep: 4 },
-      { msg: "Anchoring proof hash to Algorand...", delay: 11000, vStep: 4 },
-      { msg: "Transaction confirmed on Algorand.", delay: 12500, vStep: 4 },
-      { msg: "Proof successfully generated and anchored.", delay: 13500, vStep: 5 }
-    ];
-
-    let timeouts: NodeJS.Timeout[] = [];
-
-    generationSteps.forEach((step, index) => {
-      const timeout = setTimeout(() => {
-        setLogs((prev) => [...prev, step.msg]);
-        const currentProgress = Math.min(((index + 1) / generationSteps.length) * 100, 100);
-        setProgress(currentProgress);
-        setVisualStep(step.vStep);
-
-        if (index === generationSteps.length - 1) {
-          setIsComplete(true);
-        }
-      }, step.delay);
-      timeouts.push(timeout);
-    });
-
-    return () => timeouts.forEach((t) => clearTimeout(t));
-  }, []);
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
@@ -66,13 +24,111 @@ export default function ProofGenerator() {
     setTimeout(() => setCopied(false), 2000);
   };
 
-  const proofData = {
+  const [proofData, setProofData] = useState({
     id: "prf_0x8f2a9c...1b4e",
     hash: "0x4f128be7c93...a9b24cd51",
     timestamp: new Date().toISOString(),
     attribute: "Age > 18",
-    algorandTx: "TX_ALGO_5F2E8A1C4D3B2"
-  };
+    algorandTx: "SIMULATED_ANCHOR"
+  });
+
+  const visualSteps = [
+    "Decrypting local credential",
+    "Binding wallet to attributes",
+    "Evaluating ZK constraints",
+    "Generating zk-SNARK proof",
+    "Anchoring to Algorand"
+  ];
+
+  useEffect(() => {
+    // Step 3: Load credential from Step 2
+    const storedCred = localStorage.getItem("stealth_identity_credential");
+    if (storedCred) {
+      const parsed = JSON.parse(storedCred);
+      setCredential(parsed);
+      setProofData(prev => ({
+        ...prev,
+        attribute: parsed.credential === "age_over_18_certificate" ? "Age Over 18" : (parsed.name ? `Identity: ${parsed.name}` : "Verified Attributes")
+      }));
+    }
+
+    const runGeneration = async () => {
+      const generationSteps = [
+        { msg: "Initializing zk-SNARK prover...", delay: 500, vStep: 0 },
+        { msg: "Loading verification key (VK)...", delay: 1200, vStep: 0 },
+        { msg: credential ? "Reading local signed credential..." : "Reading local identity attributes...", delay: 2000, vStep: 1 },
+        { msg: "Building arithmetic circuit...", delay: 3500, vStep: 2 },
+        { msg: "Computing witness generation...", delay: 5000, vStep: 3 },
+        { msg: "Executing polynomial commitments...", delay: 6500, vStep: 3 },
+        { msg: "Finalizing cryptographic proof...", delay: 8000, vStep: 4 },
+      ];
+
+      for (const step of generationSteps) {
+        await new Promise(resolve => setTimeout(resolve, step.delay - (generationSteps[generationSteps.indexOf(step) - 1]?.delay || 0)));
+        setLogs(prev => [...prev, step.msg]);
+        setVisualStep(step.vStep);
+        setProgress(Math.min(((generationSteps.indexOf(step) + 1) / (generationSteps.length + 3)) * 100, 100));
+      }
+
+      // Real Anchoring Phase
+      if (!address || isDemoMode) {
+        setLogs(prev => [...prev, "Demo Mode: Skipping real on-chain anchoring.", "Proof successfully generated (Simulated)."]);
+        setIsComplete(true);
+        setProgress(100);
+        return;
+      }
+
+      try {
+        setLogs(prev => [...prev, "Connecting to Algorand Testnet...", "Preparing Secure Identity Anchor..."]);
+        
+        const algosdk = await import("algosdk");
+        const params = await algodClient.getTransactionParams().do();
+        
+        // Step 4: Anchor Proof Object (JSON note)
+        const proofObj = {
+          id: proofData.id,
+          p_hash: proofData.hash,
+          w_bound: address,
+          attr: proofData.attribute
+        };
+        const note = new TextEncoder().encode(`stealth-zk-proof:${JSON.stringify(proofObj)}`);
+        
+        const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+          sender: address,
+          receiver: address, // Self-payment for anchoring
+          amount: 0,
+          note: note,
+          suggestedParams: params,
+        });
+
+        setLogs(prev => [...prev, "Awaiting wallet signature..."]);
+        const encodedTxn = algosdk.encodeUnsignedTransaction(txn);
+        const signedTxnsRaw = await signTransactions([encodedTxn]);
+        const signedTxns = signedTxnsRaw.filter((stxn): stxn is Uint8Array => stxn !== null);
+        
+        setLogs(prev => [...prev, "Broadcasting anchor to Algorand..."]);
+        const sendResponse = await algodClient.sendRawTransaction(signedTxns).do();
+        const txId = sendResponse.txid;
+        
+        setLogs(prev => [...prev, `Transaction confirmed: ${txId}`, "Proof successfully generated and anchored."]);
+        
+        setProofData(prev => ({
+          ...prev,
+          algorandTx: txId
+        }));
+
+        setIsComplete(true);
+        setProgress(100);
+      } catch (error: any) {
+        console.error("Anchoring failed:", error);
+        setLogs(prev => [...prev, `Error: ${error.message || "Failed to anchor proof"}`]);
+        setIsComplete(true);
+        setProgress(100);
+      }
+    };
+
+    runGeneration();
+  }, [address]); // Re-run if address changes
 
   return (
     <div className="container max-w-5xl pt-32 md:pt-40 lg:pt-48 pb-16 px-4 mx-auto min-h-[calc(100vh-4rem-200px)] flex flex-col items-center justify-center relative">

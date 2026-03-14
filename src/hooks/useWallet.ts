@@ -1,15 +1,27 @@
 "use client";
 
+import { useWallet as useTxnWallet } from "@txnlab/use-wallet-react";
 import { useWalletContext } from "@/context/WalletContext";
 
 export const useWallet = () => {
   const { 
-    connectedAddress, 
-    isConnected, 
+    activeAddress, 
+    activeWallet,
+    signTransactions,
+    algodClient,
+  } = useTxnWallet();
+
+  const isTxnConnected = !!activeWallet;
+
+  const {
+    isConnected: isDemoConnected,
     isDemoMode,
-    connectWallet, 
-    disconnectWallet 
+    connectWallet: triggerContextConnect,
+    disconnectWallet: triggerContextDisconnect
   } = useWalletContext();
+
+  const isConnected = isTxnConnected || isDemoConnected;
+  const connectedAddress = activeAddress || (isDemoMode ? "DEMO_ADDRESS_PLACEHOLDER" : null);
 
   const formatAddress = (address: string | null) => {
     if (!address) return "";
@@ -21,8 +33,12 @@ export const useWallet = () => {
     shortAddress: formatAddress(connectedAddress),
     isConnected,
     isDemoMode,
-    connectWallet,
-    disconnectWallet,
+    // Note: connectWallet is now primarily handled by the WalletButton trigger 
+    // but we keep the mapping for compatibility.
+    connectWallet: triggerContextConnect, 
+    disconnectWallet: triggerContextDisconnect,
+    signTransactions,
+    algodClient,
   };
 };
 
