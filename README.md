@@ -5,7 +5,7 @@
 ![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
 ![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
 
-**Stealth ZK-KYC** is a privacy-preserving identity verification protocol built on the Algorand blockchain. It enables users to verify their identity or attributes (like "Age Over 18") using Zero-Knowledge Proofs (ZKPs) without ever exposing their sensitive personal data to third parties.
+**Stealth ZK-KYC** is a privacy-preserving identity verification protocol built on the Algorand blockchain. It enables users to verify their identity or attributes (like "Age Over 18") using Zero-Knowledge Proofs (ZKPs) without ever exposing their sensitive personal data to third parties.My solution implements a privacy-first, fully automated KYC system using AlgoPlonk zero-knowledge proofs on the Algorand blockchain. Users prove identity attributes—such as age, address, and ID validity—without ever revealing sensitive personal data. Trusted oracles provide digitally signed credentials, which are locally converted into verifiable proofs bound to the user’s wallet. These proofs are anchored on-chain, enabling organizations to verify authenticity instantly and tamper-proof, without manual review or human intervention. This approach ensures complete privacy, prevents bluffing, aligns with India’s DPDP Act, and provides a scalable, secure, and trustless alternative to traditional KYC processes.
 
 ---
 
@@ -81,10 +81,4 @@ Stealth ZK-KYC prioritizes user data sovereignty.
 
 ---
 
-## 📄 License
 
-This project is licensed under the MIT License - see the LICENSE file for details.
-
----
-
-Developed with ❤️ for the decentralized future.
