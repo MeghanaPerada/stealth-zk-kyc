@@ -1,5 +1,5 @@
-contracts/
-backend/
+/contracts/
+/backend/
 node_modules/
 .next/
 .algokit/
