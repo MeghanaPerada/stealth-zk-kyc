@@ -1,0 +1,151 @@
+#pragma version 11
+#pragma typetrack false
+
+// @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
+main:
+    intcblock 1 32 0
+    bytecblock "v" 0x151f7c75
+    // smart_contracts/identity_registry/contract.algo.ts:8
+    // export class IdentityRegistry extends Contract {
+    txn NumAppArgs
+    bz main___algots__.defaultCreate@10
+    txn OnCompletion
+    !
+    assert // OnCompletion must be NoOp
+    txn ApplicationID
+    assert
+    pushbytess 0x0ab64786 0xe31ed474 0xf9259c3f // method "registerVerification(address,string)void", method "isVerified(address)bool", method "getProofId(address)string"
+    txna ApplicationArgs 0
+    match registerVerification isVerified getProofId
+    err
+
+main___algots__.defaultCreate@10:
+    // smart_contracts/identity_registry/contract.algo.ts:8
+    // export class IdentityRegistry extends Contract {
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    assert // OnCompletion must be NoOp && can only call when creating
+    intc_0 // 1
+    return
+
+
+// smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.registerVerification[routing]() -> void:
+registerVerification:
+    // smart_contracts/identity_registry/contract.algo.ts:17
+    // public registerVerification(wallet: Account, proofId: string): void {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_2 // 0
+    extract_uint16 // on error: invalid array length header
+    pushint 2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/identity_registry/contract.algo.ts:18
+    // assert(proofId !== '', 'Proof ID cannot be empty')
+    dup
+    pushbytes ""
+    !=
+    assert // Proof ID cannot be empty
+    // smart_contracts/identity_registry/contract.algo.ts:10
+    // verifiedWallets = BoxMap<Account, string>({ keyPrefix: 'v' })
+    bytec_0 // "v"
+    uncover 2
+    concat
+    // smart_contracts/identity_registry/contract.algo.ts:21
+    // this.verifiedWallets(wallet).value = proofId
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // smart_contracts/identity_registry/contract.algo.ts:17
+    // public registerVerification(wallet: Account, proofId: string): void {
+    intc_0 // 1
+    return
+
+
+// smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.isVerified[routing]() -> void:
+isVerified:
+    // smart_contracts/identity_registry/contract.algo.ts:29
+    // public isVerified(wallet: Account): boolean {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/identity_registry/contract.algo.ts:10
+    // verifiedWallets = BoxMap<Account, string>({ keyPrefix: 'v' })
+    bytec_0 // "v"
+    swap
+    concat
+    // smart_contracts/identity_registry/contract.algo.ts:30
+    // return this.verifiedWallets(wallet).exists
+    box_len
+    bury 1
+    // smart_contracts/identity_registry/contract.algo.ts:29
+    // public isVerified(wallet: Account): boolean {
+    pushbytes 0x00
+    intc_2 // 0
+    uncover 2
+    setbit
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+
+// smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.getProofId[routing]() -> void:
+getProofId:
+    // smart_contracts/identity_registry/contract.algo.ts:38
+    // public getProofId(wallet: Account): string {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_1 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/identity_registry/contract.algo.ts:10
+    // verifiedWallets = BoxMap<Account, string>({ keyPrefix: 'v' })
+    bytec_0 // "v"
+    swap
+    concat
+    // smart_contracts/identity_registry/contract.algo.ts:39
+    // assert(this.verifiedWallets(wallet).exists, 'Wallet not found in verified registry')
+    dup
+    box_len
+    bury 1
+    assert // Wallet not found in verified registry
+    // smart_contracts/identity_registry/contract.algo.ts:40
+    // return this.verifiedWallets(wallet).value
+    box_get
+    pop
+    // smart_contracts/identity_registry/contract.algo.ts:38
+    // public getProofId(wallet: Account): string {
+    dup
+    len
+    itob
+    extract 6 2
+    swap
+    concat
+    bytec_1 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return

@@ -95,15 +95,27 @@ export default function ProofGenerator() {
         
         setLogs(prev => [...prev, "Awaiting wallet signature..."]);
 
-        // Using AlograndClient for cleaner transaction orchestration
-        const result = await algorand.send.payment({
-          sender: address,
-          receiver: address,
-          amount: (0).microAlgos(),
-          note: note,
+        // Real On-chain Anchoring using ProofAnchor Contract (App ID 1006)
+        const PROOF_ANCHOR_APP_ID = BigInt(1006);
+        const { ProofAnchorFactory } = await import('@/contracts/proof_anchor/ProofAnchorClient');
+        const factory = new ProofAnchorFactory({
+          algorand: algorand,
+          defaultSender: address,
+        });
+        const client = factory.getAppClientById({ appId: PROOF_ANCHOR_APP_ID });
+
+        setLogs(prev => [...prev, "Awaiting wallet signature for Proof Anchor..."]);
+
+        const result = await client.send.submitProof({
+          args: {
+            proofHash: proofData.hash,
+          },
+          // BOX STORAGE: We must fund the box storage for the proof
+          // ProofAnchor uses BoxMap<Account, string>
+          boxReferences: [{ appId: PROOF_ANCHOR_APP_ID, name: address }],
         });
         
-        const txId = result.confirmation.txn.txn.txID();
+        const txId = result.transaction.txID();
         
         setLogs(prev => [...prev, `Transaction confirmed: ${txId}`, "Proof successfully generated and anchored."]);
         

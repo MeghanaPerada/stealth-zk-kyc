@@ -1,0 +1,1784 @@
+{
+  "version": 3,
+  "sources": [
+    "../../zkp_verifier/contract.algo.ts"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;AAQA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAUE;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AARe;AAUb;AAAA;AAFF;AAAA;AAQA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAbgB;AAcd;AAAA;AADF;AAAA;AAaA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAS0E;AAtC3D;AAsC2D;AAAA;AAAlD;;AAAA;;AAAA;;AAAA;AACtB;AAIO;;AAAA;AAAP;AAIO;;AAAA;AAAA;AAA8B;AAA9B;AAAP;AACiC;AAA1B;;AAAA;AAA0B;AAA1B;;AAAA;;AAAA;AAAqC;AAArC;;AAAA;AAAqC;AAArC;;AAAA;;AAAA;AAAA;;AAAA;;AAAA;AAA8C;;AAA9C;AAAP;AAMA;AACqB;AApDP;AAoDO;AAAA;AACC;;AACT;;;AADD;;;;;;;;;;;;;;AAFZ;;;;AAIc;;;AAJd;AAzBF;AAAA",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "@algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 0 2 1 32"
+    },
+    "7": {
+      "op": "bytecblock \"opk\" \"rai\""
+    },
+    "17": {
+      "op": "txn NumAppArgs",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "19": {
+      "op": "bz main___algots__.defaultCreate@10",
+      "stack_out": []
+    },
+    "22": {
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "24": {
+      "op": "!",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "25": {
+      "error": "OnCompletion must be NoOp",
+      "op": "assert // OnCompletion must be NoOp",
+      "stack_out": []
+    },
+    "26": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "28": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "29": {
+      "op": "pushbytess 0xb87df2a3 0xdf4a951d 0x9b22d323 // method \"setOraclePubKey(byte[])void\", method \"setRegistryAppId(uint64)void\", method \"verifyAndRegister(byte[],byte[],byte[],byte[],string)void\"",
+      "defined_out": [
+        "Method(setOraclePubKey(byte[])void)",
+        "Method(setRegistryAppId(uint64)void)",
+        "Method(verifyAndRegister(byte[],byte[],byte[],byte[],string)void)"
+      ],
+      "stack_out": [
+        "Method(setOraclePubKey(byte[])void)",
+        "Method(setRegistryAppId(uint64)void)",
+        "Method(verifyAndRegister(byte[],byte[],byte[],byte[],string)void)"
+      ]
+    },
+    "46": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(setOraclePubKey(byte[])void)",
+        "Method(setRegistryAppId(uint64)void)",
+        "Method(verifyAndRegister(byte[],byte[],byte[],byte[],string)void)",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "Method(setOraclePubKey(byte[])void)",
+        "Method(setRegistryAppId(uint64)void)",
+        "Method(verifyAndRegister(byte[],byte[],byte[],byte[],string)void)",
+        "tmp%6#0"
+      ]
+    },
+    "49": {
+      "op": "match setOraclePubKey setRegistryAppId verifyAndRegister",
+      "stack_out": []
+    },
+    "57": {
+      "op": "err"
+    },
+    "58": {
+      "block": "main___algots__.defaultCreate@10",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0"
+      ]
+    },
+    "60": {
+      "op": "!",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0"
+      ]
+    },
+    "61": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ]
+    },
+    "63": {
+      "op": "!",
+      "defined_out": [
+        "tmp%10#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%10#0"
+      ]
+    },
+    "64": {
+      "op": "&&",
+      "defined_out": [
+        "tmp%11#0"
+      ],
+      "stack_out": [
+        "tmp%11#0"
+      ]
+    },
+    "65": {
+      "error": "OnCompletion must be NoOp && can only call when creating",
+      "op": "assert // OnCompletion must be NoOp && can only call when creating",
+      "stack_out": []
+    },
+    "66": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "67": {
+      "op": "return",
+      "stack_out": []
+    },
+    "68": {
+      "subroutine": "smart_contracts/zkp_verifier/contract.algo.ts::ZkpVerifier.setOraclePubKey[routing]",
+      "params": {},
+      "block": "setOraclePubKey",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "71": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "72": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "73": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "74": {
+      "op": "intc_1 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "75": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "76": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "78": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "79": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "80": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "81": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "pubKey#0"
+      ],
+      "stack_out": [
+        "pubKey#0"
+      ]
+    },
+    "84": {
+      "op": "bytec_0 // \"opk\"",
+      "defined_out": [
+        "\"opk\"",
+        "pubKey#0"
+      ],
+      "stack_out": [
+        "pubKey#0",
+        "\"opk\""
+      ]
+    },
+    "85": {
+      "op": "swap",
+      "stack_out": [
+        "\"opk\"",
+        "pubKey#0"
+      ]
+    },
+    "86": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "87": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "88": {
+      "op": "return",
+      "stack_out": []
+    },
+    "89": {
+      "subroutine": "smart_contracts/zkp_verifier/contract.algo.ts::ZkpVerifier.setRegistryAppId[routing]",
+      "params": {},
+      "block": "setRegistryAppId",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "92": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "93": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "len%0#0"
+      ]
+    },
+    "94": {
+      "op": "pushint 8 // 8",
+      "defined_out": [
+        "8",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "len%0#0",
+        "8"
+      ]
+    },
+    "96": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "97": {
+      "error": "invalid number of bytes for arc4.uint64",
+      "op": "assert // invalid number of bytes for arc4.uint64",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "98": {
+      "op": "btoi",
+      "defined_out": [
+        "appId#0"
+      ],
+      "stack_out": [
+        "appId#0"
+      ]
+    },
+    "99": {
+      "op": "bytec_1 // \"rai\"",
+      "defined_out": [
+        "\"rai\"",
+        "appId#0"
+      ],
+      "stack_out": [
+        "appId#0",
+        "\"rai\""
+      ]
+    },
+    "100": {
+      "op": "swap",
+      "stack_out": [
+        "\"rai\"",
+        "appId#0"
+      ]
+    },
+    "101": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "102": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "103": {
+      "op": "return",
+      "stack_out": []
+    },
+    "104": {
+      "subroutine": "smart_contracts/zkp_verifier/contract.algo.ts::ZkpVerifier.verifyAndRegister[routing]",
+      "params": {},
+      "block": "verifyAndRegister",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "107": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "108": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "109": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "110": {
+      "op": "intc_1 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "111": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "112": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "114": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "115": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "116": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "117": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "proof#0"
+      ],
+      "stack_out": [
+        "proof#0"
+      ]
+    },
+    "120": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "proof#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0"
+      ]
+    },
+    "123": {
+      "op": "dup",
+      "defined_out": [
+        "proof#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "124": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "0"
+      ]
+    },
+    "125": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%1#0",
+        "proof#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "aggregate%array_length%1#0"
+      ]
+    },
+    "126": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "aggregate%array_length%1#0",
+        "2"
+      ]
+    },
+    "127": {
+      "op": "+",
+      "defined_out": [
+        "add%1#0",
+        "proof#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "add%1#0"
+      ]
+    },
+    "128": {
+      "op": "dig 1",
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "add%1#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "130": {
+      "op": "len",
+      "defined_out": [
+        "add%1#0",
+        "len%1#0",
+        "proof#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "add%1#0",
+        "len%1#0"
+      ]
+    },
+    "131": {
+      "op": "==",
+      "defined_out": [
+        "eq%1#0",
+        "proof#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "132": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "proof#0",
+        "tmp%2#0"
+      ]
+    },
+    "133": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "proof#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0"
+      ]
+    },
+    "136": {
+      "op": "txna ApplicationArgs 3",
+      "defined_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0"
+      ]
+    },
+    "139": {
+      "op": "dup",
+      "defined_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "140": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)",
+        "0"
+      ]
+    },
+    "141": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%2#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "aggregate%array_length%2#0"
+      ]
+    },
+    "142": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "aggregate%array_length%2#0",
+        "2"
+      ]
+    },
+    "143": {
+      "op": "+",
+      "defined_out": [
+        "add%2#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "add%2#0"
+      ]
+    },
+    "144": {
+      "op": "dig 1",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "add%2#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "146": {
+      "op": "len",
+      "defined_out": [
+        "add%2#0",
+        "len%2#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "add%2#0",
+        "len%2#0"
+      ]
+    },
+    "147": {
+      "op": "==",
+      "defined_out": [
+        "eq%2#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0",
+        "eq%2#0"
+      ]
+    },
+    "148": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "tmp%4#0"
+      ]
+    },
+    "149": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "oracleData#0",
+        "proof#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0"
+      ]
+    },
+    "152": {
+      "op": "txna ApplicationArgs 4",
+      "defined_out": [
+        "oracleData#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0"
+      ]
+    },
+    "155": {
+      "op": "dup",
+      "defined_out": [
+        "oracleData#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)"
+      ]
+    },
+    "156": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "tmp%6#0 (copy)",
+        "0"
+      ]
+    },
+    "157": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%3#0",
+        "oracleData#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "aggregate%array_length%3#0"
+      ]
+    },
+    "158": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "aggregate%array_length%3#0",
+        "2"
+      ]
+    },
+    "159": {
+      "op": "+",
+      "defined_out": [
+        "add%3#0",
+        "oracleData#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "add%3#0"
+      ]
+    },
+    "160": {
+      "op": "dig 1",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "add%3#0",
+        "tmp%6#0 (copy)"
+      ]
+    },
+    "162": {
+      "op": "len",
+      "defined_out": [
+        "add%3#0",
+        "len%3#0",
+        "oracleData#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "add%3#0",
+        "len%3#0"
+      ]
+    },
+    "163": {
+      "op": "==",
+      "defined_out": [
+        "eq%3#0",
+        "oracleData#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0",
+        "eq%3#0"
+      ]
+    },
+    "164": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "tmp%6#0"
+      ]
+    },
+    "165": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0"
+      ]
+    },
+    "168": {
+      "op": "txna ApplicationArgs 5",
+      "defined_out": [
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0"
+      ]
+    },
+    "171": {
+      "op": "dup",
+      "defined_out": [
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)"
+      ]
+    },
+    "172": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "tmp%8#0 (copy)",
+        "0"
+      ]
+    },
+    "173": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%4#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "aggregate%array_length%4#0"
+      ]
+    },
+    "174": {
+      "op": "intc_1 // 2",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "aggregate%array_length%4#0",
+        "2"
+      ]
+    },
+    "175": {
+      "op": "+",
+      "defined_out": [
+        "add%4#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "add%4#0"
+      ]
+    },
+    "176": {
+      "op": "dig 1",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "add%4#0",
+        "tmp%8#0 (copy)"
+      ]
+    },
+    "178": {
+      "op": "len",
+      "defined_out": [
+        "add%4#0",
+        "len%4#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "add%4#0",
+        "len%4#0"
+      ]
+    },
+    "179": {
+      "op": "==",
+      "defined_out": [
+        "eq%4#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "publicInputs#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0",
+        "eq%4#0"
+      ]
+    },
+    "180": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "tmp%8#0"
+      ]
+    },
+    "181": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "proofId#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proofId#0"
+      ]
+    },
+    "184": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proofId#0",
+        "0"
+      ]
+    },
+    "185": {
+      "op": "bytec_0 // \"opk\"",
+      "defined_out": [
+        "\"opk\"",
+        "0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "proofId#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proofId#0",
+        "0",
+        "\"opk\""
+      ]
+    },
+    "186": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proof#0",
+        "proofId#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proofId#0",
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "187": {
+      "error": "check GlobalState exists",
+      "op": "assert // check GlobalState exists",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "proofId#0",
+        "maybe_value%0#0"
+      ]
+    },
+    "188": {
+      "op": "uncover 3",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "oracleSignature#0",
+        "proofId#0",
+        "maybe_value%0#0",
+        "oracleData#0"
+      ]
+    },
+    "190": {
+      "op": "uncover 3",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "proofId#0",
+        "maybe_value%0#0",
+        "oracleData#0",
+        "oracleSignature#0"
+      ]
+    },
+    "192": {
+      "op": "uncover 2",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "proofId#0",
+        "oracleData#0",
+        "oracleSignature#0",
+        "maybe_value%0#0"
+      ]
+    },
+    "194": {
+      "op": "ed25519verify_bare",
+      "defined_out": [
+        "isOracleValid#0",
+        "proof#0",
+        "proofId#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "proofId#0",
+        "isOracleValid#0"
+      ]
+    },
+    "195": {
+      "error": "Invalid Oracle signature",
+      "op": "assert // Invalid Oracle signature",
+      "stack_out": [
+        "proof#0",
+        "publicInputs#0",
+        "proofId#0"
+      ]
+    },
+    "196": {
+      "op": "uncover 2",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "proof#0"
+      ]
+    },
+    "198": {
+      "op": "len",
+      "defined_out": [
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%1#1"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%1#1"
+      ]
+    },
+    "199": {
+      "error": "Empty ZK proof metadata",
+      "op": "assert // Empty ZK proof metadata",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0"
+      ]
+    },
+    "200": {
+      "op": "dig 1",
+      "defined_out": [
+        "proofId#0",
+        "publicInputs#0",
+        "publicInputs#0 (copy)"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "publicInputs#0 (copy)"
+      ]
+    },
+    "202": {
+      "op": "len",
+      "defined_out": [
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%3#1"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1"
+      ]
+    },
+    "203": {
+      "op": "dup",
+      "defined_out": [
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%3#1",
+        "tmp%3#1 (copy)"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "tmp%3#1 (copy)"
+      ]
+    },
+    "204": {
+      "op": "intc_3 // 32",
+      "defined_out": [
+        "32",
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%3#1",
+        "tmp%3#1 (copy)"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "tmp%3#1 (copy)",
+        "32"
+      ]
+    },
+    "205": {
+      "op": ">=",
+      "defined_out": [
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%3#1",
+        "tmp%4#1"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "tmp%4#1"
+      ]
+    },
+    "206": {
+      "error": "Public inputs too short",
+      "op": "assert // Public inputs too short",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1"
+      ]
+    },
+    "207": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "0"
+      ]
+    },
+    "208": {
+      "op": "dig 1",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "0",
+        "tmp%3#1 (copy)"
+      ]
+    },
+    "210": {
+      "op": ">=",
+      "defined_out": [
+        "is_out_of_bounds%0#0",
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%3#1"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "is_out_of_bounds%0#0"
+      ]
+    },
+    "211": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "is_out_of_bounds%0#0",
+        "0"
+      ]
+    },
+    "212": {
+      "op": "dig 2",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "is_out_of_bounds%0#0",
+        "0",
+        "tmp%3#1 (copy)"
+      ]
+    },
+    "214": {
+      "op": "uncover 2",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "0",
+        "tmp%3#1 (copy)",
+        "is_out_of_bounds%0#0"
+      ]
+    },
+    "216": {
+      "op": "select",
+      "defined_out": [
+        "bounded_index%0#0",
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%3#1"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "bounded_index%0#0"
+      ]
+    },
+    "217": {
+      "op": "intc_3 // 32",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "bounded_index%0#0",
+        "32"
+      ]
+    },
+    "218": {
+      "op": "dig 2",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "bounded_index%0#0",
+        "32",
+        "tmp%3#1 (copy)"
+      ]
+    },
+    "220": {
+      "op": ">=",
+      "defined_out": [
+        "bounded_index%0#0",
+        "is_out_of_bounds%1#0",
+        "proofId#0",
+        "publicInputs#0",
+        "tmp%3#1"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "bounded_index%0#0",
+        "is_out_of_bounds%1#0"
+      ]
+    },
+    "221": {
+      "op": "intc_3 // 32",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "tmp%3#1",
+        "bounded_index%0#0",
+        "is_out_of_bounds%1#0",
+        "32"
+      ]
+    },
+    "222": {
+      "op": "uncover 3",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "bounded_index%0#0",
+        "is_out_of_bounds%1#0",
+        "32",
+        "tmp%3#1"
+      ]
+    },
+    "224": {
+      "op": "uncover 2",
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "bounded_index%0#0",
+        "32",
+        "tmp%3#1",
+        "is_out_of_bounds%1#0"
+      ]
+    },
+    "226": {
+      "op": "select",
+      "defined_out": [
+        "bounded_index%0#0",
+        "bounded_index%1#0",
+        "proofId#0",
+        "publicInputs#0"
+      ],
+      "stack_out": [
+        "publicInputs#0",
+        "proofId#0",
+        "bounded_index%0#0",
+        "bounded_index%1#0"
+      ]
+    },
+    "227": {
+      "op": "uncover 3",
+      "stack_out": [
+        "proofId#0",
+        "bounded_index%0#0",
+        "bounded_index%1#0",
+        "publicInputs#0"
+      ]
+    },
+    "229": {
+      "op": "cover 2",
+      "stack_out": [
+        "proofId#0",
+        "publicInputs#0",
+        "bounded_index%0#0",
+        "bounded_index%1#0"
+      ]
+    },
+    "231": {
+      "op": "substring3",
+      "defined_out": [
+        "proofId#0",
+        "tmp%5#1"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "tmp%5#1"
+      ]
+    },
+    "232": {
+      "op": "txn Sender",
+      "defined_out": [
+        "proofId#0",
+        "reinterpret_bytes[32]%0#0",
+        "tmp%5#1"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "tmp%5#1",
+        "reinterpret_bytes[32]%0#0"
+      ]
+    },
+    "234": {
+      "op": "==",
+      "defined_out": [
+        "proofId#0",
+        "tmp%6#1"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "tmp%6#1"
+      ]
+    },
+    "235": {
+      "error": "Proof-to-sender binding mismatch",
+      "op": "assert // Proof-to-sender binding mismatch",
+      "stack_out": [
+        "proofId#0"
+      ]
+    },
+    "236": {
+      "op": "itxn_begin"
+    },
+    "237": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "proofId#0",
+        "0"
+      ]
+    },
+    "238": {
+      "op": "bytec_1 // \"rai\"",
+      "defined_out": [
+        "\"rai\"",
+        "0",
+        "proofId#0"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "0",
+        "\"rai\""
+      ]
+    },
+    "239": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%1#0",
+        "maybe_value%1#0",
+        "proofId#0"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "240": {
+      "error": "check GlobalState exists",
+      "op": "assert // check GlobalState exists",
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0"
+      ]
+    },
+    "241": {
+      "op": "txn Sender",
+      "defined_out": [
+        "maybe_value%1#0",
+        "proofId#0",
+        "tmp%7#1"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0",
+        "tmp%7#1"
+      ]
+    },
+    "243": {
+      "op": "dup",
+      "defined_out": [
+        "maybe_value%1#0",
+        "proofId#0",
+        "tmp%7#1",
+        "tmp%8#1"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0",
+        "tmp%7#1",
+        "tmp%8#1"
+      ]
+    },
+    "244": {
+      "op": "itxn_field Accounts",
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0",
+        "tmp%7#1"
+      ]
+    },
+    "246": {
+      "op": "pushbytes 0xcf1fce58 // method \"registerVerification(account,string)void\"",
+      "defined_out": [
+        "Method(registerVerification(account,string)void)",
+        "maybe_value%1#0",
+        "proofId#0",
+        "tmp%7#1"
+      ],
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0",
+        "tmp%7#1",
+        "Method(registerVerification(account,string)void)"
+      ]
+    },
+    "252": {
+      "op": "itxn_field ApplicationArgs",
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0",
+        "tmp%7#1"
+      ]
+    },
+    "254": {
+      "op": "itxn_field ApplicationArgs",
+      "stack_out": [
+        "proofId#0",
+        "maybe_value%1#0"
+      ]
+    },
+    "256": {
+      "op": "itxn_field ApplicationID"
+    },
+    "258": {
+      "op": "itxn_field ApplicationArgs",
+      "stack_out": []
+    },
+    "260": {
+      "op": "pushint 6 // 6",
+      "defined_out": [
+        "6"
+      ],
+      "stack_out": [
+        "6"
+      ]
+    },
+    "262": {
+      "op": "itxn_field TypeEnum",
+      "stack_out": []
+    },
+    "264": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "0"
+      ]
+    },
+    "265": {
+      "op": "itxn_field Fee",
+      "stack_out": []
+    },
+    "267": {
+      "op": "itxn_submit"
+    },
+    "268": {
+      "op": "intc_2 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "269": {
+      "op": "return",
+      "stack_out": []
+    }
+  }
+}

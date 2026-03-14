@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function KYCSubmission() {
   const router = useRouter();
-  const { isConnected } = useWallet();
+  const { isConnected, address } = useWallet();
   const [activeTab, setActiveTab] = useState("oracle");
   const [isFetchingOracle, setIsFetchingOracle] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -43,33 +43,45 @@ export default function KYCSubmission() {
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   const fetchFromOracle = async () => {
+    if (!isConnected) return;
     setIsFetchingOracle(true);
-    // Simulate high-fidelity oracle retrieval
-    await new Promise(resolve => setTimeout(resolve, 2500));
     
-    const mockOracleCredential = {
-      credential: "age_over_18_certificate",
-      issuer: "IdentityOracle_v2.1",
-      issuedAt: new Date().toISOString(),
-      hash: "0xec23...a9b1",
-      signature: "0x7d8e...f2a4",
-      attributes: {
-        over_18: true,
-        region: "NA"
-      }
-    };
+    try {
+      // Step 2: Query the live Identity Oracle for 18+ verification
+      const response = await fetch("http://localhost:3001/api/issue-credential", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          walletAddress: address,
+          attributes: {
+            over_18: true,
+            tier: "verified"
+          }
+        })
+      });
 
-    setManualData({
-      name: "Verified User",
-      dob: "1990-01-01",
-      email: "oracle-verified@example.com"
-    });
-    setFile(new File([JSON.stringify(mockOracleCredential, null, 2)], "oracle_credential.json", { type: "application/json" }));
-    setIsFetchingOracle(false);
-    
-    // Auto-switch to upload tab to show result
-    setActiveTab("upload");
-    localStorage.setItem("stealth_identity_credential", JSON.stringify(mockOracleCredential));
+      const data = await response.json();
+
+      if (data.success) {
+        setManualData({
+          name: "Oracle Verified User",
+          dob: "1", // Placeholder
+          email: "oracle@stealth-zk-kyc.io"
+        });
+        
+        const credentialFile = new File([JSON.stringify(data, null, 2)], "oracle_credential.json", { type: "application/json" });
+        setFile(credentialFile);
+        localStorage.setItem("stealth_identity_credential", JSON.stringify(data));
+        
+        // Auto-switch to upload tab to show the cryptographic result
+        setActiveTab("upload");
+      }
+    } catch (error) {
+      console.error("Oracle fetch failed:", error);
+    } finally {
+      setIsFetchingOracle(true); // Keep spinner active for a moment for effect
+      setTimeout(() => setIsFetchingOracle(false), 800);
+    }
   };
 
   const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
