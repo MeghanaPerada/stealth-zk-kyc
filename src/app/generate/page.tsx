@@ -95,8 +95,8 @@ export default function ProofGenerator() {
         
         setLogs(prev => [...prev, "Awaiting wallet signature..."]);
 
-        // Real On-chain Anchoring using ProofAnchor Contract (App ID 1006)
-        const PROOF_ANCHOR_APP_ID = BigInt(1006);
+        // Real On-chain Anchoring using ProofAnchor Contract (App ID 757123431)
+        const PROOF_ANCHOR_APP_ID = BigInt(757123431);
         const { ProofAnchorFactory } = await import('@/contracts/proof_anchor/ProofAnchorClient');
         const factory = new ProofAnchorFactory({
           algorand: algorand,

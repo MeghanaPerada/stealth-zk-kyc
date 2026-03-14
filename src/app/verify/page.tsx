@@ -33,11 +33,11 @@ function VerificationDashboardContent() {
     setProofDetails(null);
 
     try {
-      setVerificationSteps(prev => [...prev, "Connecting to Algorand LocalNet..."]);
+      setVerificationSteps(prev => [...prev, "Connecting to Algorand Testnet..."]);
       const { AlgorandClient } = await import("@algorandfoundation/algokit-utils");
-      const algorand = AlgorandClient.defaultLocalNet();
+      const algorand = AlgorandClient.testNet();
       
-      const REGISTRY_APP_ID = BigInt(1005);
+      const REGISTRY_APP_ID = BigInt(757123414);
       const { IdentityRegistryFactory } = await import("@/contracts/identity_registry/IdentityRegistryClient");
       
       const factory = new IdentityRegistryFactory({
@@ -62,7 +62,7 @@ function VerificationDashboardContent() {
         console.log("Not in registry yet, proceeding to check anchored proof...");
       }
 
-      setVerificationSteps(prev => [...prev, "Searching for Anchored Proof in ProofAnchor (1006)..."]);
+      setVerificationSteps(prev => [...prev, "Searching for Anchored Proof in ProofAnchor (757123431)..."]);
       // Fallback or Simulation of ZkpVerifier call if real proof bytes were provided
       // For this demo, if the user enters a valid-looking address, we check registry.
       // If it's a TX ID, we check the note (as before).
