@@ -34,12 +34,15 @@ function VerificationDashboardContent() {
 
     try {
       setVerificationSteps(prev => [...prev, "Connecting to Algorand Testnet..."]);
+      const { AlgorandClient } = await import("@algorandfoundation/algokit-utils");
+      const algorand = AlgorandClient.testNet();
+      
       await new Promise(resolve => setTimeout(resolve, 800));
 
       setVerificationSteps(prev => [...prev, "Retrieving Transaction: " + proofId.substring(0, 10) + "..."]);
       
-      // Real Blockchain Query
-      const txInfo = (await algodClient.pendingTransactionInformation(proofId).do()) as any;
+      // Real Blockchain Query using AlgorandClient
+      const txInfo = await algorand.client.algod.pendingTransactionInformation(proofId).do() as any;
       let note = "";
       
       const rawNote = txInfo?.txn?.txn?.note || txInfo?.note;

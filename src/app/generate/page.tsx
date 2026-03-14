@@ -81,8 +81,8 @@ export default function ProofGenerator() {
       try {
         setLogs(prev => [...prev, "Connecting to Algorand Testnet...", "Preparing Secure Identity Anchor..."]);
         
-        const algosdk = await import("algosdk");
-        const params = await algodClient.getTransactionParams().do();
+        const { AlgorandClient } = await import("@algorandfoundation/algokit-utils");
+        const algorand = AlgorandClient.testNet();
         
         // Step 4: Anchor Proof Object (JSON note)
         const proofObj = {
@@ -91,24 +91,19 @@ export default function ProofGenerator() {
           w_bound: address,
           attr: proofData.attribute
         };
-        const note = new TextEncoder().encode(`stealth-zk-proof:${JSON.stringify(proofObj)}`);
+        const note = `stealth-zk-proof:${JSON.stringify(proofObj)}`;
         
-        const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-          sender: address,
-          receiver: address, // Self-payment for anchoring
-          amount: 0,
-          note: note,
-          suggestedParams: params,
-        });
-
         setLogs(prev => [...prev, "Awaiting wallet signature..."]);
-        const encodedTxn = algosdk.encodeUnsignedTransaction(txn);
-        const signedTxnsRaw = await signTransactions([encodedTxn]);
-        const signedTxns = signedTxnsRaw.filter((stxn): stxn is Uint8Array => stxn !== null);
+
+        // Using AlograndClient for cleaner transaction orchestration
+        const result = await algorand.send.payment({
+          sender: address,
+          receiver: address,
+          amount: (0).microAlgos(),
+          note: note,
+        });
         
-        setLogs(prev => [...prev, "Broadcasting anchor to Algorand..."]);
-        const sendResponse = await algodClient.sendRawTransaction(signedTxns).do();
-        const txId = sendResponse.txid;
+        const txId = result.confirmation.txn.txn.txID();
         
         setLogs(prev => [...prev, `Transaction confirmed: ${txId}`, "Proof successfully generated and anchored."]);
         
