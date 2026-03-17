@@ -48,7 +48,8 @@ export default function KYCSubmission() {
     
     try {
       // Step 2: Query the live Identity Oracle for 18+ verification
-      const response = await fetch("http://localhost:3001/api/issue-credential", {
+      const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
+      const response = await fetch(`${oracleUrl}/api/issue-credential`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
