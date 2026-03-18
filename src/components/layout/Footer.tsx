@@ -6,9 +6,9 @@ export default function Footer() {
       <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[600px] h-[200px] bg-primary/5 rounded-[100%] blur-[100px] -z-10 pointer-events-none" />
       
       <div className="container px-4 mx-auto max-w-screen-xl relative z-10">
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-3 items-center gap-6 w-full">
           {/* Left: Brand */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center md:justify-start gap-3">
             <div className="p-2 bg-primary/10 rounded-lg border border-primary/20">
               <ShieldCheck className="h-5 w-5 text-primary" />
             </div>
@@ -23,7 +23,7 @@ export default function Footer() {
           </div>
 
           {/* Center: Tech badges */}
-          <div className="flex items-center gap-3">
+          <div className="flex items-center justify-center gap-3">
             <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-primary/5 border border-primary/15 text-[9px] font-bold uppercase tracking-widest text-primary/60">
               <Zap className="w-3 h-3" /> Algorand
             </span>
@@ -33,7 +33,7 @@ export default function Footer() {
           </div>
           
           {/* Right: Copyright */}
-          <div className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest text-center md:text-right">
+          <div className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest text-center md:text-right md:justify-self-end">
             <p>© 2025 Stealth zk-kyc</p>
           </div>
         </div>
