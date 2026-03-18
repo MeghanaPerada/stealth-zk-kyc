@@ -101,13 +101,13 @@ export function ZkVisualization() {
           {/* Flow Visualization */}
           <div className="max-w-4xl mx-auto mb-16 px-4">
             <div className="flex flex-col lg:flex-row items-center justify-between gap-8 lg:gap-0 relative">
-               <FlowStage icon={Lock} label="User Identity" active={step >= 0} />
+               <FlowStage icon={Lock} label="User Identity" active={true} />
                <FlowArrow active={step === 1} />
-               <FlowStage icon={Settings} label="ZK Proof Generator" active={step >= 1} pulse={step === 1} />
+               <FlowStage icon={Settings} label="ZK Proof Generator" active={true} pulse={step === 1} />
                <FlowArrow active={step >= 2} />
-               <FlowStage icon={Shield} label="Proof Verification" active={step >= 2} pulse={step === 2} />
+               <FlowStage icon={Shield} label="Proof Verification" active={true} pulse={step === 2} />
                <FlowArrow active={step === 3} />
-               <FlowStage icon={Globe} label="Public Verifier" active={step === 3} />
+               <FlowStage icon={Globe} label="Public Verifier" active={true} />
             </div>
             
             <motion.p 
