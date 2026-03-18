@@ -42,18 +42,38 @@ export default function Navbar() {
                <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
             <span className="font-black text-xl tracking-tight hidden sm:inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary drop-shadow-sm">
-              AlgoPlonk
-              <span className="text-zinc-500 font-medium ml-1.5 text-sm tracking-widest uppercase">ZK-KYC</span>
+              Stealth
+              <span className="text-zinc-500 font-medium ml-1.5 text-sm tracking-widest uppercase">zk-kyc</span>
             </span>
           </Link>
         </div>
         
-        {/* Center: Connect Identity + Nav Links */}
-        <nav className="hidden md:flex items-center gap-2 bg-black/40 px-2 py-2 rounded-full border border-white/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
-          {/* Connect Identity — Integrated with use-wallet-ui-react */}
+        {/* Center: Nav Links */}
+        <nav className="absolute left-1/2 -translate-x-1/2 hidden md:flex items-center gap-2 bg-black/40 px-2 py-2 rounded-full border border-white/5 shadow-[inset_0_0_20px_rgba(0,0,0,0.5)]">
+
+
+          {/* Nav Links — same style as Connect Wallet */}
+          {navLinks.map((link) => {
+            const isActive = pathname === link.path;
+            return (
+              <Link
+                key={link.path}
+                href={link.path}
+                className={`relative text-sm font-bold tracking-wide transition-all duration-300 px-5 py-2 rounded-full overflow-hidden group bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_25px_rgba(52,211,153,0.4)] hover:shadow-[0_0_40px_rgba(52,211,153,0.6)] hover:scale-[1.03] active:scale-[0.98] ${
+                  isActive ? "ring-2 ring-white/30 ring-offset-1 ring-offset-black" : ""
+                }`}
+              >
+                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
+                <span className="relative z-10">{link.name}</span>
+              </Link>
+            )
+          })}
+        </nav>
+
+        {/* Right side — Connect Wallet */}
+        <div className="flex items-center gap-3">
           {!isConnected ? (
-            <div className="wui-custom-trigger relative group">
-              <span className="absolute -top-8 left-1/2 -translate-x-1/2 text-[9px] font-black uppercase tracking-[0.2em] text-primary opacity-0 group-hover:opacity-100 transition-opacity whitespace-nowrap">Secure Identity</span>
+            <div className="wui-custom-trigger relative">
               <WalletButton />
               <style jsx global>{`
                 .wui-custom-trigger button {
@@ -92,7 +112,7 @@ export default function Navbar() {
               </button>
 
               {isDropdownOpen && (
-                <div className="absolute left-1/2 -translate-x-1/2 mt-3 w-56 py-2 bg-zinc-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-[60] animate-in fade-in zoom-in-95 duration-200">
+                <div className="absolute right-0 mt-3 w-56 py-2 bg-zinc-900/95 backdrop-blur-2xl border border-white/10 rounded-2xl shadow-[0_20px_60px_rgba(0,0,0,0.8)] z-[60] animate-in fade-in zoom-in-95 duration-200">
                   <div className="px-4 py-3 border-b border-white/5 mb-1">
                     <p className="text-[9px] uppercase tracking-widest text-primary font-black flex items-center gap-1.5">
                       <span className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
@@ -128,50 +148,6 @@ export default function Navbar() {
                   </button>
                 </div>
               )}
-            </div>
-          )}
-
-          {/* Divider */}
-          <div className="w-px h-5 bg-primary/20 mx-1" />
-
-          {/* Nav Links — same style as Connect Wallet */}
-          {navLinks.map((link) => {
-            const isActive = pathname === link.path;
-            return (
-              <Link
-                key={link.path}
-                href={link.path}
-                className={`relative text-sm font-bold tracking-wide transition-all duration-300 px-5 py-2 rounded-full overflow-hidden group bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_25px_rgba(52,211,153,0.4)] hover:shadow-[0_0_40px_rgba(52,211,153,0.6)] hover:scale-[1.03] active:scale-[0.98] ${
-                  isActive ? "ring-2 ring-white/30 ring-offset-1 ring-offset-black" : ""
-                }`}
-              >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
-                <span className="relative z-10">{link.name}</span>
-              </Link>
-            )
-          })}
-        </nav>
-
-        {/* Right side — Algorand Testnet live badge */}
-        <div className="flex items-center gap-3">
-          <a 
-            href="https://lora.algokit.io/testnet" 
-            target="_blank" 
-            rel="noopener noreferrer"
-            className="flex items-center gap-2.5 px-4 py-2 rounded-full bg-primary/10 border border-primary/25 hover:border-primary/40 hover:bg-primary/15 hover:shadow-[0_0_20px_rgba(52,211,153,0.15)] transition-all duration-300 group cursor-pointer"
-          >
-            <div className="relative flex items-center justify-center">
-              <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-              <div className="absolute w-3.5 h-3.5 rounded-full border border-primary/30 animate-ping" />
-            </div>
-            <span className="text-[9px] font-black uppercase tracking-widest text-primary group-hover:text-emerald-300 transition-colors">Algorand Testnet</span>
-            <Zap className="w-3 h-3 text-primary/60 group-hover:text-primary transition-colors" />
-          </a>
-
-          {/* Mobile-only Connect Button */}
-          {!isConnected && (
-            <div className="md:hidden wui-custom-trigger">
-              <WalletButton />
             </div>
           )}
         </div>

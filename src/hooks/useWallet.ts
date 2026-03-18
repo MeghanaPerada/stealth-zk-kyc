@@ -36,7 +36,12 @@ export const useWallet = () => {
     // Note: connectWallet is now primarily handled by the WalletButton trigger 
     // but we keep the mapping for compatibility.
     connectWallet: triggerContextConnect, 
-    disconnectWallet: triggerContextDisconnect,
+    disconnectWallet: async () => {
+      if (activeWallet) {
+        activeWallet.disconnect();
+      }
+      await triggerContextDisconnect();
+    },
     signTransactions,
     algodClient,
   };

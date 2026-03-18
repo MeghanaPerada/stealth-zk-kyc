@@ -373,7 +373,7 @@ function ExplorerContent() {
                       </div>
                       <div className="space-y-2">
                         <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Secure Protocol</p>
-                        <Badge className="bg-primary/20 text-primary border-primary/20 font-black px-3 py-1 mt-1 text-[9px] tracking-widest uppercase">AlgoPlonk v1.0</Badge>
+                        <Badge className="bg-primary/20 text-primary border-primary/20 font-black px-3 py-1 mt-1 text-[9px] tracking-widest uppercase">Stealth v1.0</Badge>
                       </div>
                     </div>
 

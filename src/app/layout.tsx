@@ -17,7 +17,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  title: "AlgoPlonk ZK-KYC",
+  title: "Stealth zk-kyc",
   description: "Privacy-preserving KYC using Zero Knowledge Proofs.",
 };
 

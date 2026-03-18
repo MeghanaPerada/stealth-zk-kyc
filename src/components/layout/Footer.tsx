@@ -14,7 +14,7 @@ export default function Footer() {
             </div>
             <div>
               <p className="text-sm font-black text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary">
-                AlgoPlonk <span className="text-zinc-500 font-medium text-xs tracking-widest uppercase ml-1">ZK-KYC</span>
+                Stealth <span className="text-zinc-500 font-medium text-xs tracking-widest uppercase ml-1">zk-kyc</span>
               </p>
               <p className="text-[10px] text-zinc-500 mt-0.5">
                 Privacy-Preserving Identity Verification on Algorand
@@ -34,7 +34,7 @@ export default function Footer() {
           
           {/* Right: Copyright */}
           <div className="text-[10px] text-zinc-500 font-medium uppercase tracking-widest text-center md:text-right">
-            <p>© 2025 AlgoPlonk ZK-KYC</p>
+            <p>© 2025 Stealth zk-kyc</p>
           </div>
         </div>
       </div>
