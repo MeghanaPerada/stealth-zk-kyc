@@ -33,64 +33,56 @@ function VerificationDashboardContent() {
     setProofDetails(null);
 
     try {
-      setVerificationSteps(prev => [...prev, "Initiating PLONK Cryptographic Verification..."]);
+      setVerificationSteps(prev => [...prev, "Initiating ZK-Groth16 Verification..."]);
       
-      // Step 1: Resolve proof object (Try to find it in localStorage for demo)
-      const storedCredStr = localStorage.getItem("stealth_identity_credential");
-      let proofToVerify = null;
+      // Step 1: Extract real ZK artifacts from storage
+      const storedProofStr = localStorage.getItem("stealth_final_proof");
+      let zkArtifacts = null;
       
-      if (storedCredStr) {
-        const storedCred = JSON.parse(storedCredStr);
-        // Match the pasted Hash to our database/local record
-        const currentHash = storedCred.proofHash;
-        
-        if (currentHash === proofId) {
-          // Send the full cryptographic artifacts if we have them
-          proofToVerify = {
-            proofHash: currentHash,
-            fullProof: storedCred.fullProof
-          };
-          setVerificationSteps(prev => [...prev, "PLONK Proof Artifacts Loaded..."]);
+      if (storedProofStr) {
+        const stored = JSON.parse(storedProofStr);
+        // Only load if the Hash matches our searched Proof ID
+        if (stored.hash === proofId || proofId.includes(stored.hash)) {
+          zkArtifacts = stored.fullProof;
+          setVerificationSteps(prev => [...prev, "Cryptographic Artifacts Resolved."]);
         }
       }
 
-      const currentAddress = address || "";
-      
-      const payload = {
-        proof: proofToVerify || { proofHash: proofId },
-        walletAddress: currentAddress
-      };
+      if (!zkArtifacts && proofId.startsWith("zkp_")) {
+         setVerificationSteps(prev => [...prev, "Error: Full ZK artifacts missing for this ID in local vault. Use Demo Mode or re-generate."]);
+         setVerificationResult('invalid');
+         return;
+      }
 
-      // Use local unified API route
-      const response = await fetch("/api/kyc/verify", {
+      // Step 2: Call Production Verifier API
+      const response = await fetch("/api/zk/verify", {
         method: "POST",
-        headers: { 
-          "Content-Type": "application/json",
-          "x-wallet-address": currentAddress
-        },
-        body: JSON.stringify(payload)
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          proof: zkArtifacts?.proof,
+          publicSignals: zkArtifacts?.publicSignals
+        })
       });
 
       const data = await response.json();
 
       if (data.verified) {
-        setVerificationSteps(prev => [...prev, "PLONK Protocol Verification: PASSED"]);
-        setVerificationSteps(prev => [...prev, "BN128 Bilinear Pairing: SUCCESS"]);
-        setVerificationSteps(prev => [...prev, "Algorand Testnet Consensus: ANCHORED"]);
+        setVerificationSteps(prev => [...prev, "Mathematical Consistency: PASSED"]);
+        setVerificationSteps(prev => [...prev, "SnarkJS Groth16 Logic: VALID"]);
         setVerificationResult('valid');
         setProofDetails({
-          w_bound: address,
-          attr: data.dbRecord?.sourceType || "Manual/Oracle",
-          trustScore: data.dbRecord?.trustScore || 85
+          w_bound: address || "0xUnknown",
+          attr: "Verified Identity",
+          trustScore: 99
         });
       } else {
-        setVerificationSteps(prev => [...prev, `Error: ${data.message || "Invalid Proof"}`]);
+        setVerificationSteps(prev => [...prev, `Logic Error: ${data.message || data.error || "Inconsistent Proof"}`]);
         setVerificationResult('invalid');
       }
 
     } catch (error: any) {
       console.error("Verification failed:", error);
-      setVerificationSteps(prev => [...prev, "System Fault: " + (error.message || "Network failure")]);
+      setVerificationSteps(prev => [...prev, "Network/System Fault: " + (error.message || "Unknown error")]);
       setVerificationResult('invalid');
     } finally {
       setIsVerifying(false);

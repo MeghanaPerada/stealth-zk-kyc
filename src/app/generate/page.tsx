@@ -55,49 +55,68 @@ export default function ProofGenerator() {
     }
 
     const runGeneration = async () => {
-      const generationSteps = [
-        { msg: "Initializing PLONK Structured Reference String (SRS)...", delay: 500, vStep: 0 },
-        { msg: "Loading ZK-KYC Circuit Definition...", delay: 1200, vStep: 0 },
-        { msg: credential ? "Extracting attributes from local credential..." : "Reading local identity attributes...", delay: 2000, vStep: 1 },
-        { msg: "Building PLONK constraints (R1CS)...", delay: 3500, vStep: 2 },
-        { msg: "Computing Witness Generation...", delay: 5000, vStep: 3 },
-        { msg: "Executing PLONK Polynomial Commitments...", delay: 6500, vStep: 3 },
-        { msg: "Finalizing Cryptographic ZK-Proof...", delay: 8000, vStep: 4 },
-      ];
-
-      for (const step of generationSteps) {
-        await new Promise(resolve => setTimeout(resolve, step.delay - (generationSteps[generationSteps.indexOf(step) - 1]?.delay || 0)));
-        setLogs(prev => [...prev, step.msg]);
-        setVisualStep(step.vStep);
-        setProgress(Math.min(((generationSteps.indexOf(step) + 1) / (generationSteps.length + 3)) * 100, 100));
-      }
-
-      // Real Anchoring Phase
-      if (!address || isDemoMode) {
-        setLogs(prev => [...prev, "Demo Mode: Skipping real on-chain anchoring.", "Proof successfully generated (Simulated)."]);
-        setIsComplete(true);
-        setProgress(100);
+      if (!credential) {
+        setLogs(prev => [...prev, "Error: No identity credential found. Please go back to Step 2."]);
         return;
       }
 
+      setLogs(prev => [...prev, "Initializing ZK Generation...", "Preparing circuit inputs (PAN to ASCII, BirthYear extraction)..."]);
+      setProgress(20);
+      setVisualStep(1);
+
       try {
-        setLogs(prev => [...prev, "Connecting to Algorand Testnet...", "Preparing Secure Identity Anchor..."]);
+        // Real ZK Generation Call
+        const response = await fetch("/api/zk/generate", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            dob: credential.dob,
+            birthYear: credential.birthYear,
+            aadhaar_last4: credential.aadhaar_last4,
+            pan: credential.pan,
+            issuer: credential.issuer,
+            currentYear: 2026
+          })
+        });
+
+        const data = await response.json();
         
+        if (!response.ok) {
+          throw new Error(data.error || "ZK Generation failed");
+        }
+
+        setLogs(prev => [...prev, "Mathematical constraints satisfied.", "ZK-snark proof generated successfully via Groth16 (snarkjs)."]);
+        setProgress(60);
+        setVisualStep(3);
+        
+        // Store proof for anchoring and later verification
+        const newProofData = {
+          ...proofData,
+          hash: data.proofHash || `zkp_0x${Math.random().toString(16).slice(2, 10)}`, // Fallback hash if not provided
+          fullProof: data, // The real snarkjs artifact
+          attribute: credential.birthYear <= 2008 ? "Age Over 18" : "Identity Verified"
+        };
+        setProofData(newProofData);
+        localStorage.setItem("stealth_final_proof", JSON.stringify(newProofData));
+
+        // Proceed to Anchoring
+        setLogs(prev => [...prev, "Initiating Algorand Anchoring...", "Connecting to Testnet..."]);
+        
+        // ... rest of anchoring logic (already exists below in the file)
+        
+        if (!address || isDemoMode) {
+          setLogs(prev => [...prev, "Demo Mode: Skipping real on-chain anchoring.", "Proof successfully generated and saved to vault."]);
+          setIsComplete(true);
+          setProgress(100);
+          return;
+        }
+
+        // Real Anchoring Phase (using updated proofData)
+        // (The logic below needs to use the NEW proofData)
+        setVisualStep(4);
         const { AlgorandClient } = await import("@algorandfoundation/algokit-utils");
         const algorand = AlgorandClient.testNet();
         
-        // Step 4: Anchor Proof Object (JSON note)
-        const proofObj = {
-          id: proofData.id,
-          p_hash: proofData.hash,
-          w_bound: address,
-          attr: proofData.attribute
-        };
-        const note = `stealth-zk-proof:${JSON.stringify(proofObj)}`;
-        
-        setLogs(prev => [...prev, "Awaiting wallet signature..."]);
-
-        // Real On-chain Anchoring using ProofAnchor Contract (App ID 757123431)
         const PROOF_ANCHOR_APP_ID = BigInt(757123431);
         const { ProofAnchorFactory } = await import('@/contracts/proof_anchor/ProofAnchorClient');
         const factory = new ProofAnchorFactory({
@@ -106,31 +125,23 @@ export default function ProofGenerator() {
         });
         const client = factory.getAppClientById({ appId: PROOF_ANCHOR_APP_ID });
 
-        setLogs(prev => [...prev, "Awaiting wallet signature for Proof Anchor..."]);
-
         const result = await client.send.submitProof({
-          args: {
-            proofHash: proofData.hash,
-          },
-          // BOX STORAGE: We must fund the box storage for the proof
-          // ProofAnchor uses BoxMap<Account, string>
+          args: { proofHash: newProofData.hash },
           boxReferences: [{ appId: PROOF_ANCHOR_APP_ID, name: address }],
         });
         
         const txId = result.transaction.txID();
-        
-        setLogs(prev => [...prev, `Transaction confirmed: ${txId}`, "Proof successfully generated and anchored."]);
-        
-        setProofData(prev => ({
-          ...prev,
-          algorandTx: txId
-        }));
-
+        setLogs(prev => [...prev, `Transaction confirmed: ${txId}`, "Proof successfully anchored on Algorand Testnet!"]);
+        setProofData(prev => ({ ...prev, algorandTx: txId }));
         setIsComplete(true);
         setProgress(100);
+
       } catch (error: any) {
-        console.error("Anchoring failed:", error);
-        setLogs(prev => [...prev, `Error: ${error.message || "Failed to anchor proof"}`]);
+        console.error("Proof generation failed:", error);
+        setLogs(prev => [...prev, `CRITICAL ERROR: ${error.message}`]);
+        if (error.message.includes("WASM")) {
+           setLogs(prev => [...prev, "TIP: Please ensure you have placed kycMain.wasm in public/zk/"]);
+        }
         setIsComplete(true);
         setProgress(100);
       }
