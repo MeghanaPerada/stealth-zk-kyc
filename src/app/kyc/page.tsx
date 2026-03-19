@@ -28,7 +28,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 export default function KYCSubmission() {
   const router = useRouter();
-  const { isConnected, address } = useWallet();
+  const { isConnected, address, connectWallet } = useWallet();
   const [activeTab, setActiveTab] = useState("oracle");
   const [isFetchingOracle, setIsFetchingOracle] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -152,7 +152,7 @@ export default function KYCSubmission() {
                 Please connect your Algorand Identity to proceed with the secure verification process.
               </p>
               <Button 
-                onClick={() => router.push('/')}
+                onClick={connectWallet}
                 variant="outline"
                 className="border-destructive/30 text-destructive hover:bg-destructive/10 h-12 px-8 font-bold tracking-widest uppercase text-xs rounded-xl"
               >
