@@ -35,6 +35,25 @@ function VerificationDashboardContent() {
     try {
       setVerificationSteps(prev => [...prev, "Initiating Secure Verification via Proxy..."]);
       
+      // Step 1: Resolve proof object (Try to find it in localStorage for demo, or construct it)
+      const storedCredStr = localStorage.getItem("stealth_identity_credential");
+      let proofToVerify = null;
+      
+      if (storedCredStr) {
+        const storedCred = JSON.parse(storedCredStr);
+        // If the pasted ID matches the one in our local storage, use the full proof object
+        if (storedCred.proofHash === proofId || (storedCred.proof && storedCred.proof.proofHash === proofId)) {
+          proofToVerify = storedCred.proof || storedCred;
+          setVerificationSteps(prev => [...prev, "Local Proof Object Resolved..."]);
+        }
+      }
+
+      // If not found locally, we send just the ID and the backend will handle lookup
+      const payload = {
+        proof: proofToVerify || { proofHash: proofId },
+        walletAddress: address || ""
+      };
+
       const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
       const response = await fetch(`${oracleUrl}/api/kyc/verify`, {
         method: "POST",
@@ -42,15 +61,7 @@ function VerificationDashboardContent() {
           "Content-Type": "application/json",
           "x-wallet-address": address || ""
         },
-        body: JSON.stringify({
-          proof: {
-            proofContent: proofId,
-            publicSignals: {
-              isAdult: true,
-              isVerified: true
-            }
-          }
-        })
+        body: JSON.stringify(payload)
       });
 
       const data = await response.json();
@@ -64,7 +75,7 @@ function VerificationDashboardContent() {
           attr: data.dbRecord?.sourceType || "Manual/Oracle"
         });
       } else {
-        setVerificationSteps(prev => [...prev, "Verification Failed: " + (data.message || "Unknown error")]);
+        setVerificationSteps(prev => [...prev, data.message || "Verification Failed"]);
         setVerificationResult('invalid');
       }
 
@@ -341,13 +352,13 @@ function VerificationDashboardContent() {
                     
                     <div className="bg-black/50 rounded-xl p-6 border border-red-500/20 shadow-[inset_0_0_20px_rgba(0,0,0,0.8)] flex-1">
                        <p className="text-zinc-300 text-base leading-relaxed mb-4">
-                         The pairing equation check failed. The provided proof identifier:
+                         The verification check failed for the following identifier:
                        </p>
                        <div className="font-mono text-red-400 p-3 bg-red-500/10 rounded-lg border border-red-500/20 break-all mb-4 text-sm shadow-[inset_0_0_10px_rgba(239,68,68,0.1)]">
                          {proofId}
                        </div>
                        <p className="text-zinc-400 text-sm">
-                         This indicates that the proof does not mathematically map to a valid set of attributes, the public inputs are incorrect, or the proof signature has been tampered with.
+                         This indicates that the proof hash does not match our records, the identity attributes are invalid, or the proof integrity has been compromised.
                        </p>
                     </div>
                   </div>

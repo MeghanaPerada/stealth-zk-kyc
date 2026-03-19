@@ -48,6 +48,8 @@ export default function ProofGenerator() {
       setCredential(parsed);
       setProofData(prev => ({
         ...prev,
+        id: parsed.proofHash || parsed.proof?.proofHash || prev.id,
+        hash: parsed.proof?.proofHash || parsed.proofHash || prev.hash,
         attribute: parsed.credential === "age_over_18_certificate" ? "Age Over 18" : (parsed.name ? `Identity: ${parsed.name}` : "Verified Attributes")
       }));
     }

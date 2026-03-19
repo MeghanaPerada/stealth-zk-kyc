@@ -24,7 +24,7 @@ const ProofSchema = new mongoose.Schema({
   sourceType: {
     type: String,
     required: true,
-    enum: ['DIGILOCKER', 'MANUAL', 'MANUAL_ENTRY', 'UNKNOWN'],
+    enum: ['DIGILOCKER', 'MANUAL', 'MANUAL_ENTRY', 'ORACLE', 'UNKNOWN'],
   },
 }, { timestamps: true });
 
