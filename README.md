@@ -1,90 +1,89 @@
-# 🥷 Stealth ZK-KYC
+# Stealth ZK-KYC
+**A Full-Stack Privacy-Preserving KYC System on Algorand**
 
-![Next.js](https://img.shields.io/badge/Next.js-000000?style=for-the-badge&logo=nextdotjs&logoColor=white)
-![Algorand](https://img.shields.io/badge/Algorand-000000?style=for-the-badge&logo=algorand&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Tailwind_CSS-38B2AC?style=for-the-badge&logo=tailwind-css&logoColor=white)
-![TypeScript](https://img.shields.io/badge/TypeScript-007ACC?style=for-the-badge&logo=typescript&logoColor=white)
+## Overview
+Stealth ZK-KYC represents the next generation of identity verification. We combine **Zero-Knowledge Proofs (ZK)** with the **Algorand Blockchain** to allow users to prove their eligibility (e.g., age > 18, valid nationality) without ever exposing their underlying Personally Identifiable Information (PII) such as their PAN card or Date of Birth.
 
-**Stealth ZK-KYC** is a privacy-preserving identity verification protocol built on the Algorand blockchain. It enables users to verify their identity or attributes (like "Age Over 18") using Zero-Knowledge Proofs (ZKPs) without ever exposing their sensitive personal data to third parties.My solution implements a privacy-first, fully automated KYC system using AlgoPlonk zero-knowledge proofs on the Algorand blockchain. Users prove identity attributes—such as age, address, and ID validity—without ever revealing sensitive personal data. Trusted oracles provide digitally signed credentials, which are locally converted into verifiable proofs bound to the user’s wallet. These proofs are anchored on-chain, enabling organizations to verify authenticity instantly and tamper-proof, without manual review or human intervention. This approach ensures complete privacy, prevents bluffing, aligns with India’s DPDP Act, and provides a scalable, secure, and trustless alternative to traditional KYC processes.
+## Why Stealth ZK-KYC?
+Traditional KYC models force users to upload highly sensitive documents to centralized databases, creating massive honeypots for hackers. Stealth ZK-KYC reverses this model completely:
+- **Wallet-First Architecture:** Identity is intrinsically tied to your non-custodial Algorand wallet address. If there is no wallet, there is no verification.
+- **Zero Data Leaks:** Raw PII is evaluated locally/in-memory, converted to a zero-knowledge logical proof hash, and discarded. It is never stored.
+- **Immutable Trust via Algorand:** Mathematical proofs are permanently and immutably anchored to the Algorand network.
 
----
+## System Architecture
 
-## 🌟 Key Features
+### 1. Frontend (Next.js & Tailwind CSS)
+A beautiful, highly-responsive modern interface allowing users to seamlessly connect their Algorand wallets, submit identity documents, simulate high-trust DigiLocker connections, and view their active KYC proofs visually.
 
-- **🔐 Privacy-First Architecture**: Sensitive PII stays in your browser. Only cryptographic proofs are shared.
-- **👛 Pera Wallet Integration**: Secure identity anchoring using industry-standard Algorand wallets.
-- **⚡ Local ZKP Generation**: Proofs are computed locally on the client-side using a terminal-style prover interface.
-- **⛓️ Immutable Proof Anchoring**: Proof metadata is anchored on Algorand Testnet for public, tamper-proof verifiability.
-- **📡 Real-Time Verification**: Organizations can verify proofs instantly by querying the blockchain directly.
-- **✨ Premium UI/UX**: Futuristic dark-themed aesthetic with glassmorphism and smooth micro-animations.
+### 2. Backend Processing (Node.js & Express)
+The engine securely coordinating the complex data flows:
+- **`POST /api/kyc/documents` (DigiLocker Mocking)**: Simulates integration with government systems for verified high-trust scoring (`1.0`).
+- **`POST /api/kyc/upload`**: Takes manual PDF/image uploads via Multer, parsing them for logical checks, and attributing variable trust scores (`0.6-0.8`).
+- **ZK Generation**: Dynamically simulates secure proof generation, returning a rigorous metadata payload containing constraints (like `isAdult`).
 
----
+### 3. Database Layer (MongoDB & Mongoose)
+A NoSQL database responsible exclusively for rapid metadata indexing. We strictly enforce the segregation of PII. We securely store only:
+- Algorand Wallet Addresses
+- Proof Hashes
+- Validation Trust Scores & Data Source Types
+- Algorand Transaction IDs
 
-## 🏗️ The 5-Step Identity Flow
+### 4. Smart Contracts & Decentralized Trust (Algorand + PuyaTS)
+Algorand is our ultimate source of immutability and trust cross-referencing.
+- **algosdk Integrations**: The backend seamlessly submits securely derived ZK Proof hashes natively on-chain. The specific proof sits inside the transaction `note` field.
+- **PuyaTS Helper Contracts**: Contains 3 tightly-coupled smart contracts explicitly written in modern Algorand TypeScript (`@algorandfoundation/algorand-typescript`):
+  - `IdentityAnchor`
+  - `ProofRegistry`
+  - `VerificationContract`
 
-The system follows a decentralized identity lifecycle:
-
-1.  **Connect Wallet**: Bind your decentralized identity as the ownership anchor.
-2.  **Acquire Credentials**: Fetch cryptographically signed data from an Identity Oracle or upload your own.
-3.  **Generate ZKP**: Compute a mathematical proof that you meet specific criteria without revealing raw data.
-4.  **Anchor to Algorand**: Store the proof hash immutably in a transaction note on the Testnet.
-5.  **Public Verification**: Provide your Proof ID to any organization for instant, math-backed validation.
-
----
-
-## 🛠️ Technical Stack
-
-- **Framework**: [Next.js 14](https://nextjs.org/) (App Router)
-- **Blockchain**: [Algorand Testnet](https://algorand.co/) (algosdk)
-- **Wallet**: [@txnlab/use-wallet-react](https://github.com/TxnLab/use-wallet) (Pera, Defly, Lute)
-- **Styling**: Tailwind CSS & Vanilla CSS
-- **Animations**: Framer Motion
-- **Icons**: Lucide React
-
----
-
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
-
-- [Node.js](https://nodejs.org/) (v18+)
-- [Pera Wallet](https://perawallet.app/) or any supported Algorand wallet correctly configured for **Testnet**.
+- Node.js (v18+)
+- MongoDB Atlas (or local MongoDB context)
+- An Algorand Node/Indexer (Connects to Algonode Testnet locally by default)
 
 ### Installation
-
-1. Clone the repository:
-   ```bash
-   git clone https://github.com/MeghanaPerada/stealth-zk-kyc.git
-   cd stealth-zk-kyc
-   ```
-
-2. Install dependencies:
+1. Clone the repository.
+2. Install frontend dependencies:
    ```bash
    npm install
    ```
+3. Install backend dependencies:
+   ```bash
+   cd backend
+   npm install
+   ```
 
-3. Run the development server:
+### Running the Application
+
+1. **Start the Frontend:**
    ```bash
    npm run dev
    ```
+   *Available at http://localhost:3000*
 
-4. **Start the Identity Oracle (Required for Oracle Fetch)**:
-   In a separate terminal, run:
+2. **Start the Backend:**
    ```bash
-   npm run dev:oracle
+   cd backend
+   npm start
    ```
+   *Available at http://localhost:3001*
 
-5. Open [http://localhost:3000](http://localhost:3000) in your browser.
-
----
-
-## 🛡️ Security
-
-Stealth ZK-KYC prioritizes user data sovereignty. 
-- **No Database**: We do not store any user data on servers.
-- **Math-Based**: Trust is established through cryptography, not human intermediaries.
-- **Transparent**: Every proof is anchored to a public blockchain for auditability.
+### See the Demo Architecture
+Want to instantly see how the API operates? Browse our auto-generated Hackathon payloads via our built-in demo route: `http://localhost:3001/api/demo/samples`
 
 ---
 
+### The Verification Flow
+1. Connect your Algorand Testnet wallet on the frontend.
+2. Navigate to KYC process and upload a document or authorize DigiLocker.
+3. The Node server evaluates the structural constraints and dynamically issues a ZKP.
+4. The server structurally formats Algorand Application Calls to our PuyaTS components while locking the hash into the chain.
+5. The Verification endpoint (`/api/kyc/verify`) utilizes **3-Layer Cross Verification**:
+   - Math Proof cryptography check.
+   - Metadata registry match mapping Wallet to Hash.
+   - Live Testnet query structurally evaluating the `note` buffer against our Smart Contracts.
 
+---
+**Built for Web3 Hackathons. Built to Protect User Privacy.**
