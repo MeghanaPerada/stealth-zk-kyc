@@ -66,6 +66,7 @@ export const issueZkProof = async (walletAddress: string, pan: string, dob: stri
       const newProof = new Proof({
         walletAddress,
         proofHash,
+        fullProof: proof.fullProof, // Save the real PLONK artifacts
         txId,
         trustScore,
         sourceType
@@ -78,8 +79,9 @@ export const issueZkProof = async (walletAddress: string, pan: string, dob: stri
 
     return NextResponse.json({
       success: true,
-      message: `KYC Processed via ${sourceType}. Proof verified and anchored on-chain.`,
-      proof,
+      message: `KYC Processed via ${sourceType}. PLONK ZK Proof generated and anchored on-chain.`,
+      proof: proof.publicSignals, // Return human-readable signals to UI
+      fullProof: proof.fullProof, // Return cryptographic JSON for verification
       proofHash,
       txId,
       trustScore,

@@ -90,8 +90,9 @@ export default function KYCSubmission() {
           raw: data
         });
         
+        // Save the full PLONK proof and public signals for the verifier
         localStorage.setItem("stealth_identity_credential", JSON.stringify(data));
-        setFile(new File([JSON.stringify(data)], "digilocker_proof.json", { type: "application/json" }));
+        setFile(new File([JSON.stringify(data, null, 2)], "digilocker_zk_proof.json", { type: "application/json" }));
       } else {
         throw new Error(data.error || "KYC Processing failed");
       }

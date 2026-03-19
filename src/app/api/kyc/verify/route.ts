@@ -11,41 +11,49 @@ export async function POST(request: Request) {
     const { proof, walletAddress: bodyAddress } = await request.json();
     const walletAddress = getWalletAddress(request) || bodyAddress;
 
-    if (!proof || !proof.proofHash) {
-      return NextResponse.json({ verified: false, message: 'Missing proof or proof identification.' }, { status: 400 });
+    if (!proof) {
+      return NextResponse.json({ verified: false, message: 'Missing proof data.' }, { status: 400 });
     }
 
     const providedHash = proof.proofHash;
     console.log(`[DEBUG] Received Verify Request for Hash: ${providedHash}`);
 
-    // 1. Recalculate Hash (Integrity Check)
-    const isValid = (zkService as any).verifyProof(proof);
-    if (!isValid) {
-      return NextResponse.json({
-        verified: false,
-        message: 'Proof verification failed: hash mismatch or invalid proof metadata.'
-      }, { status: 400 });
-    }
-
-    // 2. Database & Ownership Checks (Only if DB connected)
+    // 1. Database & Ownership Checks (Only if DB connected)
     let dbProof = null;
-    if (db) {
+    if (db && providedHash) {
       dbProof = await Proof.findOne({ proofHash: providedHash });
       if (!dbProof) {
         return NextResponse.json({
           verified: false,
-          message: 'Proof is cryptographically valid but not found in our registry.'
+          message: 'Proof identification (Hash) not found in our registry.'
         }, { status: 404 });
       }
 
-      if (dbProof.walletAddress !== walletAddress) {
+      if (walletAddress && dbProof.walletAddress !== walletAddress) {
         return NextResponse.json({
           verified: false,
           message: 'Security Alert: Proof does not belong to the connected wallet.'
         }, { status: 403 });
       }
-    } else {
-      console.warn(`[DEMO] Skipping DB & Ownership lookup for ${providedHash} due to connection error.`);
+    }
+
+    // 2. Real PLONK Cryptographic Verification
+    // Use the fullProof from the request or the DB
+    const verificationTarget = proof.fullProof || (dbProof && dbProof.fullProof);
+    
+    if (!verificationTarget) {
+      return NextResponse.json({
+        verified: false,
+        message: 'Cryptographic artifacts (fullProof) missing for this verification request.'
+      }, { status: 400 });
+    }
+
+    const isZkValid = (zkService as any).verifyProof(verificationTarget);
+    if (!isZkValid) {
+      return NextResponse.json({
+        verified: false,
+        message: 'Real ZK-PLONK verification failed: Mathematical proofs or public signals are inconsistent.'
+      }, { status: 400 });
     }
 
     // 4. On-chain Cross-verification

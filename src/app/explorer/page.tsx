@@ -116,7 +116,8 @@ function ExplorerContent() {
         timestamp: p.createdAt,
         status: "Verified",
         hash: p.proofHash,
-        algorandTx: p.txId || "PENDING_SYNC"
+        algorandTx: p.txId || "PENDING_SYNC",
+        fullProof: p.fullProof // Pass the real ZK artifacts to the UI
       }));
 
       setProofs(mappedProofs.length > 0 ? mappedProofs : INITIAL_PROOFS);
@@ -384,27 +385,42 @@ function ExplorerContent() {
                       </div>
                     </div>
 
-                    <div className="mt-12 p-8 bg-primary/5 rounded-[2rem] border border-primary/20 relative overflow-hidden group">
-                       <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                         <ShieldCheck className="h-24 w-24" />
-                       </div>
-                       <h4 className="text-primary font-black uppercase tracking-widest text-[10px] mb-4 flex items-center gap-3">
-                         <CheckCircle2 className="h-4 w-4" /> Validated Cryptographic Integrity
-                       </h4>
-                       <p className="text-zinc-300 text-base font-bold leading-relaxed mb-6 uppercase tracking-tighter">
-                         Record verified against decentralized constraints. Mathematical confirmation complete. No PII disclosed.
-                       </p>
-                       <div className="flex gap-4">
-                         <Button onClick={() => copyToClipboard(selectedProof.hash)} variant="outline" size="sm" className="bg-black/60 border-primary/20 hover:bg-primary hover:text-black transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl">
-                           <Copy className="h-4 w-4" /> Copy Proof Hash
-                         </Button>
-                         <Link href={`https://testnet.algoexplorer.io/tx/${selectedProof.algorandTx}`} target="_blank">
-                           <Button variant="outline" size="sm" className="bg-black/60 border-white/10 hover:bg-white/10 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl">
-                             <ExternalLink className="h-4 w-4" /> View On Algorand
+                      <div className="space-y-6 pt-8 border-t border-white/5">
+                        <div className="flex items-center justify-between">
+                          <p className="text-[10px] uppercase tracking-widest font-black text-zinc-600">PLONK Cryptographic Artifacts</p>
+                          <Badge variant="outline" className="text-[8px] border-primary/20 text-primary uppercase font-black px-2 py-0.5">zk-SNARK (PLONK)</Badge>
+                        </div>
+                        
+                        <div className="bg-black/60 rounded-2xl border border-white/5 p-6 font-mono text-[10px] text-zinc-400 max-h-48 overflow-y-auto shadow-inner custom-scrollbar">
+                           <pre className="whitespace-pre-wrap">
+                             {JSON.stringify(selectedProof.fullProof || { 
+                               message: "Proof payload anchored on-chain. Signature: " + selectedProof.hash.slice(0, 32) + "..." 
+                             }, null, 2)}
+                           </pre>
+                        </div>
+                      </div>
+
+                      <div className="mt-12 p-8 bg-primary/5 rounded-[2rem] border border-primary/20 relative overflow-hidden group">
+                         <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
+                           <ShieldCheck className="h-24 w-24" />
+                         </div>
+                         <h4 className="text-primary font-black uppercase tracking-widest text-[10px] mb-4 flex items-center gap-3">
+                           <CheckCircle2 className="h-4 w-4" /> Validated PLONK Integrity
+                         </h4>
+                         <p className="text-zinc-300 text-base font-bold leading-relaxed mb-6 uppercase tracking-tighter text-left">
+                           This record was verified using a PLONK ZK-SNARK circuit. Mathematical confirmation of 18+ age status is anchored to Algorand Testnet.
+                         </p>
+                         <div className="flex flex-wrap gap-4">
+                           <Button onClick={() => copyToClipboard(selectedProof.hash)} variant="outline" size="sm" className="bg-black/60 border-primary/20 hover:bg-primary hover:text-black transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl">
+                             <Copy className="h-4 w-4" /> Copy Proof Hash
                            </Button>
-                         </Link>
-                       </div>
-                    </div>
+                           <Link href={`https://testnet.algoexplorer.io/tx/${selectedProof.algorandTx}`} target="_blank">
+                             <Button variant="outline" size="sm" className="bg-black/60 border-white/10 hover:bg-white/10 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl">
+                               <ExternalLink className="h-4 w-4" /> View On Algorand
+                             </Button>
+                           </Link>
+                         </div>
+                      </div>
                   </div>
                 </div>
               </GlowingCard>
