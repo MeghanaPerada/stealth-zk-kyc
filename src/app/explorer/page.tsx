@@ -104,8 +104,7 @@ function ExplorerContent() {
   const fetchProofs = async () => {
     try {
       setIsLoading(true);
-      const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
-      const response = await fetch(`${oracleUrl}/api/kyc/proofs`);
+      const response = await fetch("/api/kyc/proofs");
       const data = await response.json();
       
       const mappedProofs = data.map((p: any) => ({

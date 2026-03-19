@@ -54,8 +54,8 @@ function VerificationDashboardContent() {
         walletAddress: address || ""
       };
 
-      const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
-      const response = await fetch(`${oracleUrl}/api/kyc/verify`, {
+      // Use local unified API route
+      const response = await fetch("/api/kyc/verify", {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",

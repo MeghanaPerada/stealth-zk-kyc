@@ -1,5 +1,0 @@
-[dotenv@17.3.1] injecting env (7) from .env -- tip: 🔐 encrypt with Dotenvx: https://dotenvx.com
-Stealth ZK-KYC backend running on port 3001
-Hackathon Demo Samples: http://localhost:3001/api/demo/samples
-Error connecting to MongoDB: connect ECONNREFUSED ::1:27017, connect ECONNREFUSED 127.0.0.1:27017
-Continuing in mock/offline mode (some features requiring DB persistence may not work).

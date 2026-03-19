@@ -56,16 +56,14 @@ export default function KYCSubmission() {
     setDigilockerData(null);
     
     try {
-      const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
-      
       // Step 1: Initiate DigiLocker Auth
-      const authResponse = await fetch(`${oracleUrl}/api/auth/digilocker?walletAddress=${address}`);
+      const authResponse = await fetch(`/api/auth/digilocker?walletAddress=${address}`);
       const authData = await authResponse.json();
       
       if (!authResponse.ok) throw new Error(authData.error || "Auth initiation failed");
 
-      // Step 2: Fetch Documents using the token from callback (simulated in our backend)
-      const callbackResponse = await fetch(`${oracleUrl}${authData.url}`);
+      // Step 2: Fetch Documents using the token from callback
+      const callbackResponse = await fetch(authData.url);
       const callbackData = await callbackResponse.json();
       
       if (!callbackResponse.ok) throw new Error(callbackData.error || "Callback failed");
@@ -73,7 +71,7 @@ export default function KYCSubmission() {
       const dlToken = callbackData.mockAccessToken;
 
       // Step 3: Get KYC Processed Proof
-      const kycResponse = await fetch(`${oracleUrl}/api/kyc/documents`, {
+      const kycResponse = await fetch(`/api/kyc/documents`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
@@ -99,8 +97,13 @@ export default function KYCSubmission() {
       }
     } catch (error: any) {
       console.error("DigiLocker fetch failed:", error);
-      setFetchError(error.message || "Failed to connect to DigiLocker network");
-    } finally {
+      const isNetworkError = error instanceof TypeError || error.message?.includes('fetch');
+      setFetchError(isNetworkError 
+        ? "Network Error: Cannot reach unified API. Ensure 'npm run dev' is active."
+        : error.message || "Failed to connect to DigiLocker network"
+      );
+    }
+ finally {
       setIsFetchingOracle(false);
     }
   };
