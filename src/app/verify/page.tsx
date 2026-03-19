@@ -54,9 +54,11 @@ function VerificationDashboardContent() {
         }
       }
 
+      const currentAddress = address || "";
+      
       const payload = {
         proof: proofToVerify || { proofHash: proofId },
-        walletAddress: address || ""
+        walletAddress: currentAddress
       };
 
       // Use local unified API route
@@ -64,7 +66,7 @@ function VerificationDashboardContent() {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
-          "x-wallet-address": address || ""
+          "x-wallet-address": currentAddress
         },
         body: JSON.stringify(payload)
       });

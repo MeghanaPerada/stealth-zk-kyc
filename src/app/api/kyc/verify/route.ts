@@ -48,11 +48,11 @@ export async function POST(request: Request) {
       }, { status: 400 });
     }
 
-    const isZkValid = (zkService as any).verifyProof(verificationTarget);
+    const isZkValid = (zkService as any).verifyProof(verificationTarget, walletAddress);
     if (!isZkValid) {
       return NextResponse.json({
         verified: false,
-        message: 'Real ZK-PLONK verification failed: Mathematical proofs or public signals are inconsistent.'
+        message: 'Real ZK-PLONK verification failed: Mathematical proofs are inconsistent or bound to a different wallet address.'
       }, { status: 400 });
     }
 

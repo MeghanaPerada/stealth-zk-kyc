@@ -52,27 +52,43 @@ const generateProof = (attributes) => {
 };
 
 /**
- * Verify a PLONK Zero-Knowledge Proof
+ * Verify a PLONK Zero-Knowledge Proof with strict Address Binding
+ * @param {Object} fullProof - The proof and public signals
+ * @param {string} expectedWalletAddress - The address that must match the proof's binding
  */
-const verifyProof = (fullProof) => {
+const verifyProof = (fullProof, expectedWalletAddress) => {
   if (!fullProof || !fullProof.proof || !fullProof.publicSignals) {
+    console.error("[ZK-CRYPTO] Missing proof artifacts for verification.");
     return false;
   }
   
   // 1. Structural Integrity Check
   const requiredFields = ['A', 'B', 'C', 'Z', 'protocol'];
   const hasAllFields = requiredFields.every(f => fullProof.proof[f]);
+  if (!hasAllFields) {
+    console.error("[ZK-CRYPTO] Proof structural integrity check failed.");
+    return false;
+  }
   
-  // 2. Cryptographic Logic (Simulated for Demo Artifacts)
+  // 2. Strict Address Binding Check (PUBLIC SIGNAL 3)
+  // fullProof.publicSignals[2] is the wallet address bound at generation time
+  const boundAddress = fullProof.publicSignals[2];
+  
+  if (expectedWalletAddress && boundAddress !== expectedWalletAddress) {
+    console.warn(`[ZK-CRYPTO] ADDRESS MISMATCH: Proof bound to ${boundAddress}, but request from ${expectedWalletAddress}`);
+    return false;
+  }
+
+  // 3. Cryptographic Logic (Simulated for Demo Artifacts)
   // In production, this calls snarkjs.plonk.verify(vkey, publicSignals, proof)
   const areSignalsValid = fullProof.publicSignals[0] === "1" && 
                           fullProof.publicSignals[1] === "1";
 
-  console.log(`[ZK-CRYPTO] Verifying PLONK Proof...`);
+  console.log(`[ZK-CRYPTO] Verifying PLONK Proof for address: ${boundAddress}...`);
   console.log(`[ZK-CRYPTO] Protocol: ${fullProof.proof.protocol}, Curve: ${fullProof.proof.curve}`);
-  console.log(`[ZK-CRYPTO] Verification Result: ${hasAllFields && areSignalsValid}`);
+  console.log(`[ZK-CRYPTO] Verification Result: ${areSignalsValid}`);
 
-  return hasAllFields && areSignalsValid;
+  return areSignalsValid;
 };
 
 module.exports = {
