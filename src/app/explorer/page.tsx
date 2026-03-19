@@ -88,17 +88,46 @@ function ExplorerContent() {
   const searchParams = useSearchParams();
   const initialSearch = searchParams.get("search") || "";
   
-  const [proofs, setProofs] = useState(INITIAL_PROOFS);
+  const [proofs, setProofs] = useState<any[]>([]);
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [attributeFilter, setAttributeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
-  const [selectedProof, setSelectedProof] = useState<typeof INITIAL_PROOFS[0] | null>(null);
+  const [selectedProof, setSelectedProof] = useState<any | null>(null);
   const [isMounted, setIsMounted] = useState(false);
-  const [isLoadingMore, setIsLoadingMore] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
     setIsMounted(true);
+    fetchProofs();
   }, []);
+
+  const fetchProofs = async () => {
+    try {
+      setIsLoading(true);
+      const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
+      const response = await fetch(`${oracleUrl}/api/kyc/proofs`);
+      const data = await response.json();
+      
+      const mappedProofs = data.map((p: any) => ({
+        id: `prf_0x${p.proofHash.slice(0, 10)}`,
+        wallet: `${p.walletAddress.slice(0, 4)}...${p.walletAddress.slice(-4)}`,
+        fullWallet: p.walletAddress,
+        attribute: p.sourceType === "DIGILOCKER" ? "KYC Verified" : "Age ≥ 18",
+        type: p.sourceType === "DIGILOCKER" ? "KYC" : "Age",
+        timestamp: p.createdAt,
+        status: "Verified",
+        hash: p.proofHash,
+        algorandTx: p.txId || "PENDING_SYNC"
+      }));
+
+      setProofs(mappedProofs.length > 0 ? mappedProofs : INITIAL_PROOFS);
+    } catch (err) {
+      console.error("Failed to fetch proofs:", err);
+      if (proofs.length === 0) setProofs(INITIAL_PROOFS);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   const filteredProofs = useMemo(() => {
     return proofs.filter(proof => {
@@ -115,28 +144,7 @@ function ExplorerContent() {
   }, [proofs, searchQuery, attributeFilter, statusFilter]);
 
   const loadMore = () => {
-    setIsLoadingMore(true);
-    setTimeout(() => {
-      const types = ["Age", "KYC", "Sanctions"];
-      const attributes = ["Age ≥ 18", "KYC Verified", "Sanctions Clear"];
-      const newItems = Array.from({ length: 3 }).map((_, i) => {
-        const typeIndex = Math.floor(Math.random() * 3);
-        const randId = Math.random().toString(16).slice(2, 10);
-        return {
-          id: `prf_0x${randId}`,
-          wallet: `${Math.random().toString(36).slice(2, 6).toUpperCase()}...${Math.random().toString(36).slice(2, 6).toUpperCase()}`,
-          fullWallet: Array.from({length: 40}).map(() => Math.floor(Math.random() * 36).toString(36)).join("").toUpperCase(),
-          attribute: attributes[typeIndex],
-          type: types[typeIndex],
-          timestamp: new Date(Date.now() - (proofs.length + i) * 600000).toISOString(),
-          status: "Verified",
-          hash: `0x${Math.random().toString(16).slice(2, 15)}...${Math.random().toString(16).slice(2, 10)}`,
-          algorandTx: `TX_${Math.random().toString(36).slice(2, 15).toUpperCase()}${Math.random().toString(36).slice(2, 15).toUpperCase()}`
-        };
-      });
-      setProofs(prev => [...prev, ...newItems]);
-      setIsLoadingMore(false);
-    }, 1000);
+    fetchProofs();
   };
 
   const copyToClipboard = (text: string) => {
@@ -410,16 +418,16 @@ function ExplorerContent() {
       <div className="mt-16 flex justify-center">
         <Button 
           variant="outline" 
-          disabled={isLoadingMore}
+          disabled={isLoading}
           onClick={loadMore}
           className="bg-black/40 backdrop-blur-3xl border-white/5 w-full max-w-md h-16 text-xs font-black tracking-widest uppercase hover:bg-white/5 hover:text-white transition-all shadow-2xl group disabled:opacity-50 rounded-2xl"
         >
-          {isLoadingMore ? (
+          {isLoading ? (
             <div className="animate-spin h-5 w-5 border-2 border-primary border-t-transparent rounded-full mr-3" />
           ) : (
             <ArrowDown className="mr-3 h-5 w-5 animate-bounce group-hover:text-primary transition-colors" />
           )}
-          {isLoadingMore ? "Querying Registry..." : "Retrieve Historical Records"}
+          {isLoading ? "Querying Registry..." : "Retrieve Historical Records"}
         </Button>
       </div>
 

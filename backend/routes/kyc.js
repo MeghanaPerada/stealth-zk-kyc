@@ -80,11 +80,38 @@ const issueZkProof = async (walletAddress, pan, dob, sourceType, res) => {
   }
 
   return res.status(200).json({
+    success: true,
     message: `KYC Processed successfully via ${sourceType}. Proof verified and saved on-chain.`,
     proof,
-    trustScore
+    trustScore,
+    walletAddress
   });
 };
+
+/**
+ * POST /issue-credential (Oracle alias)
+ */
+router.post('/issue-credential', async (req, res) => {
+  try {
+    const { attributes, walletAddress: bodyAddress } = req.body;
+    // We favor the header address provided by middleware, but fallback to body for flexibility
+    const targetAddress = req.walletAddress || bodyAddress;
+    
+    // Mock data for the "Fetch From Oracle" flow
+    const pan = "ABCDE1234F";
+    const dob = "1990-01-01";
+    
+    // Reuse internal logic
+    const result = await issueZkProof(targetAddress, pan, dob, 'ORACLE', res);
+    
+    // The issueZkProof function sends its own response, but we need to ensure 
+    // it matches the frontend's expected { success: true, ... } if possible.
+    // However, issueZkProof is already designed to return res.status(200).json(...)
+  } catch (error) {
+    console.error('Error issuing credential:', error);
+    res.status(500).json({ success: false, error: 'Internal server error' });
+  }
+});
 
 /**
  * POST /process (Legacy basic route)
@@ -216,6 +243,20 @@ router.post('/verify', async (req, res) => {
 
   } catch (error) {
     console.error('Error verifying proof:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+/**
+ * GET /proofs
+ * Returns all proofs (sanitized) for the explorer
+ */
+router.get('/proofs', async (req, res) => {
+  try {
+    const proofs = await Proof.find().sort({ createdAt: -1 }).limit(50);
+    res.json(proofs);
+  } catch (error) {
+    console.error('Error fetching proofs:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

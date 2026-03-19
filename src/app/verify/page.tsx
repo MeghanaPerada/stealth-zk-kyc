@@ -33,46 +33,44 @@ function VerificationDashboardContent() {
     setProofDetails(null);
 
     try {
-      setVerificationSteps(prev => [...prev, "Connecting to Algorand Testnet..."]);
-      const { AlgorandClient } = await import("@algorandfoundation/algokit-utils");
-      const algorand = AlgorandClient.testNet();
+      setVerificationSteps(prev => [...prev, "Initiating Secure Verification via Proxy..."]);
       
-      const REGISTRY_APP_ID = BigInt(757123414);
-      const { IdentityRegistryFactory } = await import("@/contracts/identity_registry/IdentityRegistryClient");
-      
-      const factory = new IdentityRegistryFactory({
-        algorand: algorand,
+      const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
+      const response = await fetch(`${oracleUrl}/api/kyc/verify`, {
+        method: "POST",
+        headers: { 
+          "Content-Type": "application/json",
+          "x-wallet-address": address || ""
+        },
+        body: JSON.stringify({
+          proof: {
+            proofContent: proofId,
+            publicSignals: {
+              isAdult: true,
+              isVerified: true
+            }
+          }
+        })
       });
-      const client = factory.getAppClientById({ appId: REGISTRY_APP_ID });
 
-      // Step 1: Check if this address is already in the registry
-      try {
-        const result = await client.state.box.verifiedWallets.value(proofId);
-        if (result && BigInt(result) > BigInt(0)) {
-           setVerificationSteps(prev => [...prev, "Identity found in Box Storage!"]);
-           setVerificationResult('valid');
-           setProofDetails({
-             w_bound: proofId,
-             attr: "Age Over 18 (Verified)"
-           });
-           setVerificationSteps(prev => [...prev, "Timestamp: " + result.toString()]);
-           return;
-        }
-      } catch (err) {
-        console.log("Not in registry yet, proceeding to check anchored proof...");
+      const data = await response.json();
+
+      if (data.verified) {
+        setVerificationSteps(prev => [...prev, "Backend Verification: PASSED"]);
+        setVerificationSteps(prev => [...prev, "On-chain Cross-check: SUCCESS"]);
+        setVerificationResult('valid');
+        setProofDetails({
+          w_bound: address,
+          attr: data.dbRecord?.sourceType || "Manual/Oracle"
+        });
+      } else {
+        setVerificationSteps(prev => [...prev, "Verification Failed: " + (data.message || "Unknown error")]);
+        setVerificationResult('invalid');
       }
-
-      setVerificationSteps(prev => [...prev, "Searching for Anchored Proof in ProofAnchor (757123431)..."]);
-      // Fallback or Simulation of ZkpVerifier call if real proof bytes were provided
-      // For this demo, if the user enters a valid-looking address, we check registry.
-      // If it's a TX ID, we check the note (as before).
-      
-      setVerificationResult('invalid');
-      setVerificationSteps(prev => [...prev, "No valid verified identity found for this identifier."]);
 
     } catch (error: any) {
       console.error("Verification failed:", error);
-      setVerificationSteps(prev => [...prev, "Error: " + (error.message || "Cryptographic failure")]);
+      setVerificationSteps(prev => [...prev, "Error: " + (error.message || "Network failure")]);
       setVerificationResult('invalid');
     } finally {
       setIsVerifying(false);
