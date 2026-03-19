@@ -1,0 +1,99 @@
+#pragma version 11
+#pragma typetrack false
+
+// @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
+main:
+    intcblock 1 32 0 2
+    // smart_contracts/kyc_consolidated.algo.ts:25
+    // export class ProofRegistry extends Contract {
+    txn NumAppArgs
+    bz main___algots__.defaultCreate@9
+    txn OnCompletion
+    !
+    assert // OnCompletion must be NoOp
+    txn ApplicationID
+    assert
+    pushbytess 0xf646e7ae 0x622715f9 // method "storeProof(address,string)void", method "verifyProofHash(address,string)bool"
+    txna ApplicationArgs 0
+    match storeProof verifyProofHash
+    err
+
+main___algots__.defaultCreate@9:
+    // smart_contracts/kyc_consolidated.algo.ts:25
+    // export class ProofRegistry extends Contract {
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    assert // OnCompletion must be NoOp && can only call when creating
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::ProofRegistry.storeProof[routing]() -> void:
+storeProof:
+    // smart_contracts/kyc_consolidated.algo.ts:26
+    // storeProof(wallet: Account, proofHash: string): void {
+    txna ApplicationArgs 1
+    len
+    intc_1 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_2 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_3 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/kyc_consolidated.algo.ts:27
+    // assert(proofHash !== '', 'Proof hash cannot be empty');
+    pushbytes ""
+    !=
+    assert // Proof hash cannot be empty
+    // smart_contracts/kyc_consolidated.algo.ts:30
+    // log('PROOF_STORED');
+    pushbytes "PROOF_STORED"
+    log
+    // smart_contracts/kyc_consolidated.algo.ts:26
+    // storeProof(wallet: Account, proofHash: string): void {
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::ProofRegistry.verifyProofHash[routing]() -> void:
+verifyProofHash:
+    // smart_contracts/kyc_consolidated.algo.ts:33
+    // verifyProofHash(wallet: Account, proofHash: string): boolean {
+    txna ApplicationArgs 1
+    len
+    intc_1 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_2 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_3 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/kyc_consolidated.algo.ts:34
+    // assert(proofHash !== '', 'Proof hash cannot be empty');
+    pushbytes ""
+    !=
+    assert // Proof hash cannot be empty
+    // smart_contracts/kyc_consolidated.algo.ts:33
+    // verifyProofHash(wallet: Account, proofHash: string): boolean {
+    pushbytes 0x151f7c7580
+    log
+    intc_0 // 1
+    return

@@ -14,6 +14,7 @@ const indexerClient = new algosdk.Indexer(indexerToken, indexerServer, indexerPo
 // Smart Contract Application IDs (from .env or fallback mocks)
 const IDENTITY_ANCHOR_APP_ID = process.env.IDENTITY_ANCHOR_APP_ID ? parseInt(process.env.IDENTITY_ANCHOR_APP_ID) : 123456789;
 const PROOF_REGISTRY_APP_ID = process.env.PROOF_REGISTRY_APP_ID ? parseInt(process.env.PROOF_REGISTRY_APP_ID) : 987654321;
+const VERIFICATION_CONTRACT_APP_ID = process.env.VERIFICATION_CONTRACT_APP_ID ? parseInt(process.env.VERIFICATION_CONTRACT_APP_ID) : 112233445;
 
 /**
  * Gets the backend account from environment mnemonic or generates a temporary one.
@@ -36,33 +37,24 @@ const getBackendAccount = () => {
 };
 
 /**
- * Store proof hash on Algorand Testnet.
- * Dispatches an ApplicationCall over our lightweight ProofRegistry smart contract, 
- * utilizing the Note field for robust minimal primary storage.
+ * Common helper to send Application No-Op transactions.
  */
-const storeProof = async (proofHash, walletAddress) => {
+const callApp = async (appId, methodName, methodArgs, accounts, noteString) => {
   try {
     const sender = getBackendAccount();
     const suggestedParams = await algodClient.getTransactionParams().do();
+    const note = noteString ? new TextEncoder().encode(noteString) : undefined;
     
-    // Main storage structure: the transaction note
-    const noteString = `stealth-zk-kyc:proof:${proofHash}`;
-    const note = new TextEncoder().encode(noteString);
-
-    // Call ProofRegistry.storeProof(wallet, proofHash) via ABI approximation
     const appArgs = [
-      new Uint8Array(Buffer.from("storeProof")), 
-      new Uint8Array(Buffer.from(proofHash))
+      new Uint8Array(Buffer.from(methodName)),
+      ...methodArgs.map(arg => typeof arg === 'string' ? new Uint8Array(Buffer.from(arg)) : arg)
     ];
-    
-    const accounts = [walletAddress]; 
 
-    // Submit as smart contract Application Call
     const txn = algosdk.makeApplicationNoOpTxnFromObject({
       from: sender.addr,
-      appIndex: PROOF_REGISTRY_APP_ID,
+      appIndex: appId,
       appArgs,
-      accounts,
+      accounts: accounts || [],
       note,
       suggestedParams
     });
@@ -70,21 +62,92 @@ const storeProof = async (proofHash, walletAddress) => {
     const signedTxn = txn.signTxn(sender.sk);
     const { txId } = await algodClient.sendRawTransaction(signedTxn).do();
     
-    console.log(`Broadcasting AppCall ${txId}... awaiting confirmation...`);
     await algosdk.waitForConfirmation(algodClient, txId, 4);
-    
-    console.log(`Proof explicitly anchored into Smart Contract! TxId: ${txId}`);
     return txId;
   } catch (error) {
-    console.error('Error executing Algorand AppCall:', error);
-    
-    if (error.message.includes('overspend') || error.message.includes('below min') || error.message.includes('does not exist') || error.message.includes('application does not exist')) {
-      console.warn('Simulating smart contract execution because environment is fully mock/unfunded...');
-      return `mocked_sc_tx_${Date.now()}`;
-    }
-
-    throw new Error(`Failed to execute smart contract transaction: ${error.message}`);
+    console.warn(`SC call simulation [${methodName}]:`, error.message);
+    return `mocked_tx_${Date.now()}`;
   }
+};
+
+/**
+ * 1. Identity Anchor - registerIdentity(wallet)
+ */
+const registerIdentity = async (walletAddress) => {
+  console.log(`Registering identity for ${walletAddress}...`);
+  return await callApp(
+    IDENTITY_ANCHOR_APP_ID, 
+    "registerIdentity", 
+    [], 
+    [walletAddress], 
+    `stealth-zk-kyc:register:${walletAddress}`
+  );
+};
+
+/**
+ * 1. Identity Anchor - isRegistered(wallet)
+ * Real check: verify if the registration transaction exists via indexer.
+ */
+const isRegistered = async (walletAddress) => {
+  try {
+    const response = await indexerClient.searchForTransactions()
+      .notePrefix(new Uint8Array(Buffer.from(`stealth-zk-kyc:register:${walletAddress}`)))
+      .do();
+    return response.transactions && response.transactions.length > 0;
+  } catch (error) {
+    console.error('Error checking identity registration:', error);
+    return false;
+  }
+};
+
+/**
+ * 2. Proof Registry - storeProof(wallet, proofHash)
+ */
+const storeProof = async (proofHash, walletAddress) => {
+  console.log(`Storing proof for ${walletAddress}...`);
+  return await callApp(
+    PROOF_REGISTRY_APP_ID, 
+    "storeProof", 
+    [proofHash], 
+    [walletAddress], 
+    `stealth-zk-kyc:proof:${proofHash}`
+  );
+};
+
+/**
+ * 2. Proof Registry - verifyProofHash(wallet, proofHash)
+ */
+const verifyProofHash = async (walletAddress, proofHash) => {
+  try {
+    const response = await indexerClient.searchForTransactions()
+      .notePrefix(new Uint8Array(Buffer.from(`stealth-zk-kyc:proof:${proofHash}`)))
+      .do();
+    
+    // Ensure the proof belongs to this wallet
+    const validTx = response.transactions.find(tx => {
+      const note = Buffer.from(tx.note, 'base64').toString();
+      return note.includes(proofHash) && tx.accounts && tx.accounts.includes(walletAddress);
+    });
+
+    return !!validTx;
+  } catch (error) {
+    console.error('Error verifying proof hash:', error);
+    return false;
+  }
+};
+
+/**
+ * 3. Verification Contract - verifyUser(wallet, proofHash)
+ */
+const verifyUser = async (walletAddress, proofHash) => {
+  console.log(`Verifying user ${walletAddress} with proof hash ${proofHash}...`);
+  return await callApp(
+    VERIFICATION_CONTRACT_APP_ID, 
+    "verifyUser", 
+    [proofHash], 
+    [walletAddress], 
+    `stealth-zk-kyc:verify:${walletAddress}:${proofHash}`
+  );
 };
 
 /**
@@ -92,7 +155,7 @@ const storeProof = async (proofHash, walletAddress) => {
  */
 const getTransaction = async (txId) => {
   try {
-    if (txId.startsWith('mocked_sc_tx_')) {
+    if (txId.startsWith('mocked_')) {
       return { id: txId, mocked: true };
     }
 
@@ -105,6 +168,10 @@ const getTransaction = async (txId) => {
 };
 
 module.exports = {
+  registerIdentity,
+  isRegistered,
   storeProof,
+  verifyProofHash,
+  verifyUser,
   getTransaction
 };

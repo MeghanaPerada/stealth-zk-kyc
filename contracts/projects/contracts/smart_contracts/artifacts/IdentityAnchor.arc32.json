@@ -1,0 +1,74 @@
+{
+    "hints": {
+        "registerIdentity(address)void": {
+            "call_config": {
+                "no_op": "CALL"
+            }
+        },
+        "isRegistered(address)bool": {
+            "call_config": {
+                "no_op": "CALL"
+            }
+        }
+    },
+    "source": {
+        "approval": "I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYXJjNC9pbmRleC5kLnRzOjpDb250cmFjdC5hcHByb3ZhbFByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICBpbnRjYmxvY2sgMSAzMgogICAgLy8gc21hcnRfY29udHJhY3RzL2t5Y19jb25zb2xpZGF0ZWQuYWxnby50czo4CiAgICAvLyBleHBvcnQgY2xhc3MgSWRlbnRpdHlBbmNob3IgZXh0ZW5kcyBDb250cmFjdCB7CiAgICB0eG4gTnVtQXBwQXJncwogICAgYnogbWFpbl9fX2FsZ290c19fLmRlZmF1bHRDcmVhdGVAOQogICAgdHhuIE9uQ29tcGxldGlvbgogICAgIQogICAgYXNzZXJ0IC8vIE9uQ29tcGxldGlvbiBtdXN0IGJlIE5vT3AKICAgIHR4biBBcHBsaWNhdGlvbklECiAgICBhc3NlcnQKICAgIHB1c2hieXRlc3MgMHgyMWU5MWQ1ZiAweGQwNTI0MzYwIC8vIG1ldGhvZCAicmVnaXN0ZXJJZGVudGl0eShhZGRyZXNzKXZvaWQiLCBtZXRob2QgImlzUmVnaXN0ZXJlZChhZGRyZXNzKWJvb2wiCiAgICB0eG5hIEFwcGxpY2F0aW9uQXJncyAwCiAgICBtYXRjaCByZWdpc3RlcklkZW50aXR5IGlzUmVnaXN0ZXJlZAogICAgZXJyCgptYWluX19fYWxnb3RzX18uZGVmYXVsdENyZWF0ZUA5OgogICAgLy8gc21hcnRfY29udHJhY3RzL2t5Y19jb25zb2xpZGF0ZWQuYWxnby50czo4CiAgICAvLyBleHBvcnQgY2xhc3MgSWRlbnRpdHlBbmNob3IgZXh0ZW5kcyBDb250cmFjdCB7CiAgICB0eG4gT25Db21wbGV0aW9uCiAgICAhCiAgICB0eG4gQXBwbGljYXRpb25JRAogICAgIQogICAgJiYKICAgIGFzc2VydCAvLyBPbkNvbXBsZXRpb24gbXVzdCBiZSBOb09wICYmIGNhbiBvbmx5IGNhbGwgd2hlbiBjcmVhdGluZwogICAgaW50Y18wIC8vIDEKICAgIHJldHVybgoKCi8vIHNtYXJ0X2NvbnRyYWN0cy9reWNfY29uc29saWRhdGVkLmFsZ28udHM6OklkZW50aXR5QW5jaG9yLnJlZ2lzdGVySWRlbnRpdHlbcm91dGluZ10oKSAtPiB2b2lkOgpyZWdpc3RlcklkZW50aXR5OgogICAgLy8gc21hcnRfY29udHJhY3RzL2t5Y19jb25zb2xpZGF0ZWQuYWxnby50czo5CiAgICAvLyByZWdpc3RlcklkZW50aXR5KHdhbGxldDogQWNjb3VudCk6IHZvaWQgewogICAgdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMQogICAgbGVuCiAgICBpbnRjXzEgLy8gMzIKICAgID09CiAgICBhc3NlcnQgLy8gaW52YWxpZCBudW1iZXIgb2YgYnl0ZXMgZm9yIGFyYzQuc3RhdGljX2FycmF5PGFyYzQudWludDgsIDMyPgogICAgLy8gc21hcnRfY29udHJhY3RzL2t5Y19jb25zb2xpZGF0ZWQuYWxnby50czoxMwogICAgLy8gbG9nKCdJREVOVElUWV9SRUdJU1RFUkVEJyk7CiAgICBwdXNoYnl0ZXMgIklERU5USVRZX1JFR0lTVEVSRUQiCiAgICBsb2cKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9reWNfY29uc29saWRhdGVkLmFsZ28udHM6OQogICAgLy8gcmVnaXN0ZXJJZGVudGl0eSh3YWxsZXQ6IEFjY291bnQpOiB2b2lkIHsKICAgIGludGNfMCAvLyAxCiAgICByZXR1cm4KCgovLyBzbWFydF9jb250cmFjdHMva3ljX2NvbnNvbGlkYXRlZC5hbGdvLnRzOjpJZGVudGl0eUFuY2hvci5pc1JlZ2lzdGVyZWRbcm91dGluZ10oKSAtPiB2b2lkOgppc1JlZ2lzdGVyZWQ6CiAgICAvLyBzbWFydF9jb250cmFjdHMva3ljX2NvbnNvbGlkYXRlZC5hbGdvLnRzOjE2CiAgICAvLyBpc1JlZ2lzdGVyZWQod2FsbGV0OiBBY2NvdW50KTogYm9vbGVhbiB7CiAgICB0eG5hIEFwcGxpY2F0aW9uQXJncyAxCiAgICBsZW4KICAgIGludGNfMSAvLyAzMgogICAgPT0KICAgIGFzc2VydCAvLyBpbnZhbGlkIG51bWJlciBvZiBieXRlcyBmb3IgYXJjNC5zdGF0aWNfYXJyYXk8YXJjNC51aW50OCwgMzI+CiAgICBwdXNoYnl0ZXMgMHgxNTFmN2M3NTgwCiAgICBsb2cKICAgIGludGNfMCAvLyAxCiAgICByZXR1cm4K",
+        "clear": "I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYmFzZS1jb250cmFjdC5kLnRzOjpCYXNlQ29udHJhY3QuY2xlYXJTdGF0ZVByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICBwdXNoaW50IDEgLy8gMQogICAgcmV0dXJuCg=="
+    },
+    "state": {
+        "global": {
+            "num_byte_slices": 0,
+            "num_uints": 0
+        },
+        "local": {
+            "num_byte_slices": 0,
+            "num_uints": 0
+        }
+    },
+    "schema": {
+        "global": {
+            "declared": {},
+            "reserved": {}
+        },
+        "local": {
+            "declared": {},
+            "reserved": {}
+        }
+    },
+    "contract": {
+        "name": "IdentityAnchor",
+        "desc": "1. Identity Anchor\nHelper contract. Since main storage is the transaction note, \nthis simply serves as an on-chain verification endpoint.",
+        "methods": [
+            {
+                "name": "registerIdentity",
+                "args": [
+                    {
+                        "type": "address",
+                        "name": "wallet"
+                    }
+                ],
+                "readonly": false,
+                "returns": {
+                    "type": "void"
+                }
+            },
+            {
+                "name": "isRegistered",
+                "args": [
+                    {
+                        "type": "address",
+                        "name": "wallet"
+                    }
+                ],
+                "readonly": false,
+                "returns": {
+                    "type": "bool"
+                }
+            }
+        ],
+        "networks": {}
+    },
+    "bare_call_config": {
+        "no_op": "CREATE"
+    }
+}

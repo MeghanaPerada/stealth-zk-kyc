@@ -1,0 +1,312 @@
+{
+  "version": 3,
+  "sources": [
+    "../kyc_consolidated.algo.ts"
+  ],
+  "mappings": ";;;;;AAOA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;AAAA;;;AAAA;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AACE;;;AAAA;AAAA;AAAA;AAAA;AAIM;;;;;;;;;;;;;;;;;;;;;AAAJ;AAJF;AAAA;AAOA;;;AAAA;AAAA;AAAA;AAAA;AAAA;;;;;;;AAAA;AAAA;AAAA",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "@algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 1 32"
+    },
+    "5": {
+      "op": "txn NumAppArgs",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "7": {
+      "op": "bz main___algots__.defaultCreate@9",
+      "stack_out": []
+    },
+    "10": {
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "12": {
+      "op": "!",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "13": {
+      "error": "OnCompletion must be NoOp",
+      "op": "assert // OnCompletion must be NoOp",
+      "stack_out": []
+    },
+    "14": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "16": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "17": {
+      "op": "pushbytess 0x21e91d5f 0xd0524360 // method \"registerIdentity(address)void\", method \"isRegistered(address)bool\"",
+      "defined_out": [
+        "Method(isRegistered(address)bool)",
+        "Method(registerIdentity(address)void)"
+      ],
+      "stack_out": [
+        "Method(registerIdentity(address)void)",
+        "Method(isRegistered(address)bool)"
+      ]
+    },
+    "29": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(isRegistered(address)bool)",
+        "Method(registerIdentity(address)void)",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "Method(registerIdentity(address)void)",
+        "Method(isRegistered(address)bool)",
+        "tmp%6#0"
+      ]
+    },
+    "32": {
+      "op": "match registerIdentity isRegistered",
+      "stack_out": []
+    },
+    "38": {
+      "op": "err"
+    },
+    "39": {
+      "block": "main___algots__.defaultCreate@9",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0"
+      ]
+    },
+    "41": {
+      "op": "!",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0"
+      ]
+    },
+    "42": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ]
+    },
+    "44": {
+      "op": "!",
+      "defined_out": [
+        "tmp%10#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%10#0"
+      ]
+    },
+    "45": {
+      "op": "&&",
+      "defined_out": [
+        "tmp%11#0"
+      ],
+      "stack_out": [
+        "tmp%11#0"
+      ]
+    },
+    "46": {
+      "error": "OnCompletion must be NoOp && can only call when creating",
+      "op": "assert // OnCompletion must be NoOp && can only call when creating",
+      "stack_out": []
+    },
+    "47": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "48": {
+      "op": "return",
+      "stack_out": []
+    },
+    "49": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::IdentityAnchor.registerIdentity[routing]",
+      "params": {},
+      "block": "registerIdentity",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "52": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0"
+      ]
+    },
+    "53": {
+      "op": "intc_1 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0",
+        "32"
+      ]
+    },
+    "54": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0"
+      ],
+      "stack_out": [
+        "eq%0#0"
+      ]
+    },
+    "55": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": []
+    },
+    "56": {
+      "op": "pushbytes \"IDENTITY_REGISTERED\"",
+      "defined_out": [
+        "\"IDENTITY_REGISTERED\""
+      ],
+      "stack_out": [
+        "\"IDENTITY_REGISTERED\""
+      ]
+    },
+    "77": {
+      "op": "log",
+      "stack_out": []
+    },
+    "78": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "79": {
+      "op": "return",
+      "stack_out": []
+    },
+    "80": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::IdentityAnchor.isRegistered[routing]",
+      "params": {},
+      "block": "isRegistered",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "83": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0"
+      ]
+    },
+    "84": {
+      "op": "intc_1 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0",
+        "32"
+      ]
+    },
+    "85": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0"
+      ],
+      "stack_out": [
+        "eq%0#0"
+      ]
+    },
+    "86": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": []
+    },
+    "87": {
+      "op": "pushbytes 0x151f7c7580",
+      "defined_out": [
+        "0x151f7c7580"
+      ],
+      "stack_out": [
+        "0x151f7c7580"
+      ]
+    },
+    "94": {
+      "op": "log",
+      "stack_out": []
+    },
+    "95": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "96": {
+      "op": "return",
+      "stack_out": []
+    }
+  }
+}

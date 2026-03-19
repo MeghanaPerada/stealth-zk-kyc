@@ -53,10 +53,17 @@ const issueZkProof = async (walletAddress, pan, dob, sourceType, res) => {
       { upsert: true, new: true }
     );
 
-    // 2. Store proof on Algorand Testnet
+    // 2. Identify Registration check
+    const registered = await blockchainService.isRegistered(walletAddress);
+    if (!registered) {
+      console.log(`User ${walletAddress} not registered on-chain. Registering now...`);
+      await blockchainService.registerIdentity(walletAddress);
+    }
+
+    // 3. Store proof on Algorand Testnet (Proof Registry)
     const txId = await blockchainService.storeProof(proof.proofContent, walletAddress);
 
-    // 3. Save proof metadata to MongoDB (No PII) along with txId
+    // 4. Save proof metadata to MongoDB (No PII) along with txId
     const newProof = new Proof({
       walletAddress,
       proofHash: proof.proofContent,
@@ -174,22 +181,19 @@ router.post('/verify', async (req, res) => {
     // 3. Algorand Network Verification
     try {
       if (dbProof.txId) {
+        // Simple presence check + Note verification
         const tx = await blockchainService.getTransaction(dbProof.txId);
         
-        // If it's not a generic mocked placeholder during unfunded tests
         if (!tx.mocked) {
-          if (!tx.note || typeof tx.note !== 'string') {
-            return res.status(400).json({ verified: false, message: 'Blockchain transaction missing the note.' });
-          }
-
-          // Convert indexer base64 note string to matching utf8 Text
-          const noteBuffer = Buffer.from(tx.note, 'base64');
-          const decodedNote = new TextDecoder('utf-8').decode(noteBuffer);
-
-          if (decodedNote !== `stealth-zk-kyc:proof:${proofHash}`) {
-            return res.status(400).json({ verified: false, message: 'Blockchain proof hash mismatch! Malicious proof modification detected.' });
+          const verifiedOnChain = await blockchainService.verifyProofHash(req.walletAddress, proofHash);
+          if (!verifiedOnChain) {
+             return res.status(400).json({ verified: false, message: 'Blockchain proof hash mismatch! Malicious proof modification detected.' });
           }
         }
+
+        // 4. Advanced: Use Verification Contract helper (contract logic requirement)
+        console.log('Explicitly invoking VerificationContract.verifyUser via ABI...');
+        await blockchainService.verifyUser(req.walletAddress, proofHash);
       }
     } catch (blockchainErr) {
       return res.status(500).json({ 

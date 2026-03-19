@@ -1,0 +1,596 @@
+{
+  "version": 3,
+  "sources": [
+    "../kyc_consolidated.algo.ts"
+  ],
+  "mappings": ";;;;;;;AAwBA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;AAAA;;;AAAA;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AACE;;;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACuB;;AAAd;AAAP;AAGI;;;;;;;;;;;;;;AAAJ;AAJF;AAAA;AAOA;;;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACuB;;AAAd;AAAP;AADF;;;;;;;AAAA;AAAA;AAAA",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "@algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 1 32 0 2"
+    },
+    "7": {
+      "op": "txn NumAppArgs",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "9": {
+      "op": "bz main___algots__.defaultCreate@9",
+      "stack_out": []
+    },
+    "12": {
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "14": {
+      "op": "!",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "15": {
+      "error": "OnCompletion must be NoOp",
+      "op": "assert // OnCompletion must be NoOp",
+      "stack_out": []
+    },
+    "16": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "18": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "19": {
+      "op": "pushbytess 0xf646e7ae 0x622715f9 // method \"storeProof(address,string)void\", method \"verifyProofHash(address,string)bool\"",
+      "defined_out": [
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProofHash(address,string)bool)"
+      ],
+      "stack_out": [
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProofHash(address,string)bool)"
+      ]
+    },
+    "31": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProofHash(address,string)bool)",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProofHash(address,string)bool)",
+        "tmp%6#0"
+      ]
+    },
+    "34": {
+      "op": "match storeProof verifyProofHash",
+      "stack_out": []
+    },
+    "40": {
+      "op": "err"
+    },
+    "41": {
+      "block": "main___algots__.defaultCreate@9",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0"
+      ]
+    },
+    "43": {
+      "op": "!",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0"
+      ]
+    },
+    "44": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ]
+    },
+    "46": {
+      "op": "!",
+      "defined_out": [
+        "tmp%10#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%10#0"
+      ]
+    },
+    "47": {
+      "op": "&&",
+      "defined_out": [
+        "tmp%11#0"
+      ],
+      "stack_out": [
+        "tmp%11#0"
+      ]
+    },
+    "48": {
+      "error": "OnCompletion must be NoOp && can only call when creating",
+      "op": "assert // OnCompletion must be NoOp && can only call when creating",
+      "stack_out": []
+    },
+    "49": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "50": {
+      "op": "return",
+      "stack_out": []
+    },
+    "51": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::ProofRegistry.storeProof[routing]",
+      "params": {},
+      "block": "storeProof",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "54": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0"
+      ]
+    },
+    "55": {
+      "op": "intc_1 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0",
+        "32"
+      ]
+    },
+    "56": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0"
+      ],
+      "stack_out": [
+        "eq%0#0"
+      ]
+    },
+    "57": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": []
+    },
+    "58": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "61": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "62": {
+      "op": "intc_2 // 0",
+      "defined_out": [
+        "0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "0"
+      ]
+    },
+    "63": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "64": {
+      "op": "intc_3 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "65": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "add%0#0"
+      ]
+    },
+    "66": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%2#0",
+        "add%0#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "68": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%1#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "add%0#0",
+        "len%1#0"
+      ]
+    },
+    "69": {
+      "op": "==",
+      "defined_out": [
+        "eq%1#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "70": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "71": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "proofHash#0"
+      ],
+      "stack_out": [
+        "proofHash#0"
+      ]
+    },
+    "74": {
+      "op": "pushbytes \"\"",
+      "defined_out": [
+        "\"\"",
+        "proofHash#0"
+      ],
+      "stack_out": [
+        "proofHash#0",
+        "\"\""
+      ]
+    },
+    "76": {
+      "op": "!=",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "77": {
+      "error": "Proof hash cannot be empty",
+      "op": "assert // Proof hash cannot be empty",
+      "stack_out": []
+    },
+    "78": {
+      "op": "pushbytes \"PROOF_STORED\"",
+      "defined_out": [
+        "\"PROOF_STORED\""
+      ],
+      "stack_out": [
+        "\"PROOF_STORED\""
+      ]
+    },
+    "92": {
+      "op": "log",
+      "stack_out": []
+    },
+    "93": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "94": {
+      "op": "return",
+      "stack_out": []
+    },
+    "95": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::ProofRegistry.verifyProofHash[routing]",
+      "params": {},
+      "block": "verifyProofHash",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "98": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0"
+      ]
+    },
+    "99": {
+      "op": "intc_1 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0"
+      ],
+      "stack_out": [
+        "len%0#0",
+        "32"
+      ]
+    },
+    "100": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0"
+      ],
+      "stack_out": [
+        "eq%0#0"
+      ]
+    },
+    "101": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": []
+    },
+    "102": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "105": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "106": {
+      "op": "intc_2 // 0",
+      "defined_out": [
+        "0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "0"
+      ]
+    },
+    "107": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "108": {
+      "op": "intc_3 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "109": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "add%0#0"
+      ]
+    },
+    "110": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%2#0",
+        "add%0#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "112": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%1#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "add%0#0",
+        "len%1#0"
+      ]
+    },
+    "113": {
+      "op": "==",
+      "defined_out": [
+        "eq%1#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "114": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "115": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "proofHash#0"
+      ],
+      "stack_out": [
+        "proofHash#0"
+      ]
+    },
+    "118": {
+      "op": "pushbytes \"\"",
+      "defined_out": [
+        "\"\"",
+        "proofHash#0"
+      ],
+      "stack_out": [
+        "proofHash#0",
+        "\"\""
+      ]
+    },
+    "120": {
+      "op": "!=",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "121": {
+      "error": "Proof hash cannot be empty",
+      "op": "assert // Proof hash cannot be empty",
+      "stack_out": []
+    },
+    "122": {
+      "op": "pushbytes 0x151f7c7580",
+      "defined_out": [
+        "0x151f7c7580"
+      ],
+      "stack_out": [
+        "0x151f7c7580"
+      ]
+    },
+    "129": {
+      "op": "log",
+      "stack_out": []
+    },
+    "130": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "131": {
+      "op": "return",
+      "stack_out": []
+    }
+  }
+}

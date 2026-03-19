@@ -1,0 +1,72 @@
+#pragma version 11
+#pragma typetrack false
+
+// @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
+main:
+    // smart_contracts/kyc_consolidated.algo.ts:44
+    // export class VerificationContract extends Contract {
+    txn NumAppArgs
+    bz main___algots__.defaultCreate@5
+    pushbytes 0xbe0042d2 // method "verifyUser(address,string)bool"
+    txna ApplicationArgs 0
+    match main_verifyUser_route@3
+    err
+
+main_verifyUser_route@3:
+    // smart_contracts/kyc_consolidated.algo.ts:45
+    // verifyUser(wallet: Account, proofHash: string): boolean {
+    txn OnCompletion
+    !
+    txn ApplicationID
+    &&
+    assert // OnCompletion must be NoOp && can only call when not creating
+    b verifyUser
+
+main___algots__.defaultCreate@5:
+    // smart_contracts/kyc_consolidated.algo.ts:44
+    // export class VerificationContract extends Contract {
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    assert // OnCompletion must be NoOp && can only call when creating
+    pushint 1 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::VerificationContract.verifyUser[routing]() -> void:
+verifyUser:
+    // smart_contracts/kyc_consolidated.algo.ts:45
+    // verifyUser(wallet: Account, proofHash: string): boolean {
+    txna ApplicationArgs 1
+    len
+    pushint 32 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    pushint 0 // 0
+    extract_uint16 // on error: invalid array length header
+    pushint 2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/kyc_consolidated.algo.ts:46
+    // assert(proofHash !== '', 'Proof hash cannot be empty');
+    pushbytes ""
+    !=
+    assert // Proof hash cannot be empty
+    // smart_contracts/kyc_consolidated.algo.ts:47
+    // log('USER_VERIFIED');
+    pushbytes "USER_VERIFIED"
+    log
+    // smart_contracts/kyc_consolidated.algo.ts:45
+    // verifyUser(wallet: Account, proofHash: string): boolean {
+    pushbytes 0x151f7c7580
+    log
+    pushint 1 // 1
+    return

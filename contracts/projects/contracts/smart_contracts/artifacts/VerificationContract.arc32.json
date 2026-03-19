@@ -1,0 +1,60 @@
+{
+    "hints": {
+        "verifyUser(address,string)bool": {
+            "call_config": {
+                "no_op": "CALL"
+            }
+        }
+    },
+    "source": {
+        "approval": "I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYXJjNC9pbmRleC5kLnRzOjpDb250cmFjdC5hcHByb3ZhbFByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICAvLyBzbWFydF9jb250cmFjdHMva3ljX2NvbnNvbGlkYXRlZC5hbGdvLnRzOjQ0CiAgICAvLyBleHBvcnQgY2xhc3MgVmVyaWZpY2F0aW9uQ29udHJhY3QgZXh0ZW5kcyBDb250cmFjdCB7CiAgICB0eG4gTnVtQXBwQXJncwogICAgYnogbWFpbl9fX2FsZ290c19fLmRlZmF1bHRDcmVhdGVANQogICAgcHVzaGJ5dGVzIDB4YmUwMDQyZDIgLy8gbWV0aG9kICJ2ZXJpZnlVc2VyKGFkZHJlc3Msc3RyaW5nKWJvb2wiCiAgICB0eG5hIEFwcGxpY2F0aW9uQXJncyAwCiAgICBtYXRjaCBtYWluX3ZlcmlmeVVzZXJfcm91dGVAMwogICAgZXJyCgptYWluX3ZlcmlmeVVzZXJfcm91dGVAMzoKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9reWNfY29uc29saWRhdGVkLmFsZ28udHM6NDUKICAgIC8vIHZlcmlmeVVzZXIod2FsbGV0OiBBY2NvdW50LCBwcm9vZkhhc2g6IHN0cmluZyk6IGJvb2xlYW4gewogICAgdHhuIE9uQ29tcGxldGlvbgogICAgIQogICAgdHhuIEFwcGxpY2F0aW9uSUQKICAgICYmCiAgICBhc3NlcnQgLy8gT25Db21wbGV0aW9uIG11c3QgYmUgTm9PcCAmJiBjYW4gb25seSBjYWxsIHdoZW4gbm90IGNyZWF0aW5nCiAgICBiIHZlcmlmeVVzZXIKCm1haW5fX19hbGdvdHNfXy5kZWZhdWx0Q3JlYXRlQDU6CiAgICAvLyBzbWFydF9jb250cmFjdHMva3ljX2NvbnNvbGlkYXRlZC5hbGdvLnRzOjQ0CiAgICAvLyBleHBvcnQgY2xhc3MgVmVyaWZpY2F0aW9uQ29udHJhY3QgZXh0ZW5kcyBDb250cmFjdCB7CiAgICB0eG4gT25Db21wbGV0aW9uCiAgICAhCiAgICB0eG4gQXBwbGljYXRpb25JRAogICAgIQogICAgJiYKICAgIGFzc2VydCAvLyBPbkNvbXBsZXRpb24gbXVzdCBiZSBOb09wICYmIGNhbiBvbmx5IGNhbGwgd2hlbiBjcmVhdGluZwogICAgcHVzaGludCAxIC8vIDEKICAgIHJldHVybgoKCi8vIHNtYXJ0X2NvbnRyYWN0cy9reWNfY29uc29saWRhdGVkLmFsZ28udHM6OlZlcmlmaWNhdGlvbkNvbnRyYWN0LnZlcmlmeVVzZXJbcm91dGluZ10oKSAtPiB2b2lkOgp2ZXJpZnlVc2VyOgogICAgLy8gc21hcnRfY29udHJhY3RzL2t5Y19jb25zb2xpZGF0ZWQuYWxnby50czo0NQogICAgLy8gdmVyaWZ5VXNlcih3YWxsZXQ6IEFjY291bnQsIHByb29mSGFzaDogc3RyaW5nKTogYm9vbGVhbiB7CiAgICB0eG5hIEFwcGxpY2F0aW9uQXJncyAxCiAgICBsZW4KICAgIHB1c2hpbnQgMzIgLy8gMzIKICAgID09CiAgICBhc3NlcnQgLy8gaW52YWxpZCBudW1iZXIgb2YgYnl0ZXMgZm9yIGFyYzQuc3RhdGljX2FycmF5PGFyYzQudWludDgsIDMyPgogICAgdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMgogICAgZHVwCiAgICBwdXNoaW50IDAgLy8gMAogICAgZXh0cmFjdF91aW50MTYgLy8gb24gZXJyb3I6IGludmFsaWQgYXJyYXkgbGVuZ3RoIGhlYWRlcgogICAgcHVzaGludCAyIC8vIDIKICAgICsKICAgIGRpZyAxCiAgICBsZW4KICAgID09CiAgICBhc3NlcnQgLy8gaW52YWxpZCBudW1iZXIgb2YgYnl0ZXMgZm9yIGFyYzQuZHluYW1pY19hcnJheTxhcmM0LnVpbnQ4PgogICAgZXh0cmFjdCAyIDAKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9reWNfY29uc29saWRhdGVkLmFsZ28udHM6NDYKICAgIC8vIGFzc2VydChwcm9vZkhhc2ggIT09ICcnLCAnUHJvb2YgaGFzaCBjYW5ub3QgYmUgZW1wdHknKTsKICAgIHB1c2hieXRlcyAiIgogICAgIT0KICAgIGFzc2VydCAvLyBQcm9vZiBoYXNoIGNhbm5vdCBiZSBlbXB0eQogICAgLy8gc21hcnRfY29udHJhY3RzL2t5Y19jb25zb2xpZGF0ZWQuYWxnby50czo0NwogICAgLy8gbG9nKCdVU0VSX1ZFUklGSUVEJyk7CiAgICBwdXNoYnl0ZXMgIlVTRVJfVkVSSUZJRUQiCiAgICBsb2cKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9reWNfY29uc29saWRhdGVkLmFsZ28udHM6NDUKICAgIC8vIHZlcmlmeVVzZXIod2FsbGV0OiBBY2NvdW50LCBwcm9vZkhhc2g6IHN0cmluZyk6IGJvb2xlYW4gewogICAgcHVzaGJ5dGVzIDB4MTUxZjdjNzU4MAogICAgbG9nCiAgICBwdXNoaW50IDEgLy8gMQogICAgcmV0dXJuCg==",
+        "clear": "I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYmFzZS1jb250cmFjdC5kLnRzOjpCYXNlQ29udHJhY3QuY2xlYXJTdGF0ZVByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICBwdXNoaW50IDEgLy8gMQogICAgcmV0dXJuCg=="
+    },
+    "state": {
+        "global": {
+            "num_byte_slices": 0,
+            "num_uints": 0
+        },
+        "local": {
+            "num_byte_slices": 0,
+            "num_uints": 0
+        }
+    },
+    "schema": {
+        "global": {
+            "declared": {},
+            "reserved": {}
+        },
+        "local": {
+            "declared": {},
+            "reserved": {}
+        }
+    },
+    "contract": {
+        "name": "VerificationContract",
+        "desc": "3. Verification Contract\nHelper layer to link verify logic cleanly via ABI calls.",
+        "methods": [
+            {
+                "name": "verifyUser",
+                "args": [
+                    {
+                        "type": "address",
+                        "name": "wallet"
+                    },
+                    {
+                        "type": "string",
+                        "name": "proofHash"
+                    }
+                ],
+                "readonly": false,
+                "returns": {
+                    "type": "bool"
+                }
+            }
+        ],
+        "networks": {}
+    },
+    "bare_call_config": {
+        "no_op": "CREATE"
+    }
+}
