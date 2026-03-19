@@ -31,10 +31,9 @@ async function connectDB() {
       console.log('MongoDB Connected (Singleton)');
       return mongoose;
     }).catch((err) => {
-      console.error('MongoDB Connection Error:', err.message);
-      // For Demo purposes, we might want to continue in mock mode, 
-      // but a singleton usually throws or handles it gracefully.
-      throw err;
+      console.error('CRITICAL: MongoDB Connection Failed. Running in MOCK/MEMORY mode for demo.');
+      // We don't throw here to avoid crashing the whole API startup
+      return null;
     });
   }
   

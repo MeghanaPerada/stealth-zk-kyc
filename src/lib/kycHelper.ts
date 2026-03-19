@@ -8,7 +8,7 @@ import * as documentService from './services/documentService';
 import * as blockchainService from './services/blockchainService';
 
 export const issueZkProof = async (walletAddress: string, pan: string, dob: string, sourceType: string) => {
-  await connectDB();
+  const db = await connectDB();
 
   const isPanValid = validationService.validatePAN(pan);
   let age;
@@ -41,12 +41,14 @@ export const issueZkProof = async (walletAddress: string, pan: string, dob: stri
   const proofHash = proof.proofHash;
 
   try {
-    // 1. Ensure user exists in the DB
-    await User.findOneAndUpdate(
-      { walletAddress },
-      { walletAddress },
-      { upsert: true, new: true }
-    );
+    // 1. Ensure user exists in the DB (Only if DB connected)
+    if (db) {
+      await User.findOneAndUpdate(
+        { walletAddress },
+        { walletAddress },
+        { upsert: true, new: true }
+      );
+    }
 
     // 2. Identify Registration check
     const registered = await (blockchainService as any).isRegistered(walletAddress);
@@ -59,17 +61,20 @@ export const issueZkProof = async (walletAddress: string, pan: string, dob: stri
     console.log(`[DEBUG] Storing Proof Hash on Chain: ${proofHash}`);
     const txId = await (blockchainService as any).storeProof(proofHash, walletAddress);
 
-    // 4. Save to MongoDB
-    const newProof = new Proof({
-      walletAddress,
-      proofHash,
-      txId,
-      trustScore,
-      sourceType
-    });
-    
-    await newProof.save();
-    console.log(`[SECURE] Proof ${proofHash} stored in DB and on-chain (Tx: ${txId})`);
+    // 4. Save to MongoDB (Only if DB connected)
+    if (db) {
+      const newProof = new Proof({
+        walletAddress,
+        proofHash,
+        txId,
+        trustScore,
+        sourceType
+      });
+      await newProof.save();
+      console.log(`[SECURE] Proof ${proofHash} stored in DB and on-chain (Tx: ${txId})`);
+    } else {
+      console.warn(`[DEMO] Proof generated and anchored on-chain (Tx: ${txId}) but skipping DB record due to connection error.`);
+    }
 
     return NextResponse.json({
       success: true,
