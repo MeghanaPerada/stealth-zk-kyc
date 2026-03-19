@@ -68,12 +68,12 @@ export default function KYCSubmission() {
 
       if (data.success) {
         setManualData({
-          name: "Oracle Verified User",
-          dob: "1", // Placeholder
-          email: "oracle@stealth-zk-kyc.io"
+          name: "DigiLocker Verified User",
+          dob: "1", // Placeholder from DigiLocker
+          email: "digilocker@stealth-zk-kyc.io"
         });
         
-        const credentialFile = new File([JSON.stringify(data, null, 2)], "oracle_credential.json", { type: "application/json" });
+        const credentialFile = new File([JSON.stringify(data, null, 2)], "digilocker_credential.json", { type: "application/json" });
         setFile(credentialFile);
         localStorage.setItem("stealth_identity_credential", JSON.stringify(data));
         
@@ -168,7 +168,7 @@ export default function KYCSubmission() {
         <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
           <TabsList className="grid w-full grid-cols-3 bg-black/40 h-16 rounded-2xl p-1.5 border border-white/5 mb-10 shadow-2xl backdrop-blur-3xl">
             <TabsTrigger value="oracle" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
-              <Zap className="w-4 h-4 mr-2" /> Identity Oracle
+              <Download className="w-4 h-4 mr-2" /> DigiLocker Connect
             </TabsTrigger>
             <TabsTrigger value="upload" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
               <FileJson className="w-4 h-4 mr-2" /> Upload VC
@@ -190,11 +190,11 @@ export default function KYCSubmission() {
                   <GlowingCard glowColor="primary" className="p-1">
                     <div className="bg-background/40 backdrop-blur-3xl rounded-2xl p-10 flex flex-col items-center text-center border-t border-white/5">
                         <div className="p-4 bg-primary/10 rounded-2xl text-primary mb-8 border border-primary/20 shadow-[0_0_20px_rgba(52,211,153,0.1)]">
-                          <Zap className="h-10 w-10" />
+                          <Download className="h-10 w-10" />
                         </div>
-                        <h2 className="text-2xl font-black uppercase tracking-widest mb-4">Identity Oracle v2.1</h2>
+                        <h2 className="text-2xl font-black uppercase tracking-widest mb-4">DigiLocker Connect v1.0</h2>
                         <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-10 max-w-md leading-relaxed">
-                          Fetch a cryptographically signed Verifiable Credential from our trusted oracle network based on your connected Algorand identity.
+                          Securely fetch your government-issued documents directly from DigiLocker. We only extract the minimum required attributes for KYC.
                         </p>
                         
                         <button 
@@ -206,10 +206,10 @@ export default function KYCSubmission() {
                           {isFetchingOracle ? (
                             <span className="flex items-center">
                               <span className="w-5 h-5 rounded-full border-2 border-black/40 border-t-black animate-spin mr-3"></span>
-                              Querying Oracles...
+                              Authenticating DigiLocker...
                             </span>
                           ) : (
-                            "Fetch From Oracle"
+                            "Connect DigiLocker"
                           )}
                         </button>
                     </div>
