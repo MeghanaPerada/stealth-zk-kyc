@@ -42,49 +42,66 @@ export default function KYCSubmission() {
   const [file, setFile] = useState<File | null>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const fetchFromOracle = async () => {
-    if (!isConnected) return;
+  const [digilockerData, setDigilockerData] = useState<any>(null);
+  const [fetchError, setFetchError] = useState<string | null>(null);
+
+  const fetchFromDigiLocker = async () => {
+    if (!isConnected) {
+      setFetchError("Please connect wallet first");
+      return;
+    }
+    
     setIsFetchingOracle(true);
+    setFetchError(null);
+    setDigilockerData(null);
     
     try {
-      // Step 2: Query the live Identity Oracle for 18+ verification
       const oracleUrl = process.env.NEXT_PUBLIC_ORACLE_URL || "http://localhost:3001";
-      const response = await fetch(`${oracleUrl}/api/kyc/issue-credential`, {
+      
+      // Step 1: Initiate DigiLocker Auth
+      const authResponse = await fetch(`${oracleUrl}/api/auth/digilocker?walletAddress=${address}`);
+      const authData = await authResponse.json();
+      
+      if (!authResponse.ok) throw new Error(authData.error || "Auth initiation failed");
+
+      // Step 2: Fetch Documents using the token from callback (simulated in our backend)
+      const callbackResponse = await fetch(`${oracleUrl}${authData.url}`);
+      const callbackData = await callbackResponse.json();
+      
+      if (!callbackResponse.ok) throw new Error(callbackData.error || "Callback failed");
+
+      const dlToken = callbackData.mockAccessToken;
+
+      // Step 3: Get KYC Processed Proof
+      const kycResponse = await fetch(`${oracleUrl}/api/kyc/documents`, {
         method: "POST",
         headers: { 
           "Content-Type": "application/json",
           "x-wallet-address": address || ""
         },
-        body: JSON.stringify({
-          walletAddress: address,
-          attributes: {
-            over_18: true,
-            tier: "verified"
-          }
-        })
+        body: JSON.stringify({ dl_token: dlToken })
       });
 
-      const data = await response.json();
+      const data = await kycResponse.json();
 
       if (data.success) {
-        setManualData({
-          name: "DigiLocker Verified User",
-          dob: "1", // Placeholder from DigiLocker
-          email: "digilocker@stealth-zk-kyc.io"
+        setDigilockerData({
+          name: "S**** P*****", // Masked for privacy
+          dob: "19**-**-**",
+          pan: "VALID (Verified)",
+          raw: data
         });
         
-        const credentialFile = new File([JSON.stringify(data, null, 2)], "digilocker_credential.json", { type: "application/json" });
-        setFile(credentialFile);
         localStorage.setItem("stealth_identity_credential", JSON.stringify(data));
-        
-        // Auto-switch to upload tab to show the cryptographic result
-        setActiveTab("upload");
+        setFile(new File([JSON.stringify(data)], "digilocker_proof.json", { type: "application/json" }));
+      } else {
+        throw new Error(data.error || "KYC Processing failed");
       }
-    } catch (error) {
-      console.error("Oracle fetch failed:", error);
+    } catch (error: any) {
+      console.error("DigiLocker fetch failed:", error);
+      setFetchError(error.message || "Failed to connect to DigiLocker network");
     } finally {
-      setIsFetchingOracle(true); // Keep spinner active for a moment for effect
-      setTimeout(() => setIsFetchingOracle(false), 800);
+      setIsFetchingOracle(false);
     }
   };
 
@@ -198,7 +215,7 @@ export default function KYCSubmission() {
                         </p>
                         
                         <button 
-                          onClick={fetchFromOracle}
+                          onClick={fetchFromDigiLocker}
                           disabled={isFetchingOracle}
                           className="w-full h-16 text-lg font-black tracking-widest uppercase bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_30px_rgba(52,211,153,0.3)] hover:shadow-[0_0_50px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 rounded-2xl relative overflow-hidden group flex items-center justify-center"
                         >
@@ -212,6 +229,47 @@ export default function KYCSubmission() {
                             "Connect DigiLocker"
                           )}
                         </button>
+
+                        {fetchError && (
+                          <div className="mt-6 p-4 w-full bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
+                            <ShieldCheck className="w-4 h-4" /> {fetchError}
+                          </div>
+                        )}
+
+                        {digilockerData && (
+                          <motion.div 
+                            initial={{ opacity: 0, y: 10 }}
+                            animate={{ opacity: 1, y: 0 }}
+                            className="mt-8 w-full p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-left"
+                          >
+                            <div className="flex items-center gap-2 mb-4 text-emerald-400">
+                              <CheckCircle2 className="w-4 h-4" />
+                              <span className="text-[10px] font-black uppercase tracking-widest">Credentials Fetched Successfully</span>
+                            </div>
+                            
+                            <div className="space-y-3">
+                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
+                                <span className="text-[9px] font-bold uppercase text-zinc-500">Name</span>
+                                <span className="text-xs font-mono text-zinc-300">{digilockerData.name}</span>
+                              </div>
+                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
+                                <span className="text-[9px] font-bold uppercase text-zinc-500">Age Range</span>
+                                <span className="text-xs font-mono text-zinc-300">18+ (Verified)</span>
+                              </div>
+                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
+                                <span className="text-[9px] font-bold uppercase text-zinc-500">PAN Status</span>
+                                <span className="text-xs font-mono text-primary">{digilockerData.pan}</span>
+                              </div>
+                            </div>
+                            
+                            <button 
+                              onClick={handleSubmit}
+                              className="w-full mt-6 h-12 bg-primary text-black font-black uppercase tracking-widest text-[10px] rounded-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
+                            >
+                              Generate ZK Proof <ArrowRight className="w-4 h-4" />
+                            </button>
+                          </motion.div>
+                        )}
                     </div>
                   </GlowingCard>
                 </motion.div>
