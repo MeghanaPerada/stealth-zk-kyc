@@ -56,13 +56,13 @@ export default function ProofGenerator() {
 
     const runGeneration = async () => {
       const generationSteps = [
-        { msg: "Initializing zk-SNARK prover...", delay: 500, vStep: 0 },
-        { msg: "Loading verification key (VK)...", delay: 1200, vStep: 0 },
-        { msg: credential ? "Reading local signed credential..." : "Reading local identity attributes...", delay: 2000, vStep: 1 },
-        { msg: "Building arithmetic circuit...", delay: 3500, vStep: 2 },
-        { msg: "Computing witness generation...", delay: 5000, vStep: 3 },
-        { msg: "Executing polynomial commitments...", delay: 6500, vStep: 3 },
-        { msg: "Finalizing cryptographic proof...", delay: 8000, vStep: 4 },
+        { msg: "Initializing PLONK Structured Reference String (SRS)...", delay: 500, vStep: 0 },
+        { msg: "Loading ZK-KYC Circuit Definition...", delay: 1200, vStep: 0 },
+        { msg: credential ? "Extracting attributes from local credential..." : "Reading local identity attributes...", delay: 2000, vStep: 1 },
+        { msg: "Building PLONK constraints (R1CS)...", delay: 3500, vStep: 2 },
+        { msg: "Computing Witness Generation...", delay: 5000, vStep: 3 },
+        { msg: "Executing PLONK Polynomial Commitments...", delay: 6500, vStep: 3 },
+        { msg: "Finalizing Cryptographic ZK-Proof...", delay: 8000, vStep: 4 },
       ];
 
       for (const step of generationSteps) {

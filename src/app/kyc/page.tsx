@@ -223,10 +223,10 @@ export default function KYCSubmission() {
                           {isFetchingOracle ? (
                             <span className="flex items-center">
                               <span className="w-5 h-5 rounded-full border-2 border-black/40 border-t-black animate-spin mr-3"></span>
-                              Authenticating DigiLocker...
+                              Extracting Attributes...
                             </span>
                           ) : (
-                            "Connect DigiLocker"
+                            "Fetch From DigiLocker"
                           )}
                         </button>
 

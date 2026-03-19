@@ -252,7 +252,7 @@ function VerificationDashboardContent() {
                               <Badge variant="outline" className="border-zinc-800 text-zinc-500 text-[9px] font-black uppercase tracking-widest px-2 py-0.5">Algorand Testnet</Badge>
                             </div>
                             <h3 className="text-2xl font-black text-primary uppercase tracking-tighter">Proof Verified</h3>
-                            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-1">Cryptographic Confirmation Successful</p>
+                            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mt-1">Hash Match Verification Successful</p>
                           </div>
                         </div>
                       </div>
