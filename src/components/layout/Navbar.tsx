@@ -27,8 +27,22 @@ export default function Navbar() {
         setIsDropdownOpen(false);
       }
     }
+    
+    function handleOpenWalletModal() {
+      // Find the button inside our wui-custom-trigger wrapper and click it
+      const walletBtn = document.querySelector('.wui-custom-trigger button') as HTMLButtonElement;
+      if (walletBtn) {
+        walletBtn.click();
+      }
+    }
+
     document.addEventListener("mousedown", handleClickOutside);
-    return () => document.removeEventListener("mousedown", handleClickOutside);
+    window.addEventListener("open-wallet-modal", handleOpenWalletModal);
+    
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+      window.removeEventListener("open-wallet-modal", handleOpenWalletModal);
+    };
   }, []);
 
   return (

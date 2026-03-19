@@ -26,7 +26,7 @@ export const WalletProvider: React.FC<{ children: React.ReactNode }> = ({ childr
   // while real wallets are managed by BaseWalletProvider.
   
   const handleConnect = () => {
-    console.log("Connect triggered");
+    window.dispatchEvent(new CustomEvent("open-wallet-modal"));
   };
 
   const handleDisconnect = async () => {
