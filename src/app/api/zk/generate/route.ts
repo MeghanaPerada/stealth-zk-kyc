@@ -4,8 +4,7 @@ import fs from 'fs';
 import crypto from 'crypto';
 import algosdk from 'algosdk';
 
-const { generateProofIdentifier, hashData } = require('../../../../lib/helpers');
-
+import { generateProofIdentifier, hashData } from '@/lib/helpers';
 const snarkjs = require('snarkjs');
 const { buildPoseidon } = require('circomlibjs');
 
