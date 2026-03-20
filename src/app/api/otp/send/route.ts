@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDB } from "@/lib/mongodb";
+import { setOtp } from "@/lib/otpCache";
 import { sendEmailOTP, sendSMSOTP } from "@/lib/otpService";
 
 export async function POST(req: NextRequest) {
@@ -9,14 +9,9 @@ export async function POST(req: NextRequest) {
 
     const otp = (Math.floor(100000 + Math.random() * 900000)).toString();
 
-    const { db } = await connectToDB();
-
     // store OTP with expiry 5 mins
-    await db.collection("otps").updateOne(
-      { key },
-      { $set: { otp, createdAt: new Date(), expiresAt: new Date(Date.now() + 5 * 60 * 1000) } },
-      { upsert: true }
-    );
+    setOtp(key, otp);
+
 
     // Dispatch real email/SMS if credentials exist
     if (key.includes("@")) {

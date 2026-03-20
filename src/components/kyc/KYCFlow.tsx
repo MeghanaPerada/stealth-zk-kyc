@@ -29,7 +29,10 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
         body: JSON.stringify({ key }), 
         headers: { "Content-Type": "application/json" } 
       });
-      if (!res.ok) throw new Error("Failed to send OTP");
+      if (!res.ok) {
+        const errData = await res.json().catch(() => null);
+        throw new Error(errData?.error || "Failed to send OTP");
+      }
       setOtpSent(true);
     } catch (err: any) {
       alert(err.message);

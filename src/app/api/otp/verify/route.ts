@@ -1,19 +1,17 @@
 import { NextRequest, NextResponse } from "next/server";
-import { connectToDB } from "@/lib/mongodb";
+import { getOtp, deleteOtp } from "@/lib/otpCache";
 
 export async function POST(req: NextRequest) {
   try {
     const { key, otp } = await req.json();
     if (!key || !otp) return NextResponse.json({ error: "Missing key or otp" }, { status: 400 });
 
-    const { db } = await connectToDB();
-
-    const record = await db.collection("otps").findOne({ key });
+    const record = getOtp(key);
     if (!record) return NextResponse.json({ verified: false, error: "No OTP found for this key" }, { status: 401 });
 
-    const now = new Date();
-    if (record.otp === otp && new Date(record.expiresAt) > now) {
-      await db.collection("otps").deleteOne({ key }); // OTP one-time use
+    const now = Date.now();
+    if (record.otp === otp && record.expiresAt > now) {
+      deleteOtp(key); // OTP one-time use
       return NextResponse.json({ verified: true, message: "OTP verified effectively" });
     }
     

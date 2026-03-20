@@ -95,6 +95,7 @@ function ExplorerContent() {
   const [selectedProof, setSelectedProof] = useState<any | null>(null);
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
+  const [isRevoking, setIsRevoking] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -149,6 +150,29 @@ function ExplorerContent() {
 
   const copyToClipboard = (text: string) => {
     navigator.clipboard.writeText(text);
+  };
+
+  const handleRevoke = async (walletAddress: string) => {
+    if (!confirm("Are you sure you want to revoke this consent on-chain?")) return;
+    setIsRevoking(true);
+    try {
+      const response = await fetch("/api/consent/revoke", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ address: walletAddress })
+      });
+      const data = await response.json();
+      if (!response.ok || !data.success) throw new Error(data.error || data.message || "Failed to revoke consent");
+      
+      // Update local state to reflect revoked.
+      setProofs((prev) => prev.map(p => p.fullWallet === walletAddress ? { ...p, status: "Revoked" } : p));
+      if (selectedProof) setSelectedProof({ ...selectedProof, status: "Revoked" });
+      alert("Consent revoked successfully on Algorand.");
+    } catch(err: any) {
+      alert("Failed to revoke: " + err.message);
+    } finally {
+      setIsRevoking(false);
+    }
   };
 
   if (!isMounted) return null;
@@ -419,6 +443,17 @@ function ExplorerContent() {
                                <ExternalLink className="h-4 w-4" /> View On Algorand
                              </Button>
                            </Link>
+                           {selectedProof.status !== "Revoked" && (
+                             <Button 
+                               onClick={() => handleRevoke(selectedProof.fullWallet)} 
+                               disabled={isRevoking}
+                               variant="outline" 
+                               size="sm" 
+                               className="bg-red-500/10 border-red-500/50 hover:bg-red-500 text-red-500 hover:text-white transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl ms-auto"
+                             >
+                               {isRevoking ? <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <X className="h-4 w-4" />} Revoke Consent
+                             </Button>
+                           )}
                          </div>
                       </div>
                   </div>

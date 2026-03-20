@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import KYCFlow from "./KYCFlow";
-import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2 } from "lucide-react";
+import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2, Info, Check, Lock } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 
 export default function EndToEndKYC() {
@@ -12,6 +12,7 @@ export default function EndToEndKYC() {
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
   const [oracleResult, setOracleResult] = useState<any>(null);
   const [step, setStep] = useState(1); // 1: Connect, 2: OTP/KYC, 3: Consent, 4: Result
+  const [isReusing, setIsReusing] = useState(false);
 
   const handleWalletAuth = async () => {
     if (!isConnected) {
@@ -52,6 +53,34 @@ export default function EndToEndKYC() {
       alert(err.message);
     } finally {
       setIsAuthenticating(false);
+    }
+  };
+
+  const handleReuseProof = async () => {
+    setIsReusing(true);
+    try {
+      const res = await fetch("/api/zk/reuse", {
+        method: "POST",
+        body: JSON.stringify({ address }),
+        headers: { "Content-Type": "application/json" },
+      });
+      const data = await res.json();
+      if (!res.ok || !data.success) {
+        throw new Error(data.message || data.error || "Failed to reuse proof");
+      }
+      
+      setOracleResult({
+        identityHash: data.proofHash,
+        reused: true,
+        message: "Proof Reused Successfully from On-Chain Box",
+        timestamp: new Date().toISOString()
+      });
+      setVerifiedData({ type: "reused_proof" });
+      setStep(4);
+    } catch (err: any) {
+      alert("Error reusing proof: " + err.message);
+    } finally {
+      setIsReusing(false);
     }
   };
 
@@ -127,6 +156,14 @@ export default function EndToEndKYC() {
         <p className="text-slate-400 text-sm max-w-lg mx-auto leading-relaxed">
           Privacy-first identity attestation. Your PII is verified by the Oracle, but only a zero-knowledge proof is stored on-chain.
         </p>
+        <div className="flex justify-center gap-3 pt-2">
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-xs font-bold uppercase tracking-wider">
+            <Lock className="w-3 h-3" /> DPDP 2023 Compliant
+          </div>
+          <div className="flex items-center gap-1.5 px-3 py-1 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-400 text-xs font-bold uppercase tracking-wider">
+            <Database className="w-3 h-3" /> Blockchain Anchored
+          </div>
+        </div>
       </div>
 
       {/* Progress Stepper */}
@@ -171,6 +208,16 @@ export default function EndToEndKYC() {
                 {isConnected ? "Authenticate & Proceed" : "Connect Wallet"}
                 <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 transform translate-y-2 group-hover:translate-y-0 transition-transform" />
               </button>
+              {isConnected && (
+                <button 
+                  onClick={handleReuseProof}
+                  disabled={isReusing || isAuthenticating}
+                  className="w-full max-w-xs mx-auto mt-4 bg-slate-800 hover:bg-slate-700 text-emerald-400 font-bold py-3 px-10 rounded-2xl transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex items-center justify-center gap-2 border border-emerald-500/20 shadow-lg"
+                >
+                  {isReusing ? <Loader2 className="animate-spin w-4 h-4" /> : <History className="w-4 h-4" />}
+                  Reuse Existing Proof
+                </button>
+              )}
             </motion.div>
           )}
 
@@ -201,9 +248,25 @@ export default function EndToEndKYC() {
                 <p className="text-slate-400 text-sm leading-relaxed max-w-md mx-auto">
                   You are about to sign an Algorand smart contract transaction to grant the Oracle permission to fetch your identity and anchor your ZK proof on-chain securely.
                 </p>
-                <div className="bg-slate-950 p-4 rounded-xl text-left border border-slate-800">
-                   <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2">Allowed Fields</p>
-                   <p className="text-emerald-400 text-sm font-mono">+ PAN, Aadhaar, DOB, Name</p>
+                <div className="bg-slate-950 p-5 rounded-2xl text-left border border-slate-800 space-y-3">
+                   <div className="flex items-center justify-between">
+                     <p className="text-xs text-slate-400 uppercase font-black tracking-widest">Granular Data Consent</p>
+                     <p className="text-[10px] text-emerald-500 bg-emerald-500/10 px-2 py-0.5 rounded font-bold uppercase">Required for Protocol</p>
+                   </div>
+                   <div className="grid grid-cols-2 gap-3 mt-2">
+                     {["PAN Number", "Aadhaar Match", "Date of Birth (18+)", "Name Match"].map(field => (
+                       <div key={field} className="flex items-center gap-2 bg-slate-900 border border-slate-800 p-2.5 rounded-xl">
+                         <div className="w-4 h-4 rounded-full bg-emerald-500 flex items-center justify-center border-2 border-emerald-900 shadow-[0_0_10px_rgba(16,185,129,0.5)]">
+                           <Check className="w-2.5 h-2.5 text-black" />
+                         </div>
+                         <span className="text-xs font-bold text-slate-300">{field}</span>
+                       </div>
+                     ))}
+                   </div>
+                   <div className="pt-2 flex gap-2 items-start mt-2 border-t border-slate-800/50">
+                     <Info className="w-4 h-4 text-slate-500 shrink-0 mt-0.5" />
+                     <p className="text-[10px] text-slate-500 leading-tight">These fields will be processed by the secure enclave to generate the ZK Proof. Only the resulting cryptographic proof hash will leave the enclave and be anchored on Algorand.</p>
+                   </div>
                 </div>
               </div>
               <button 
@@ -236,6 +299,35 @@ export default function EndToEndKYC() {
                 <p className="text-emerald-400 font-mono text-xs tracking-widest uppercase">
                   ID Hash Bind: {oracleResult?.identityHash?.substring(0, 16)}...
                 </p>
+              </div>
+
+              <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">
+                <p className="text-xs text-slate-400 uppercase font-black tracking-widest text-center">Proof Lifecycle</p>
+                <div className="flex items-center justify-between relative max-w-lg mx-auto">
+                  <div className="absolute top-1/2 left-0 right-0 h-0.5 bg-slate-800 -z-10 -translate-y-1/2" />
+                  <div className={`absolute top-1/2 left-0 h-0.5 bg-emerald-500 -z-10 -translate-y-1/2 transition-all duration-1000 ${oracleResult?.reused ? 'w-full' : 'w-1/2'}`} />
+                  
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500 text-black flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                      <Sparkles className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Generated</span>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-3">
+                    <div className="w-10 h-10 rounded-full bg-emerald-500 text-black flex items-center justify-center shadow-[0_0_15px_rgba(16,185,129,0.5)]">
+                      <Database className="w-5 h-5" />
+                    </div>
+                    <span className="text-[10px] font-bold text-emerald-400 uppercase tracking-widest">Anchored</span>
+                  </div>
+
+                  <div className="flex flex-col items-center gap-3">
+                    <div className={`w-10 h-10 rounded-full flex items-center justify-center transition-all ${oracleResult?.reused ? 'bg-emerald-500 text-black shadow-[0_0_15px_rgba(16,185,129,0.5)]' : 'bg-slate-900 border-2 border-slate-700 text-slate-500'}`}>
+                      <History className="w-5 h-5" />
+                    </div>
+                    <span className={`text-[10px] font-bold uppercase tracking-widest ${oracleResult?.reused ? 'text-emerald-400' : 'text-slate-500'}`}>Reused</span>
+                  </div>
+                </div>
               </div>
 
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
