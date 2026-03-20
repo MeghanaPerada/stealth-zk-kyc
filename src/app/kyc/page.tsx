@@ -59,6 +59,12 @@ export default function KYCFlow() {
   const [error, setError] = useState<string | null>(null);
   const [showNoData, setShowNoData] = useState(false);
   const [mounted, setMounted] = useState(false);
+  
+  // OTP Flow States
+  const [otp, setOtp] = useState("");
+  const [otpSent, setOtpSent] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [userId] = useState(() => `user_${Math.random().toString(36).substring(2, 9)}`);
 
   useEffect(() => {
     setMounted(true);
@@ -114,8 +120,8 @@ export default function KYCFlow() {
       }
 
       const oracleBody = token
-        ? { wallet: address, token }
-        : { wallet: address, userInputData: userData };
+        ? { userId, otp: token, wallet: address, requestedFields: ["dob", "pan", "aadhaar_last4", "city", "state"] }
+        : { wallet: address, manualData: userData, otp: "manual_bypass", userId: "manual" };
 
       const oracleRes = await fetch("/api/oracle/fetch", {
         method: "POST",
@@ -192,9 +198,46 @@ export default function KYCFlow() {
     }
   };
 
-  const handleDigiLockerApprove = () => {
-    const token = `digilocker_${Date.now()}_${Math.random().toString(36).substring(2, 8)}`;
-    runVerification(token);
+  const handleDigiLockerApprove = async () => {
+    try {
+      setError(null);
+      const res = await fetch("/api/consent/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, emailOrMobile: "user@example.com" }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send OTP");
+      
+      setOtpSent(true);
+      if (data.demoOtp) {
+        console.log("[Demo] Auto-filling OTP for convenience:", data.demoOtp);
+        // setOtp(data.demoOtp); // Optional: auto-fill for demo
+      }
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleVerifyOtp = async () => {
+    setIsVerifyingOtp(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/consent/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, otp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Invalid OTP");
+
+      // Once verified, run the full verification pipeline
+      runVerification(otp);
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsVerifyingOtp(false);
+    }
   };
 
   const handleManualSubmit = (e: React.FormEvent) => {
@@ -518,14 +561,47 @@ export default function KYCFlow() {
                     </p>
                   </div>
 
-                  <div className="flex flex-col sm:flex-row gap-4">
-                    <Button onClick={handleDigiLockerApprove} className="flex-1 h-14 bg-[#0056b3] hover:bg-[#004494] text-white font-bold text-base rounded-xl">
-                      Allow Access
-                    </Button>
-                    <Button onClick={() => setStep("METHOD_SELECT")} variant="outline" className="flex-1 h-14 border-zinc-200 text-zinc-600 font-bold rounded-xl">
-                      Deny
-                    </Button>
-                  </div>
+                  {!otpSent ? (
+                    <div className="flex flex-col sm:flex-row gap-4">
+                      <Button onClick={handleDigiLockerApprove} className="flex-1 h-14 bg-[#0056b3] hover:bg-[#004494] text-white font-bold text-base rounded-xl">
+                        Allow Access
+                      </Button>
+                      <Button onClick={() => setStep("METHOD_SELECT")} variant="outline" className="flex-1 h-14 border-zinc-200 text-zinc-600 font-bold rounded-xl">
+                        Deny
+                      </Button>
+                    </div>
+                  ) : (
+                    <div className="space-y-4">
+                      <div className="relative">
+                        <input
+                          type="text"
+                          value={otp}
+                          onChange={(e) => setOtp(e.target.value)}
+                          placeholder="Enter 6-digit OTP"
+                          className="w-full h-14 bg-zinc-50 border-2 border-zinc-200 rounded-xl px-4 text-center text-xl font-bold tracking-[0.5em] focus:border-[#0056b3] focus:outline-none transition-all"
+                          maxLength={6}
+                        />
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          {isVerifyingOtp && <Loader2 className="w-5 h-5 animate-spin text-zinc-400" />}
+                        </div>
+                      </div>
+                      <p className="text-[10px] text-zinc-400 text-center">
+                        A demo OTP has been sent to your simulated device (check console).
+                      </p>
+                      <div className="flex flex-col sm:flex-row gap-4">
+                        <Button 
+                          onClick={handleVerifyOtp} 
+                          disabled={otp.length !== 6 || isVerifyingOtp}
+                          className="flex-1 h-14 bg-emerald-600 hover:bg-emerald-700 text-white font-bold text-base rounded-xl"
+                        >
+                          Verify & Proceed
+                        </Button>
+                        <Button onClick={() => setOtpSent(false)} variant="outline" className="flex-1 h-14 border-zinc-200 text-zinc-600 font-bold rounded-xl">
+                          Cancel
+                        </Button>
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </motion.div>

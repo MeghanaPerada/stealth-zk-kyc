@@ -75,11 +75,11 @@ export async function POST(request: Request) {
     }
 
     // --- STEP 3: Calculate Poseidon Hash (to match kycMain.circom / identityHash.circom) ---
-    const pii = oracleResult._internalData;
+    const pii = oracleResult._internalData || oracleResult; // Support both old and new internal format
     const dobNum = parseInt(pii.dob.replace(/-/g, '')); // 2003-08-15 -> 20030815
     const aadhaarLast4 = parseInt(pii.aadhaar_last4);
     const pan_ascii = panToAscii(pii.pan);
-    const issuerNum = pii.issuer === "UIDAI" ? 1 : 0;
+    const issuerNum = pii.issuer === "UIDAI" || oracleResult.issuer === "UIDAI" ? 1 : 0;
 
     const poseidon = await buildPoseidon();
     // Inputs order: dob, aadhaar_last4, pan[10], issuer (Total 13 inputs)
