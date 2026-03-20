@@ -12,7 +12,7 @@ export async function verifyWalletSignature(address: string, message: string, si
     const decoded = algosdk.decodeSignedTransaction(signedTxnBytes);
 
     // 1. Verify it's a transaction signed by the expected address
-    if (decoded.txn.from.toString() !== address) {
+    if (decoded.txn.sender.toString() !== address) {
       console.error("[VERIFY] Mismatched sender address");
       return false;
     }

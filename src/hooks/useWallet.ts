@@ -55,14 +55,13 @@ export const useWallet = () => {
       // Create a dummy transaction to sign as a "message"
       // We use a zero-amount payment to the user's own address
       // with the message in the 'note' field.
-      const txn = algosdk.makePaymentTxnWithSuggestedParams(
-        activeAddress,
-        activeAddress,
-        0,
-        undefined,
-        new Uint8Array(Buffer.from(message)),
-        params
-      );
+      const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
+        sender: activeAddress,
+        receiver: activeAddress,
+        amount: 0,
+        note: new Uint8Array(Buffer.from(message)),
+        suggestedParams: params,
+      });
 
       const signedTxns = await signTransactions([txn.toByte()]);
       const signedTxn = signedTxns[0];
