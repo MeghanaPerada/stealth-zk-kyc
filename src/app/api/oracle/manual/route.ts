@@ -11,8 +11,8 @@ export async function POST(req: Request) {
   try {
     const { userId, otp, wallet, manualData, signature, authMessage } = await req.json();
 
-    // 1. Verify consent
-    if (!verifyOtp(userId, otp)) {
+    // 1. Verify user consent via OTP
+    if (!(await verifyOtp(userId, otp))) {
       return NextResponse.json({ error: "Consent not verified" }, { status: 401 });
     }
 

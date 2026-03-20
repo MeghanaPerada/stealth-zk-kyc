@@ -6,7 +6,7 @@ export async function POST(req: Request) {
     const { userId, otp } = await req.json();
     if (!userId || !otp) return NextResponse.json({ error: "Missing userId or otp" }, { status: 400 });
 
-    if (!verifyOtp(userId, otp)) {
+    if (!(await verifyOtp(userId, otp))) {
       return NextResponse.json({ verified: false, error: "OTP invalid or expired" }, { status: 401 });
     }
 

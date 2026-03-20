@@ -1,26 +1,46 @@
 // /src/lib/otp.ts
-// In-memory OTP store for consent simulation
-
-const otpStore: Record<string, { otp: string; expires: number }> = {};
+// MongoDB-backed OTP store for persistent serverless verification
+import connectDB from './config/db';
+import { Otp } from './models/Otp';
 
 /**
  * generateOtp
- * Generates a 6-digit numeric OTP for a given user/session.
+ * Generates a 6-digit numeric OTP for a given user/session and stores it in MongoDB.
  */
-export function generateOtp(userId: string): string {
+export async function generateOtp(userId: string): Promise<string> {
+  await connectDB();
   const otp = String(Math.floor(100000 + Math.random() * 900000));
-  const expires = Date.now() + 5 * 60 * 1000; // valid for 5 mins
-  otpStore[userId] = { otp, expires };
+  const expiresAt = new Date(Date.now() + 5 * 60 * 1000); // 5 mins
+  
+  // Upsert OTP for the user
+  await Otp.findOneAndUpdate(
+    { userId },
+    { otp, expiresAt },
+    { upsert: true, new: true }
+  );
+  
   return otp;
 }
 
 /**
  * verifyOtp
- * Verifies if the provided OTP matches and hasn't expired.
+ * Verifies if the provided OTP matches the one in MongoDB and hasn't expired.
  */
-export function verifyOtp(userId: string, otp: string): boolean {
-  const record = otpStore[userId];
+export async function verifyOtp(userId: string, otp: string): Promise<boolean> {
+  await connectDB();
+  const record = await Otp.findOne({ userId });
+  
   if (!record) return false;
-  if (Date.now() > record.expires) return false;
-  return record.otp === otp;
+  
+  // Mongoose TTL index handles deletion, but we check just in case
+  if (new Date() > record.expiresAt) return false;
+  
+  const isValid = record.otp === otp;
+  
+  // Optional: delete after successful verify to prevent reuse
+  if (isValid) {
+    await Otp.deleteOne({ _id: record._id });
+  }
+  
+  return isValid;
 }

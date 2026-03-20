@@ -25,7 +25,7 @@ export async function POST(req: Request) {
     }
 
     // Step 1: Generate OTP
-    const otp = generateOtp(userId);
+    const otp = await generateOtp(userId);
     
     // Attempt real delivery
     if (email) await sendEmailOTP(email, otp);
