@@ -1,0 +1,2280 @@
+{
+  "version": 3,
+  "sources": [
+    "../kyc_consolidated.algo.ts"
+  ],
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAQA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAUE;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AACS;;AAAA;;AAAA;AAAP;AACO;AAAS;;AAAT;AAAP;AAVc;AAAA;;AAAA;AAYd;AAAA;AAAA;AAXc;AAAA;;AAAA;AAYd;AAAA;;AAAA;AAAA;AAEI;;;;;;;;;;;;;;;;;AAAJ;AAPF;AAAA;;AAcA;;;AAAA;;AAAA;AAAA;AAAA;AAAA;AACS;;AAAA;;AAAA;AAAP;AAvBc;AAAA;AAAA;AAAA;AAyBV;AAAA;;AAAJ;;;AACE;AAAA;;AAzBY;AAAA;;AAAA;AAAA;AAAA;;AA2BV;AAAA;;AAAJ;;;AACE;;AAAA;;AAGE;;;;;;;;;;;;;;;;;AAAJ;AAVF;AAAA;AAgBA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AASA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACS;;AAAA;;;AAAP;AACO;AAAc;;AAAd;AAAP;AA/Ce;;AAAA;;AAAA;AAiDf;AAAA;;AAAA;AAAA;AAEI;;;;;;;;;;;;;;AAAJ;AANF;AAAA;AAaA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AA1DiB;;AAAA;;AAAA;AA2DR;AAAA;AAAA;;AAAP;AACO;AAAA;AAAA;AAFT;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAtBA;;;AAtCgB;AAAA;;AAAA;AAAA;AAuCP;AAAA;;AAAA;;;AAAqC;;AAAyB;;AAAA;AAAA;AAAA;AAAzB;AAArC;;;;AAAP;AAAA;;",
+  "op_pc_offset": 0,
+  "pc_events": {
+    "1": {
+      "subroutine": "@algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram",
+      "params": {},
+      "block": "main",
+      "stack_in": [],
+      "op": "intcblock 1 0 32 2"
+    },
+    "7": {
+      "op": "bytecblock \"expiry\" \"fields\" 0x00 0x151f7c75 \"proof\""
+    },
+    "36": {
+      "op": "txn NumAppArgs",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "38": {
+      "op": "bz main___algots__.defaultCreate@12",
+      "stack_out": []
+    },
+    "41": {
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "43": {
+      "op": "!",
+      "defined_out": [
+        "tmp%3#0"
+      ],
+      "stack_out": [
+        "tmp%3#0"
+      ]
+    },
+    "44": {
+      "error": "OnCompletion must be NoOp",
+      "op": "assert // OnCompletion must be NoOp",
+      "stack_out": []
+    },
+    "45": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "47": {
+      "op": "assert",
+      "stack_out": []
+    },
+    "48": {
+      "op": "pushbytess 0x6948557b 0xbb87b4c0 0x87aa53c3 0xf646e7ae 0x77534f48 // method \"grantConsent(address,string,uint64)void\", method \"revokeConsent(address)void\", method \"hasValidConsent(address)bool\", method \"storeProof(address,string)void\", method \"verifyProof(address,string)bool\"",
+      "defined_out": [
+        "Method(grantConsent(address,string,uint64)void)",
+        "Method(hasValidConsent(address)bool)",
+        "Method(revokeConsent(address)void)",
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProof(address,string)bool)"
+      ],
+      "stack_out": [
+        "Method(grantConsent(address,string,uint64)void)",
+        "Method(revokeConsent(address)void)",
+        "Method(hasValidConsent(address)bool)",
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProof(address,string)bool)"
+      ]
+    },
+    "75": {
+      "op": "txna ApplicationArgs 0",
+      "defined_out": [
+        "Method(grantConsent(address,string,uint64)void)",
+        "Method(hasValidConsent(address)bool)",
+        "Method(revokeConsent(address)void)",
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProof(address,string)bool)",
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "Method(grantConsent(address,string,uint64)void)",
+        "Method(revokeConsent(address)void)",
+        "Method(hasValidConsent(address)bool)",
+        "Method(storeProof(address,string)void)",
+        "Method(verifyProof(address,string)bool)",
+        "tmp%6#0"
+      ]
+    },
+    "78": {
+      "op": "match grantConsent revokeConsent hasValidConsent storeProof verifyProof",
+      "stack_out": []
+    },
+    "90": {
+      "op": "err"
+    },
+    "91": {
+      "block": "main___algots__.defaultCreate@12",
+      "stack_in": [],
+      "op": "txn OnCompletion",
+      "defined_out": [
+        "tmp%7#0"
+      ],
+      "stack_out": [
+        "tmp%7#0"
+      ]
+    },
+    "93": {
+      "op": "!",
+      "defined_out": [
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0"
+      ]
+    },
+    "94": {
+      "op": "txn ApplicationID",
+      "defined_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%9#0"
+      ]
+    },
+    "96": {
+      "op": "!",
+      "defined_out": [
+        "tmp%10#0",
+        "tmp%8#0"
+      ],
+      "stack_out": [
+        "tmp%8#0",
+        "tmp%10#0"
+      ]
+    },
+    "97": {
+      "op": "&&",
+      "defined_out": [
+        "tmp%11#0"
+      ],
+      "stack_out": [
+        "tmp%11#0"
+      ]
+    },
+    "98": {
+      "error": "OnCompletion must be NoOp && can only call when creating",
+      "op": "assert // OnCompletion must be NoOp && can only call when creating",
+      "stack_out": []
+    },
+    "99": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "100": {
+      "op": "return",
+      "stack_out": []
+    },
+    "101": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.grantConsent[routing]",
+      "params": {},
+      "block": "grantConsent",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "104": {
+      "op": "dup",
+      "defined_out": [
+        "wallet#0",
+        "wallet#0 (copy)"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "wallet#0 (copy)"
+      ]
+    },
+    "105": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "len%0#0"
+      ]
+    },
+    "106": {
+      "op": "intc_2 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "len%0#0",
+        "32"
+      ]
+    },
+    "107": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "eq%0#0"
+      ]
+    },
+    "108": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "109": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0"
+      ]
+    },
+    "112": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "113": {
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "0"
+      ]
+    },
+    "114": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "115": {
+      "op": "intc_3 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "116": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0"
+      ]
+    },
+    "117": {
+      "op": "dig 1",
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "119": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%1#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0",
+        "len%1#0"
+      ]
+    },
+    "120": {
+      "op": "==",
+      "defined_out": [
+        "eq%1#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "121": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0"
+      ]
+    },
+    "122": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "allowed_fields#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0"
+      ]
+    },
+    "125": {
+      "op": "txna ApplicationArgs 3",
+      "defined_out": [
+        "allowed_fields#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "tmp%4#0"
+      ]
+    },
+    "128": {
+      "op": "dup",
+      "defined_out": [
+        "allowed_fields#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "129": {
+      "op": "len",
+      "defined_out": [
+        "allowed_fields#0",
+        "len%2#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "tmp%4#0",
+        "len%2#0"
+      ]
+    },
+    "130": {
+      "op": "pushint 8 // 8",
+      "defined_out": [
+        "8",
+        "allowed_fields#0",
+        "len%2#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "tmp%4#0",
+        "len%2#0",
+        "8"
+      ]
+    },
+    "132": {
+      "op": "==",
+      "defined_out": [
+        "allowed_fields#0",
+        "eq%2#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "tmp%4#0",
+        "eq%2#0"
+      ]
+    },
+    "133": {
+      "error": "invalid number of bytes for arc4.uint64",
+      "op": "assert // invalid number of bytes for arc4.uint64",
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "tmp%4#0"
+      ]
+    },
+    "134": {
+      "op": "btoi",
+      "defined_out": [
+        "allowed_fields#0",
+        "expiry#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0"
+      ]
+    },
+    "135": {
+      "op": "txn Sender",
+      "defined_out": [
+        "allowed_fields#0",
+        "expiry#0",
+        "tmp%0#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "tmp%0#1"
+      ]
+    },
+    "137": {
+      "op": "dig 3",
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "tmp%0#1",
+        "wallet#0 (copy)"
+      ]
+    },
+    "139": {
+      "op": "==",
+      "defined_out": [
+        "allowed_fields#0",
+        "expiry#0",
+        "tmp%1#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "tmp%1#1"
+      ]
+    },
+    "140": {
+      "error": "Only the wallet owner can grant consent",
+      "op": "assert // Only the wallet owner can grant consent",
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0"
+      ]
+    },
+    "141": {
+      "op": "dup"
+    },
+    "142": {
+      "op": "global LatestTimestamp",
+      "defined_out": [
+        "allowed_fields#0",
+        "expiry#0",
+        "expiry#0 (copy)",
+        "tmp%2#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "expiry#0 (copy)",
+        "tmp%2#1"
+      ]
+    },
+    "144": {
+      "op": ">",
+      "defined_out": [
+        "allowed_fields#0",
+        "expiry#0",
+        "tmp%3#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "tmp%3#1"
+      ]
+    },
+    "145": {
+      "error": "Expiry must be in the future",
+      "op": "assert // Expiry must be in the future",
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0"
+      ]
+    },
+    "146": {
+      "op": "bytec_0 // \"expiry\"",
+      "defined_out": [
+        "\"expiry\"",
+        "allowed_fields#0",
+        "expiry#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "\"expiry\""
+      ]
+    },
+    "147": {
+      "op": "dig 3",
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "\"expiry\"",
+        "wallet#0 (copy)"
+      ]
+    },
+    "149": {
+      "op": "concat",
+      "defined_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%0#0",
+        "expiry#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "expiry#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "150": {
+      "op": "swap",
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "box_prefixed_key%0#0",
+        "expiry#0"
+      ]
+    },
+    "151": {
+      "op": "itob",
+      "defined_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%0#0",
+        "encoded_value%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "box_prefixed_key%0#0",
+        "encoded_value%0#0"
+      ]
+    },
+    "152": {
+      "op": "box_put",
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0"
+      ]
+    },
+    "153": {
+      "op": "bytec_1 // \"fields\"",
+      "defined_out": [
+        "\"fields\"",
+        "allowed_fields#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "allowed_fields#0",
+        "\"fields\""
+      ]
+    },
+    "154": {
+      "op": "uncover 2",
+      "stack_out": [
+        "allowed_fields#0",
+        "\"fields\"",
+        "wallet#0"
+      ]
+    },
+    "156": {
+      "op": "concat",
+      "defined_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%1#0"
+      ],
+      "stack_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%1#0"
+      ]
+    },
+    "157": {
+      "op": "dup",
+      "defined_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%1#0",
+        "box_prefixed_key%1#0 (copy)"
+      ],
+      "stack_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%1#0",
+        "box_prefixed_key%1#0 (copy)"
+      ]
+    },
+    "158": {
+      "op": "box_del",
+      "defined_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%1#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%1#0",
+        "{box_del}"
+      ]
+    },
+    "159": {
+      "op": "pop",
+      "stack_out": [
+        "allowed_fields#0",
+        "box_prefixed_key%1#0"
+      ]
+    },
+    "160": {
+      "op": "swap",
+      "stack_out": [
+        "box_prefixed_key%1#0",
+        "allowed_fields#0"
+      ]
+    },
+    "161": {
+      "op": "box_put",
+      "stack_out": []
+    },
+    "162": {
+      "op": "pushbytes \"CONSENT_GRANTED\"",
+      "defined_out": [
+        "\"CONSENT_GRANTED\""
+      ],
+      "stack_out": [
+        "\"CONSENT_GRANTED\""
+      ]
+    },
+    "179": {
+      "op": "log",
+      "stack_out": []
+    },
+    "180": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "181": {
+      "op": "return",
+      "stack_out": []
+    },
+    "182": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.revokeConsent[routing]",
+      "params": {},
+      "block": "revokeConsent",
+      "stack_in": [],
+      "op": "intc_1 // 0",
+      "stack_out": [
+        "box_prefixed_key%2#0"
+      ]
+    },
+    "183": {
+      "op": "txna ApplicationArgs 1"
+    },
+    "186": {
+      "op": "dupn 2",
+      "defined_out": [
+        "wallet#0",
+        "wallet#0 (copy)"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "wallet#0 (copy)"
+      ]
+    },
+    "188": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "len%0#0"
+      ]
+    },
+    "189": {
+      "op": "intc_2 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "len%0#0",
+        "32"
+      ]
+    },
+    "190": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "eq%0#0"
+      ]
+    },
+    "191": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0"
+      ]
+    },
+    "192": {
+      "op": "txn Sender",
+      "defined_out": [
+        "tmp%0#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "tmp%0#1"
+      ]
+    },
+    "194": {
+      "op": "dig 1",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "tmp%0#1",
+        "wallet#0 (copy)"
+      ]
+    },
+    "196": {
+      "op": "==",
+      "defined_out": [
+        "tmp%1#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "tmp%1#1"
+      ]
+    },
+    "197": {
+      "error": "Only the wallet owner can revoke consent",
+      "op": "assert // Only the wallet owner can revoke consent",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0"
+      ]
+    },
+    "198": {
+      "op": "bytec_0 // \"expiry\"",
+      "defined_out": [
+        "\"expiry\"",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "wallet#0",
+        "\"expiry\""
+      ]
+    },
+    "199": {
+      "op": "swap",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "\"expiry\"",
+        "wallet#0"
+      ]
+    },
+    "200": {
+      "op": "concat",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "201": {
+      "op": "dup",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "202": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "box_prefixed_key%0#0",
+        "maybe_exists%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "203": {
+      "op": "bury 1",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "205": {
+      "op": "bz revokeConsent_after_if_else@3",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "208": {
+      "op": "dup",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "209": {
+      "op": "box_del",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "wallet#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "{box_del}"
+      ]
+    },
+    "210": {
+      "op": "pop",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "211": {
+      "block": "revokeConsent_after_if_else@3",
+      "stack_in": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ],
+      "op": "bytec_1 // \"fields\"",
+      "defined_out": [
+        "\"fields\""
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "\"fields\""
+      ]
+    },
+    "212": {
+      "op": "dig 2",
+      "defined_out": [
+        "\"fields\"",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "\"fields\"",
+        "wallet#0"
+      ]
+    },
+    "214": {
+      "op": "concat",
+      "defined_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%2#0"
+      ]
+    },
+    "215": {
+      "op": "dup",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%2#0",
+        "box_prefixed_key%2#0"
+      ]
+    },
+    "216": {
+      "op": "bury 4",
+      "defined_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%2#0"
+      ]
+    },
+    "218": {
+      "op": "box_len",
+      "defined_out": [
+        "_%1#0",
+        "box_prefixed_key%2#0",
+        "maybe_exists%1#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "_%1#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "219": {
+      "op": "bury 1",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "maybe_exists%1#0"
+      ]
+    },
+    "221": {
+      "op": "bz revokeConsent_after_if_else@5",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "224": {
+      "op": "dig 2",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%2#0"
+      ]
+    },
+    "226": {
+      "op": "box_del",
+      "defined_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "{box_del}"
+      ]
+    },
+    "227": {
+      "op": "pop",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "228": {
+      "block": "revokeConsent_after_if_else@5",
+      "stack_in": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ],
+      "op": "pushbytes \"CONSENT_REVOKED\"",
+      "defined_out": [
+        "\"CONSENT_REVOKED\""
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "\"CONSENT_REVOKED\""
+      ]
+    },
+    "245": {
+      "op": "log",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "246": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0",
+        "1"
+      ]
+    },
+    "247": {
+      "op": "return",
+      "stack_out": [
+        "box_prefixed_key%2#0",
+        "wallet#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "248": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent[routing]",
+      "params": {},
+      "block": "hasValidConsent",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "251": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "252": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "len%0#0"
+      ]
+    },
+    "253": {
+      "op": "intc_2 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "len%0#0",
+        "32"
+      ]
+    },
+    "254": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "255": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "256": {
+      "callsub": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
+      "op": "callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
+      "defined_out": [
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0"
+      ]
+    },
+    "259": {
+      "op": "bytec_2 // 0x00",
+      "defined_out": [
+        "0x00",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "0x00"
+      ]
+    },
+    "260": {
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "0",
+        "0x00",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "tmp%2#0",
+        "0x00",
+        "0"
+      ]
+    },
+    "261": {
+      "op": "uncover 2",
+      "stack_out": [
+        "0x00",
+        "0",
+        "tmp%2#0"
+      ]
+    },
+    "263": {
+      "op": "setbit",
+      "defined_out": [
+        "aggregate%encoded_bool%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_bool%0#0"
+      ]
+    },
+    "264": {
+      "op": "bytec_3 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "aggregate%encoded_bool%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_bool%0#0",
+        "0x151f7c75"
+      ]
+    },
+    "265": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "aggregate%encoded_bool%0#0"
+      ]
+    },
+    "266": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%4#0"
+      ],
+      "stack_out": [
+        "tmp%4#0"
+      ]
+    },
+    "267": {
+      "op": "log",
+      "stack_out": []
+    },
+    "268": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "269": {
+      "op": "return",
+      "stack_out": []
+    },
+    "270": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.storeProof[routing]",
+      "params": {},
+      "block": "storeProof",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "273": {
+      "op": "dup",
+      "defined_out": [
+        "wallet#0",
+        "wallet#0 (copy)"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "wallet#0 (copy)"
+      ]
+    },
+    "274": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "len%0#0"
+      ]
+    },
+    "275": {
+      "op": "intc_2 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "len%0#0",
+        "32"
+      ]
+    },
+    "276": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "eq%0#0"
+      ]
+    },
+    "277": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "278": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0"
+      ]
+    },
+    "281": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "282": {
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "0"
+      ]
+    },
+    "283": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "284": {
+      "op": "intc_3 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "285": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0"
+      ]
+    },
+    "286": {
+      "op": "dig 1",
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "288": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%1#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0",
+        "len%1#0"
+      ]
+    },
+    "289": {
+      "op": "==",
+      "defined_out": [
+        "eq%1#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "290": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0"
+      ]
+    },
+    "291": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "proofHash#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0"
+      ]
+    },
+    "294": {
+      "op": "dig 1",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "wallet#0 (copy)"
+      ]
+    },
+    "296": {
+      "callsub": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
+      "op": "callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
+      "defined_out": [
+        "proofHash#0",
+        "tmp%0#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%0#1"
+      ]
+    },
+    "299": {
+      "error": "Active consent is required to store proof",
+      "op": "assert // Active consent is required to store proof",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0"
+      ]
+    },
+    "300": {
+      "op": "dup",
+      "defined_out": [
+        "proofHash#0",
+        "proofHash#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "proofHash#0 (copy)"
+      ]
+    },
+    "301": {
+      "op": "pushbytes \"\"",
+      "defined_out": [
+        "\"\"",
+        "proofHash#0",
+        "proofHash#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "proofHash#0 (copy)",
+        "\"\""
+      ]
+    },
+    "303": {
+      "op": "!=",
+      "defined_out": [
+        "proofHash#0",
+        "tmp%1#1",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%1#1"
+      ]
+    },
+    "304": {
+      "error": "Proof hash cannot be empty",
+      "op": "assert // Proof hash cannot be empty",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0"
+      ]
+    },
+    "305": {
+      "op": "bytec 4 // \"proof\"",
+      "defined_out": [
+        "\"proof\"",
+        "proofHash#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "\"proof\""
+      ]
+    },
+    "307": {
+      "op": "uncover 2",
+      "stack_out": [
+        "proofHash#0",
+        "\"proof\"",
+        "wallet#0"
+      ]
+    },
+    "309": {
+      "op": "concat",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "proofHash#0"
+      ],
+      "stack_out": [
+        "proofHash#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "310": {
+      "op": "dup",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%0#0 (copy)",
+        "proofHash#0"
+      ],
+      "stack_out": [
+        "proofHash#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "311": {
+      "op": "box_del",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "proofHash#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "proofHash#0",
+        "box_prefixed_key%0#0",
+        "{box_del}"
+      ]
+    },
+    "312": {
+      "op": "pop",
+      "stack_out": [
+        "proofHash#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "313": {
+      "op": "swap",
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "proofHash#0"
+      ]
+    },
+    "314": {
+      "op": "box_put",
+      "stack_out": []
+    },
+    "315": {
+      "op": "pushbytes \"PROOF_STORED\"",
+      "defined_out": [
+        "\"PROOF_STORED\""
+      ],
+      "stack_out": [
+        "\"PROOF_STORED\""
+      ]
+    },
+    "329": {
+      "op": "log",
+      "stack_out": []
+    },
+    "330": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "331": {
+      "op": "return",
+      "stack_out": []
+    },
+    "332": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.verifyProof[routing]",
+      "params": {},
+      "block": "verifyProof",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "335": {
+      "op": "dup",
+      "defined_out": [
+        "wallet#0",
+        "wallet#0 (copy)"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "wallet#0 (copy)"
+      ]
+    },
+    "336": {
+      "op": "len",
+      "defined_out": [
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "len%0#0"
+      ]
+    },
+    "337": {
+      "op": "intc_2 // 32",
+      "defined_out": [
+        "32",
+        "len%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "len%0#0",
+        "32"
+      ]
+    },
+    "338": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "eq%0#0"
+      ]
+    },
+    "339": {
+      "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
+      "stack_out": [
+        "wallet#0"
+      ]
+    },
+    "340": {
+      "op": "txna ApplicationArgs 2",
+      "defined_out": [
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0"
+      ]
+    },
+    "343": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "344": {
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "tmp%2#0 (copy)",
+        "0"
+      ]
+    },
+    "345": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "346": {
+      "op": "intc_3 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "347": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0"
+      ]
+    },
+    "348": {
+      "op": "dig 1",
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0",
+        "tmp%2#0 (copy)"
+      ]
+    },
+    "350": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%1#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "add%0#0",
+        "len%1#0"
+      ]
+    },
+    "351": {
+      "op": "==",
+      "defined_out": [
+        "eq%1#0",
+        "tmp%2#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0",
+        "eq%1#0"
+      ]
+    },
+    "352": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "wallet#0",
+        "tmp%2#0"
+      ]
+    },
+    "353": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "hashToVerify#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "hashToVerify#0"
+      ]
+    },
+    "356": {
+      "op": "bytec 4 // \"proof\"",
+      "defined_out": [
+        "\"proof\"",
+        "hashToVerify#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "hashToVerify#0",
+        "\"proof\""
+      ]
+    },
+    "358": {
+      "op": "uncover 2",
+      "stack_out": [
+        "hashToVerify#0",
+        "\"proof\"",
+        "wallet#0"
+      ]
+    },
+    "360": {
+      "op": "concat",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "hashToVerify#0"
+      ],
+      "stack_out": [
+        "hashToVerify#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "361": {
+      "op": "dup",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%0#0 (copy)",
+        "hashToVerify#0"
+      ],
+      "stack_out": [
+        "hashToVerify#0",
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%0#0 (copy)"
+      ]
+    },
+    "362": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "box_prefixed_key%0#0",
+        "hashToVerify#0",
+        "maybe_exists%0#0"
+      ],
+      "stack_out": [
+        "hashToVerify#0",
+        "box_prefixed_key%0#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "363": {
+      "op": "bury 1",
+      "stack_out": [
+        "hashToVerify#0",
+        "box_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "365": {
+      "error": "No proof exists for this wallet",
+      "op": "assert // No proof exists for this wallet",
+      "stack_out": [
+        "hashToVerify#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "366": {
+      "op": "box_get",
+      "defined_out": [
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0",
+        "hashToVerify#0"
+      ],
+      "stack_out": [
+        "hashToVerify#0",
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0"
+      ]
+    },
+    "367": {
+      "op": "pop",
+      "stack_out": [
+        "hashToVerify#0",
+        "aggregate%box_get%0#0"
+      ]
+    },
+    "368": {
+      "op": "==",
+      "defined_out": [
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1"
+      ]
+    },
+    "369": {
+      "op": "bytec_2 // 0x00",
+      "defined_out": [
+        "0x00",
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "tmp%0#1",
+        "0x00"
+      ]
+    },
+    "370": {
+      "op": "intc_1 // 0",
+      "stack_out": [
+        "tmp%0#1",
+        "0x00",
+        "0"
+      ]
+    },
+    "371": {
+      "op": "uncover 2",
+      "stack_out": [
+        "0x00",
+        "0",
+        "tmp%0#1"
+      ]
+    },
+    "373": {
+      "op": "setbit",
+      "defined_out": [
+        "aggregate%encoded_bool%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_bool%0#0"
+      ]
+    },
+    "374": {
+      "op": "bytec_3 // 0x151f7c75",
+      "defined_out": [
+        "0x151f7c75",
+        "aggregate%encoded_bool%0#0"
+      ],
+      "stack_out": [
+        "aggregate%encoded_bool%0#0",
+        "0x151f7c75"
+      ]
+    },
+    "375": {
+      "op": "swap",
+      "stack_out": [
+        "0x151f7c75",
+        "aggregate%encoded_bool%0#0"
+      ]
+    },
+    "376": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%6#0"
+      ],
+      "stack_out": [
+        "tmp%6#0"
+      ]
+    },
+    "377": {
+      "op": "log",
+      "stack_out": []
+    },
+    "378": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "379": {
+      "op": "return",
+      "stack_out": []
+    },
+    "380": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
+      "params": {
+        "wallet#0": "bytes"
+      },
+      "block": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
+      "stack_in": [],
+      "op": "proto 1 1"
+    },
+    "383": {
+      "op": "bytec_0 // \"expiry\"",
+      "defined_out": [
+        "\"expiry\""
+      ],
+      "stack_out": [
+        "\"expiry\""
+      ]
+    },
+    "384": {
+      "op": "frame_dig -1",
+      "defined_out": [
+        "\"expiry\"",
+        "wallet#0 (copy)"
+      ],
+      "stack_out": [
+        "\"expiry\"",
+        "wallet#0 (copy)"
+      ]
+    },
+    "386": {
+      "op": "concat",
+      "defined_out": [
+        "box_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "387": {
+      "op": "dup",
+      "defined_out": [
+        "box_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "388": {
+      "op": "box_len",
+      "defined_out": [
+        "_%0#0",
+        "box_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "_%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "389": {
+      "op": "bury 1",
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "391": {
+      "op": "bz smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3",
+      "stack_out": [
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "394": {
+      "op": "global LatestTimestamp",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "tmp%0#0"
+      ]
+    },
+    "396": {
+      "op": "frame_dig 0",
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "tmp%0#0",
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "398": {
+      "op": "box_get",
+      "defined_out": [
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0",
+        "box_prefixed_key%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "tmp%0#0",
+        "aggregate%box_get%0#0",
+        "aggregate%box_get%1#0"
+      ]
+    },
+    "399": {
+      "error": "Box must have value",
+      "op": "assert // Box must have value",
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "tmp%0#0",
+        "aggregate%box_get%0#0"
+      ]
+    },
+    "400": {
+      "op": "btoi",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "maybe_value_converted%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "tmp%0#0",
+        "maybe_value_converted%0#0"
+      ]
+    },
+    "401": {
+      "op": "<",
+      "defined_out": [
+        "box_prefixed_key%0#0",
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "tmp%1#0"
+      ]
+    },
+    "402": {
+      "op": "bz smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3",
+      "stack_out": [
+        "box_prefixed_key%0#0"
+      ]
+    },
+    "405": {
+      "op": "intc_0 // 1",
+      "defined_out": [
+        "and_result%0#0",
+        "box_prefixed_key%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "and_result%0#0"
+      ]
+    },
+    "406": {
+      "block": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_merge@4",
+      "stack_in": [
+        "box_prefixed_key%0#0",
+        "and_result%0#0"
+      ],
+      "op": "swap",
+      "defined_out": [
+        "and_result%0#0"
+      ]
+    },
+    "407": {
+      "retsub": true,
+      "op": "retsub"
+    },
+    "408": {
+      "block": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3",
+      "stack_in": [
+        "box_prefixed_key%0#0"
+      ],
+      "op": "intc_1 // 0",
+      "defined_out": [
+        "and_result%0#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%0#0",
+        "and_result%0#0"
+      ]
+    },
+    "409": {
+      "op": "b smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_merge@4"
+    }
+  }
+}

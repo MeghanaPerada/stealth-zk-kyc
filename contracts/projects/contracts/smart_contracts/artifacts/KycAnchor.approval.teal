@@ -1,0 +1,332 @@
+#pragma version 11
+#pragma typetrack false
+
+// @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
+main:
+    intcblock 1 0 32 2
+    bytecblock "expiry" "fields" 0x00 0x151f7c75 "proof"
+    // smart_contracts/kyc_consolidated.algo.ts:9
+    // export class KycAnchor extends Contract {
+    txn NumAppArgs
+    bz main___algots__.defaultCreate@12
+    txn OnCompletion
+    !
+    assert // OnCompletion must be NoOp
+    txn ApplicationID
+    assert
+    pushbytess 0x6948557b 0xbb87b4c0 0x87aa53c3 0xf646e7ae 0x77534f48 // method "grantConsent(address,string,uint64)void", method "revokeConsent(address)void", method "hasValidConsent(address)bool", method "storeProof(address,string)void", method "verifyProof(address,string)bool"
+    txna ApplicationArgs 0
+    match grantConsent revokeConsent hasValidConsent storeProof verifyProof
+    err
+
+main___algots__.defaultCreate@12:
+    // smart_contracts/kyc_consolidated.algo.ts:9
+    // export class KycAnchor extends Contract {
+    txn OnCompletion
+    !
+    txn ApplicationID
+    !
+    &&
+    assert // OnCompletion must be NoOp && can only call when creating
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.grantConsent[routing]() -> void:
+grantConsent:
+    // smart_contracts/kyc_consolidated.algo.ts:19
+    // grantConsent(wallet: Account, allowed_fields: string, expiry: uint64): void {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_3 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    txna ApplicationArgs 3
+    dup
+    len
+    pushint 8 // 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/kyc_consolidated.algo.ts:20
+    // assert(Txn.sender === wallet, 'Only the wallet owner can grant consent');
+    txn Sender
+    dig 3
+    ==
+    assert // Only the wallet owner can grant consent
+    // smart_contracts/kyc_consolidated.algo.ts:21
+    // assert(expiry > Global.latestTimestamp, 'Expiry must be in the future');
+    dup
+    global LatestTimestamp
+    >
+    assert // Expiry must be in the future
+    // smart_contracts/kyc_consolidated.algo.ts:11
+    // consentExpiry = BoxMap<Account, uint64>({ keyPrefix: 'expiry' });
+    bytec_0 // "expiry"
+    dig 3
+    concat
+    // smart_contracts/kyc_consolidated.algo.ts:23
+    // this.consentExpiry(wallet).value = expiry;
+    swap
+    itob
+    box_put
+    // smart_contracts/kyc_consolidated.algo.ts:12
+    // consentFields = BoxMap<Account, string>({ keyPrefix: 'fields' });
+    bytec_1 // "fields"
+    uncover 2
+    concat
+    // smart_contracts/kyc_consolidated.algo.ts:24
+    // this.consentFields(wallet).value = allowed_fields;
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // smart_contracts/kyc_consolidated.algo.ts:26
+    // log('CONSENT_GRANTED');
+    pushbytes "CONSENT_GRANTED"
+    log
+    // smart_contracts/kyc_consolidated.algo.ts:19
+    // grantConsent(wallet: Account, allowed_fields: string, expiry: uint64): void {
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.revokeConsent[routing]() -> void:
+revokeConsent:
+    intc_1 // 0
+    // smart_contracts/kyc_consolidated.algo.ts:33
+    // revokeConsent(wallet: Account): void {
+    txna ApplicationArgs 1
+    dupn 2
+    len
+    intc_2 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    // smart_contracts/kyc_consolidated.algo.ts:34
+    // assert(Txn.sender === wallet, 'Only the wallet owner can revoke consent');
+    txn Sender
+    dig 1
+    ==
+    assert // Only the wallet owner can revoke consent
+    // smart_contracts/kyc_consolidated.algo.ts:11
+    // consentExpiry = BoxMap<Account, uint64>({ keyPrefix: 'expiry' });
+    bytec_0 // "expiry"
+    swap
+    concat
+    dup
+    // smart_contracts/kyc_consolidated.algo.ts:36
+    // if (this.consentExpiry(wallet).exists) {
+    box_len
+    bury 1
+    bz revokeConsent_after_if_else@3
+    // smart_contracts/kyc_consolidated.algo.ts:37
+    // this.consentExpiry(wallet).delete();
+    dup
+    box_del
+    pop
+
+revokeConsent_after_if_else@3:
+    // smart_contracts/kyc_consolidated.algo.ts:12
+    // consentFields = BoxMap<Account, string>({ keyPrefix: 'fields' });
+    bytec_1 // "fields"
+    dig 2
+    concat
+    dup
+    bury 4
+    // smart_contracts/kyc_consolidated.algo.ts:39
+    // if (this.consentFields(wallet).exists) {
+    box_len
+    bury 1
+    bz revokeConsent_after_if_else@5
+    // smart_contracts/kyc_consolidated.algo.ts:40
+    // this.consentFields(wallet).delete();
+    dig 2
+    box_del
+    pop
+
+revokeConsent_after_if_else@5:
+    // smart_contracts/kyc_consolidated.algo.ts:43
+    // log('CONSENT_REVOKED');
+    pushbytes "CONSENT_REVOKED"
+    log
+    // smart_contracts/kyc_consolidated.algo.ts:33
+    // revokeConsent(wallet: Account): void {
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent[routing]() -> void:
+hasValidConsent:
+    // smart_contracts/kyc_consolidated.algo.ts:49
+    // hasValidConsent(wallet: Account): boolean {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent
+    bytec_2 // 0x00
+    intc_1 // 0
+    uncover 2
+    setbit
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.storeProof[routing]() -> void:
+storeProof:
+    // smart_contracts/kyc_consolidated.algo.ts:58
+    // storeProof(wallet: Account, proofHash: string): void {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_3 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/kyc_consolidated.algo.ts:59
+    // assert(this.hasValidConsent(wallet), 'Active consent is required to store proof');
+    dig 1
+    callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent
+    assert // Active consent is required to store proof
+    // smart_contracts/kyc_consolidated.algo.ts:60
+    // assert(proofHash !== '', 'Proof hash cannot be empty');
+    dup
+    pushbytes ""
+    !=
+    assert // Proof hash cannot be empty
+    // smart_contracts/kyc_consolidated.algo.ts:13
+    // proofHashBoxes = BoxMap<Account, string>({ keyPrefix: 'proof' });
+    bytec 4 // "proof"
+    uncover 2
+    concat
+    // smart_contracts/kyc_consolidated.algo.ts:62
+    // this.proofHashBoxes(wallet).value = proofHash;
+    dup
+    box_del
+    pop
+    swap
+    box_put
+    // smart_contracts/kyc_consolidated.algo.ts:64
+    // log('PROOF_STORED');
+    pushbytes "PROOF_STORED"
+    log
+    // smart_contracts/kyc_consolidated.algo.ts:58
+    // storeProof(wallet: Account, proofHash: string): void {
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.verifyProof[routing]() -> void:
+verifyProof:
+    // smart_contracts/kyc_consolidated.algo.ts:71
+    // verifyProof(wallet: Account, hashToVerify: string): boolean {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_1 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_3 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/kyc_consolidated.algo.ts:13
+    // proofHashBoxes = BoxMap<Account, string>({ keyPrefix: 'proof' });
+    bytec 4 // "proof"
+    uncover 2
+    concat
+    // smart_contracts/kyc_consolidated.algo.ts:72
+    // assert(this.proofHashBoxes(wallet).exists, 'No proof exists for this wallet');
+    dup
+    box_len
+    bury 1
+    assert // No proof exists for this wallet
+    // smart_contracts/kyc_consolidated.algo.ts:73
+    // return this.proofHashBoxes(wallet).value === hashToVerify;
+    box_get
+    pop
+    ==
+    // smart_contracts/kyc_consolidated.algo.ts:71
+    // verifyProof(wallet: Account, hashToVerify: string): boolean {
+    bytec_2 // 0x00
+    intc_1 // 0
+    uncover 2
+    setbit
+    bytec_3 // 0x151f7c75
+    swap
+    concat
+    log
+    intc_0 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent(wallet: bytes) -> uint64:
+smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent:
+    // smart_contracts/kyc_consolidated.algo.ts:49
+    // hasValidConsent(wallet: Account): boolean {
+    proto 1 1
+    // smart_contracts/kyc_consolidated.algo.ts:11
+    // consentExpiry = BoxMap<Account, uint64>({ keyPrefix: 'expiry' });
+    bytec_0 // "expiry"
+    frame_dig -1
+    concat
+    dup
+    // smart_contracts/kyc_consolidated.algo.ts:50
+    // return this.consentExpiry(wallet).exists && Global.latestTimestamp < this.consentExpiry(wallet).value;
+    box_len
+    bury 1
+    bz smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3
+    global LatestTimestamp
+    frame_dig 0
+    box_get
+    assert // Box must have value
+    btoi
+    <
+    bz smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3
+    intc_0 // 1
+
+smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_merge@4:
+    // smart_contracts/kyc_consolidated.algo.ts:50
+    // return this.consentExpiry(wallet).exists && Global.latestTimestamp < this.consentExpiry(wallet).value;
+    swap
+    retsub
+
+smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3:
+    intc_1 // 0
+    b smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_merge@4

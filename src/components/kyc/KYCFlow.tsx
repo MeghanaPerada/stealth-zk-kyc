@@ -14,7 +14,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
   const [otpSent, setOtpSent] = useState(false);
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
-  const [manualData, setManualData] = useState({ pan: "", aadhaar: "", dob: "" });
+  const [manualData, setManualData] = useState({ pan: "", aadhaar: "", dob: "", city: "", state: "", mobile: "" });
   const [mode, setMode] = useState<"digilocker" | "manual">("digilocker");
 
   const key = email || phone;
@@ -69,6 +69,8 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
         onVerified({ 
           type: "manual", 
           ...manualData, 
+          email,
+          phone,
           wallet: walletAddress 
         });
       }
@@ -114,7 +116,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
               <Mail className="absolute left-3 top-3 w-4 h-4 text-slate-500" />
               <input 
                 type="email" 
-                placeholder="Email Address" 
+                placeholder="Email Address (for OTP)" 
                 value={email} 
                 onChange={e => setEmail(e.target.value)} 
                 className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 pl-10 pr-4 text-white focus:border-emerald-500/50 focus:ring-1 focus:ring-emerald-500/50 transition-all outline-none"
@@ -147,6 +149,36 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
               onChange={e => setManualData({ ...manualData, aadhaar: e.target.value })} 
               className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:border-emerald-500/50 outline-none"
             />
+            <input 
+              type="email" 
+              placeholder="Email Address (for OTP)" 
+              value={email} 
+              onChange={e => setEmail(e.target.value)} 
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:border-emerald-500/50 outline-none"
+            />
+            <input 
+              type="tel" 
+              placeholder="Mobile Number" 
+              value={phone} 
+              onChange={e => setPhone(e.target.value)} 
+              className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:border-emerald-500/50 outline-none"
+            />
+            <div className="flex gap-3">
+              <input 
+                type="text" 
+                placeholder="City" 
+                value={manualData.city} 
+                onChange={e => setManualData({ ...manualData, city: e.target.value })} 
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:border-emerald-500/50 outline-none"
+              />
+              <input 
+                type="text" 
+                placeholder="State" 
+                value={manualData.state} 
+                onChange={e => setManualData({ ...manualData, state: e.target.value })} 
+                className="flex-1 bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:border-emerald-500/50 outline-none"
+              />
+            </div>
             <div className="flex items-center gap-2">
               <span className="text-xs text-slate-500 uppercase font-semibold">DOB:</span>
               <input 

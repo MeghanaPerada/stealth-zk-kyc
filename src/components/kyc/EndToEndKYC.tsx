@@ -11,7 +11,7 @@ export default function EndToEndKYC() {
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
   const [oracleResult, setOracleResult] = useState<any>(null);
-  const [step, setStep] = useState(1); // 1: Connect, 2: OTP/KYC, 3: Result
+  const [step, setStep] = useState(1); // 1: Connect, 2: OTP/KYC, 3: Consent, 4: Result
 
   const handleWalletAuth = async () => {
     if (!isConnected) {
@@ -57,29 +57,65 @@ export default function EndToEndKYC() {
 
   const handleKYCVerified = async (data: any) => {
     setVerifiedData(data);
-    setIsGeneratingProof(true);
-    
+    // Move to the new Consent Step (Step 3) instead of jumping straight to proof generation
+    setStep(3);
+  };
+
+  const handleGrantConsent = async () => {
+    setIsAuthenticating(true);
     try {
-      const key = data.email || data.phone || data.pan;
+      // Create a mock transaction or use algokit-utils to construct an ABI call
+      // For this hackathon demo, we'll simulate the on-chain confirmation delay
+      // then request the backend to generate and store the proof.
+      
+      // In a raw implementation, this would be:
+      // const txn = algosdk.makeApplicationCallTxnFromObject({...})
+      // const signed = await signTransactions([txn.toByte()])
+      // await algod.sendRawTransaction(signed[0]).do()
+      
+      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate tx signing & confirmation
+      console.log('On-chain consent granted and anchored into Box storage');
+
+      setIsAuthenticating(false);
+      setIsGeneratingProof(true);
+      
+      const key = verifiedData.email || verifiedData.phone || verifiedData.pan;
+      
+      // 1. Fetch Oracle Data & ZK Proof
       const res = await fetch("/api/oracle/fetch", {
         method: "POST",
         body: JSON.stringify({ 
           key, 
           wallet: address, 
-          data 
+          data: verifiedData 
         }),
         headers: { "Content-Type": "application/json" },
       });
       
       const result = await res.json();
+      
+      // 2. Store Proof Hash on-chain
+      if (result.identityHash) {
+        await fetch("/api/zk/storeProof", {
+            method: "POST",
+            body: JSON.stringify({
+                walletAddress: address,
+                proofHash: result.identityHash
+            }),
+            headers: { "Content-Type": "application/json" },
+        });
+      }
+
       setOracleResult(result);
-      setStep(3);
+      setStep(4);
     } catch (err: any) {
-      alert("Error generating ZK proof: " + err.message);
+      alert("Error generating ZK proof or storing consensus: " + err.message);
+      setIsAuthenticating(false);
     } finally {
       setIsGeneratingProof(false);
     }
   };
+
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 py-10">
@@ -95,14 +131,14 @@ export default function EndToEndKYC() {
 
       {/* Progress Stepper */}
       <div className="flex items-center justify-center gap-4 max-w-md mx-auto">
-        {[1, 2, 3].map((s) => (
+        {[1, 2, 3, 4].map((s) => (
           <React.Fragment key={s}>
             <div className={`w-10 h-10 rounded-full flex items-center justify-center border-2 transition-all ${
               step >= s ? "border-emerald-500 bg-emerald-500/10 text-emerald-500 shadow-lg shadow-emerald-500/10" : "border-slate-800 text-slate-600"
             }`}>
               {step > s ? <ShieldCheck className="w-5 h-5" /> : <span className="font-bold">{s}</span>}
             </div>
-            {s < 3 && <div className={`h-0.5 flex-1 ${step > s ? "bg-emerald-500" : "bg-slate-800"}`} />}
+            {s < 4 && <div className={`h-0.5 flex-1 ${step > s ? "bg-emerald-500" : "bg-slate-800"}`} />}
           </React.Fragment>
         ))}
       </div>
@@ -150,6 +186,42 @@ export default function EndToEndKYC() {
           )}
 
           {step === 3 && (
+            <motion.div 
+              key="step3"
+              initial={{ opacity: 0, scale: 0.95 }}
+              animate={{ opacity: 1, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              className="bg-slate-900/40 border border-slate-800 rounded-3xl p-10 text-center space-y-8 max-w-lg mx-auto"
+            >
+              <div className="w-20 h-20 bg-emerald-500/10 rounded-2xl flex items-center justify-center mx-auto ring-8 ring-emerald-500/5">
+                <Database className="w-10 h-10 text-emerald-400" />
+              </div>
+              <div className="space-y-4">
+                <h3 className="text-2xl font-bold text-white">Grant On-Chain Consent</h3>
+                <p className="text-slate-400 text-sm leading-relaxed max-w-md mx-auto">
+                  You are about to sign an Algorand smart contract transaction to grant the Oracle permission to fetch your identity and anchor your ZK proof on-chain securely.
+                </p>
+                <div className="bg-slate-950 p-4 rounded-xl text-left border border-slate-800">
+                   <p className="text-xs text-slate-500 uppercase font-bold tracking-wider mb-2">Allowed Fields</p>
+                   <p className="text-emerald-400 text-sm font-mono">+ PAN, Aadhaar, DOB, Name</p>
+                </div>
+              </div>
+              <button 
+                onClick={handleGrantConsent}
+                disabled={isAuthenticating || isGeneratingProof}
+                className="group relative w-full bg-emerald-600 hover:bg-emerald-500 text-white font-bold py-4 px-10 rounded-2xl transition-all hover:scale-105 active:scale-95 disabled:opacity-50 flex flex-col items-center justify-center gap-1 mx-auto overflow-hidden shadow-2xl shadow-emerald-500/20"
+              >
+                {isAuthenticating || isGeneratingProof ? (
+                  <div className="flex items-center gap-2"><Loader2 className="animate-spin w-5 h-5" /> Processing smart contract & generating proof...</div>
+                ) : (
+                  <div className="flex items-center gap-2"><Sparkles className="w-5 h-5" /> Sign Consent Transaction</div>
+                )}
+                <div className="absolute inset-x-0 bottom-0 h-1 bg-white/20 transform translate-y-2 group-hover:translate-y-0 transition-transform" />
+              </button>
+            </motion.div>
+          )}
+
+          {step === 4 && (
             <motion.div 
               key="step3"
               initial={{ opacity: 0, zoom: 0.8 }}

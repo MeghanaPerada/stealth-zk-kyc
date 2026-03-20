@@ -30,8 +30,14 @@ export async function POST(req: NextRequest) {
       .update(identityHash)
       .digest("hex");
 
-    // 4️⃣ Generate ZK proof (Placeholder for Groth16)
-    const proof = { pi_a: ["0x1", "0x2"], pi_b: [["0x3", "0x4"], ["0x5", "0x6"]], pi_c: ["0x7", "0x8"] }; 
+    // 4️⃣ Generate ZK proof (Simulated Groth16/SnarkJS Output)
+    const proof = { 
+      pi_a: ["0x183...", "0x2b4...", "1"], 
+      pi_b: [["0x3a...", "0x4b..."], ["0x5c...", "0x6d..."], ["1", "0"]], 
+      pi_c: ["0x7e...", "0x8f...", "1"],
+      protocol: "groth16",
+      curve: "bn128"
+    }; 
     const publicSignals = [identityHash];
 
     // 5️⃣ Store proof record securely
