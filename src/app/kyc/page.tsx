@@ -58,6 +58,11 @@ export default function KYCFlow() {
   const [resultData, setResultData] = useState<any>(null);
   const [error, setError] = useState<string | null>(null);
   const [showNoData, setShowNoData] = useState(false);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Processing log
   const [processingLog, setProcessingLog] = useState<ProcessingLogEntry[]>([]);
@@ -291,7 +296,11 @@ export default function KYCFlow() {
                     </div>
                   ))}
                 </div>
-                {!isConnected ? (
+                {!mounted ? (
+                  <Button disabled className="w-full h-16 bg-zinc-800 text-zinc-500 font-black uppercase tracking-widest text-sm rounded-2xl">
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" /> Initializing...
+                  </Button>
+                ) : !isConnected ? (
                   <Button
                     onClick={connectWallet}
                     className="w-full h-16 bg-primary text-black font-black uppercase tracking-widest text-sm rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_30px_rgba(52,211,153,0.3)]"

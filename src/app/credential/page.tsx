@@ -65,9 +65,11 @@ export default function CredentialPage() {
   const [log, setLog] = useState<string[]>([]);
   const [verifyResult, setVerifyResult] = useState<any>(null);
   const [proofStatus, setProofStatus] = useState<"active" | "expired" | "revoked">("active");
+  const [mounted, setMounted] = useState(false);
 
   // Load proof from localStorage
   useEffect(() => {
+    setMounted(true);
     const raw = localStorage.getItem("stealth_final_proof");
     if (raw) {
       try {
@@ -173,9 +175,16 @@ export default function CredentialPage() {
         </p>
       </motion.div>
 
-      {/* No proof stored */}
-      {!storedProof && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
+      {!mounted ? (
+        <div className="flex-1 flex flex-col items-center justify-center py-20">
+          <Loader2 className="w-10 h-10 text-primary animate-spin mb-4" />
+          <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px]">Loading Vault...</p>
+        </div>
+      ) : (
+        <>
+          {/* No proof stored */}
+          {!storedProof && (
+            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="text-center py-16">
           <div className="w-16 h-16 bg-zinc-900 border border-white/10 rounded-2xl flex items-center justify-center mx-auto mb-6">
             <Fingerprint className="w-8 h-8 text-zinc-600" />
           </div>
@@ -417,6 +426,8 @@ export default function CredentialPage() {
           </div>
         </div>
       )}
-    </div>
-  );
+    </>
+  )}
+</div>
+);
 }
