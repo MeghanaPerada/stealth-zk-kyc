@@ -53,22 +53,28 @@ export const useWallet = () => {
       const algosdk = await import("algosdk");
       const params = await algodClient.getTransactionParams().do();
       
+      // Ensure we have a valid fee (at least 1000 microAlgos)
+      // Some wallets reject transactions with 0 fee even for signing.
+      const suggestedParams = {
+        ...params,
+        fee: Math.max(Number(params.minFee || 1000), 1000),
+        flatFee: true,
+      };
+
       // Create a dummy transaction to sign as a "message"
-      // We use a zero-amount payment to the user's own address
-      // with the message in the 'note' field.
       const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
         sender: activeAddress,
         receiver: activeAddress,
         amount: 0,
-        note: new Uint8Array(Buffer.from(message)),
-        suggestedParams: params,
+        note: new TextEncoder().encode(message),
+        suggestedParams,
       });
 
+      console.log(`[useWallet] Requesting signature for transaction...`);
       const signedTxns = await signTransactions([txn.toByte()]);
       const signedTxn = signedTxns[0];
       if (!signedTxn) throw new Error("Signing failed");
       
-      // Return the base64 encoded signed transaction as the "signature"
       return Buffer.from(signedTxn).toString("base64");
     }
   };
