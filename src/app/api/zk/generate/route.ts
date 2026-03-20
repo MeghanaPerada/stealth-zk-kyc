@@ -4,9 +4,10 @@ import fs from 'fs';
 import crypto from 'crypto';
 import algosdk from 'algosdk';
 
+const { generateProofIdentifier, hashData } = require('../../../../lib/helpers');
+
 const snarkjs = require('snarkjs');
 const { buildPoseidon } = require('circomlibjs');
-const { generateProofIdentifier, hashData } = require('@/lib/helpers');
 
 const ORACLE_SECRET = process.env.ORACLE_SECRET || 'stealth_zk_kyc_secret_12345';
 const ALGOD_SERVER = process.env.NEXT_PUBLIC_ALGOD_SERVER || 'https://testnet-api.algonode.cloud';
