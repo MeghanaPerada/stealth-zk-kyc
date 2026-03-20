@@ -29,7 +29,7 @@ export default function EndToEndKYC() {
       });
       const { message } = await challengeRes.json();
 
-      // 2. Sign Challenge
+      // 2. Sign Challenge (useWallet hook internally handles encoding and transaction wrapper)
       const signature = await signMessage(message);
 
       // 3. Verify on Backend
@@ -39,10 +39,14 @@ export default function EndToEndKYC() {
         headers: { "Content-Type": "application/json" },
       });
 
-      if (verifyRes.ok) {
-        setStep(2);
+      const verifyData = await verifyRes.json();
+      
+      // Support both 'success' and 'verified' keys for resilience
+      if (verifyRes.ok && (verifyData.success || verifyData.verified)) {
+        setStep(2); // ✅ Explicitly move to OTP/KYC step only after verification
+        console.log("Wallet verified successfully. Transitioning to KYC step.");
       } else {
-        throw new Error("Wallet verification failed");
+        throw new Error(verifyData.error || "Wallet verification failed. Please try again.");
       }
     } catch (err: any) {
       alert(err.message);

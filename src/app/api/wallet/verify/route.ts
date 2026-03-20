@@ -17,10 +17,10 @@ export async function POST(req: NextRequest) {
     const isValid = await verifyWalletSignature(address, message, sigStr);
     
     if (!isValid) {
-      return NextResponse.json({ error: "Invalid signature" }, { status: 401 });
+      return NextResponse.json({ verified: false, error: "Invalid signature" }, { status: 401 });
     }
 
-    return NextResponse.json({ success: true, message: "Wallet verified" });
+    return NextResponse.json({ success: true, verified: true, message: "Wallet verified" });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
