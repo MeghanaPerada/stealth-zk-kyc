@@ -79,7 +79,11 @@ export default function KYCFlow() {
   const [manualForm, setManualForm] = useState({
     pan: "ABCDE1234F",
     dob: "2003-08-15",
-    aadhaar_last4: "1234",
+    aadhaar: "123456789012",
+    email: "user@example.com",
+    mobile: "9876543210",
+    city: "New Delhi",
+    state: "Delhi",
   });
 
   // Auto-redirect simulation
@@ -101,7 +105,7 @@ export default function KYCFlow() {
   };
 
   // ─── Main Verification Function ─────────────────────────────────────────────
-  const runVerification = async (token?: string, userData?: typeof manualForm) => {
+  const runVerification = async (token?: string, userData?: any) => {
     setStep("PROCESSING");
     setProcessingLog([]);
     setError(null);
@@ -112,30 +116,33 @@ export default function KYCFlow() {
       addLog("✓ Consent recorded (Algorand Boxes will be verified)");
 
       // ── Phase 2: Oracle ───────────────────────────────────────────────────
-      await sleep(1000);
-      if (token) {
-        addLog("⟳ Authenticating with DigiLocker simulation...");
-      } else {
-        addLog("⟳ Processing manual identity input...");
-      }
+      let oracleData = userData?.signature ? userData : null;
+      
+      if (!oracleData) {
+        await sleep(1000);
+        const isDigiLocker = method === "digilocker";
+        const oracleUrl = isDigiLocker ? "/api/oracle/fetch" : "/api/oracle/manual";
+        
+        addLog(`⟳ Authenticating with ${isDigiLocker ? "DigiLocker" : "Manual Input"} Oracle...`);
 
-      const oracleBody = token
-        ? { userId, otp: token, wallet: address, requestedFields: ["dob", "pan", "aadhaar_last4", "city", "state"] }
-        : { wallet: address, manualData: userData, otp: "manual_bypass", userId: "manual" };
+        const oracleBody = isDigiLocker
+          ? { userId, otp: token, wallet: address, requestedFields: ["dob", "pan", "aadhaar_last4", "city", "state"] }
+          : { userId, otp: token, wallet: address, manualData: userData };
 
-      const oracleRes = await fetch("/api/oracle/fetch", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify(oracleBody),
-      });
-      if (!oracleRes.ok) {
-        const text = await oracleRes.text();
-        throw new Error(`Oracle API error (${oracleRes.status}): ${text.substring(0, 200)}`);
+        const oracleRes = await fetch(oracleUrl, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify(oracleBody),
+        });
+        if (!oracleRes.ok) {
+          const text = await oracleRes.text();
+          throw new Error(`Oracle API error (${oracleRes.status}): ${text.substring(0, 200)}`);
+        }
+        oracleData = await oracleRes.json();
       }
-      const oracleData = await oracleRes.json();
 
       await sleep(600);
-      addLog(`✓ Oracle fetched data from ${token ? "DigiLocker (UIDAI)" : "manual input"}`, true);
+      addLog(`✓ Oracle successfully fetched/verified signed identity data`, true);
       await sleep(400);
       addLog(`✓ sha256(identity data) → ${oracleData.dataHash?.substring(0, 20)}...`, true, oracleData.dataHash);
       await sleep(400);
@@ -204,16 +211,20 @@ export default function KYCFlow() {
       const res = await fetch("/api/consent/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ userId, emailOrMobile: "user@example.com" }),
+        body: JSON.stringify({ 
+          userId, 
+          email: "user@example.com", 
+          mobile: "9876543210" 
+        }),
       });
       const data = await res.json();
-      if (!res.ok) throw new Error(data.error || "Failed to send OTP");
+      if (!res.ok) throw new Error(data.error || "Failed to request OTP");
       
-      setOtpSent(true);
       if (data.demoOtp) {
-        console.log("[Demo] Auto-filling OTP for convenience:", data.demoOtp);
-        // setOtp(data.demoOtp); // Optional: auto-fill for demo
+        addLog(`[SECURITY] OTP dispatched successfully`);
       }
+      setOtp(""); // User must enter it from their device
+      setOtpSent(true);
     } catch (err: any) {
       setError(err.message);
     }
@@ -240,9 +251,61 @@ export default function KYCFlow() {
     }
   };
 
-  const handleManualSubmit = (e: React.FormEvent) => {
+  const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    runVerification(undefined, manualForm);
+    try {
+      setError(null);
+      const res = await fetch("/api/consent/manual/request", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ 
+          userId, 
+          email: manualForm.email, 
+          mobile: manualForm.mobile 
+        }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Failed to send OTP");
+      
+      if (data.demoOtp) {
+        addLog(`[SECURITY] OTP dispatched successfully`);
+      }
+      setOtp(""); // Clear - user must check device
+      setOtpSent(true);
+      // Mode switch: the UI will now show the OTP input
+    } catch (err: any) {
+      setError(err.message);
+    }
+  };
+
+  const handleVerifyManualOtp = async () => {
+    setIsVerifyingOtp(true);
+    setError(null);
+    try {
+      const res = await fetch("/api/consent/manual/verify", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, otp }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error || "Invalid OTP");
+
+      // Verify and sign the manual data via Oracle
+      const oracleRes = await fetch("/api/oracle/manual", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ userId, otp, wallet: address, manualData: manualForm }),
+      });
+      const oracleData = await oracleRes.json();
+      if (!oracleRes.ok) throw new Error(oracleData.errors?.join(", ") || oracleData.error || "Oracle extraction failed");
+
+      // Once signed, run the full verification pipeline (using the oracle-signed data)
+      runVerification(otp, oracleData); // Re-using runVerification but passing the full oracle result
+    } catch (err: any) {
+      setError(err.message);
+    } finally {
+      setIsVerifyingOtp(false);
+    }
   };
 
   // ─── Renderer ────────────────────────────────────────────────────────────────
@@ -432,34 +495,115 @@ export default function KYCFlow() {
                   </div>
                 </div>
 
-                <form onSubmit={handleManualSubmit} className="space-y-5">
-                  {[
-                    { label: "PAN Number", key: "pan", placeholder: "ABCDE1234F" },
-                    { label: "Date of Birth (YYYY-MM-DD)", key: "dob", placeholder: "2003-08-15" },
-                    { label: "Aadhaar Last 4 Digits", key: "aadhaar_last4", placeholder: "1234" },
-                  ].map(({ label, key, placeholder }) => (
-                    <div key={key}>
-                      <label className="text-[10px] font-black text-zinc-500 uppercase tracking-widest block mb-2">{label}</label>
+                {!otpSent ? (
+                  <form onSubmit={handleManualSubmit} className="space-y-4">
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">PAN Number</label>
+                        <input
+                          type="text"
+                          required
+                          value={manualForm.pan}
+                          onChange={(e) => setManualForm({ ...manualForm, pan: e.target.value.toUpperCase() })}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-primary/50 focus:outline-none transition-all placeholder:text-zinc-700"
+                          placeholder="ABCDE1234F"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Date of Birth</label>
+                        <input
+                          type="text"
+                          required
+                          value={manualForm.dob}
+                          onChange={(e) => setManualForm({ ...manualForm, dob: e.target.value })}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-primary/50 focus:outline-none transition-all placeholder:text-zinc-700"
+                          placeholder="2003-08-15"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="space-y-1.5">
+                      <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Full Aadhaar Number</label>
                       <input
-                        value={manualForm[key as keyof typeof manualForm]}
-                        onChange={(e) => setManualForm((f) => ({ ...f, [key]: e.target.value }))}
-                        placeholder={placeholder}
-                        className="w-full h-12 bg-black/30 border border-white/10 rounded-xl px-4 text-sm font-mono text-white focus:outline-none focus:border-primary/50 transition-all"
+                        type="text"
                         required
+                        value={manualForm.aadhaar}
+                        onChange={(e) => setManualForm({ ...manualForm, aadhaar: e.target.value })}
+                        className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-primary/50 focus:outline-none transition-all placeholder:text-zinc-700"
+                        placeholder="1234 5678 9012"
+                        maxLength={12}
                       />
                     </div>
-                  ))}
 
-                  <div className="bg-amber-500/5 border border-amber-500/10 p-4 rounded-xl">
-                    <p className="text-[11px] text-amber-400 font-medium leading-relaxed">
-                      ⚠ This data is processed only in your browser and in-memory on the server. It is <strong>never stored</strong>.
-                    </p>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Email</label>
+                        <input
+                          type="email"
+                          required
+                          value={manualForm.email}
+                          onChange={(e) => setManualForm({ ...manualForm, email: e.target.value })}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-primary/50 focus:outline-none transition-all"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Mobile</label>
+                        <input
+                          type="text"
+                          required
+                          value={manualForm.mobile}
+                          onChange={(e) => setManualForm({ ...manualForm, mobile: e.target.value })}
+                          className="w-full bg-zinc-900 border border-zinc-800 rounded-xl px-4 py-3 text-sm text-white focus:border-primary/50 focus:outline-none transition-all"
+                        />
+                      </div>
+                    </div>
+
+                    <Button type="submit" className="w-full h-14 bg-primary text-black font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-all mt-4">
+                      Initiate Verification <ArrowRight className="ml-2 w-5 h-5" />
+                    </Button>
+                  </form>
+                ) : (
+                  <div className="space-y-6 pt-2">
+                    <div className="bg-emerald-500/10 border border-emerald-500/20 p-4 rounded-xl flex items-start gap-4">
+                      <ShieldCheck className="w-5 h-5 text-emerald-400 mt-0.5" />
+                      <div>
+                        <p className="text-emerald-400 font-bold text-xs uppercase tracking-widest">Ownership Challenge</p>
+                        <p className="text-zinc-400 text-[10px] mt-1 leading-relaxed">
+                          We've sent a code to your **email** and **mobile**. Please enter it for verification.
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="relative">
+                      <input
+                        type="text"
+                        value={otp}
+                        onChange={(e) => setOtp(e.target.value)}
+                        placeholder="000000"
+                        className="w-full h-16 bg-zinc-900 border-2 border-zinc-800 rounded-2xl px-4 text-center text-3xl font-black tracking-[0.4em] text-primary focus:border-primary focus:outline-none transition-all"
+                        maxLength={6}
+                      />
+                      {isVerifyingOtp && (
+                        <div className="absolute right-4 top-1/2 -translate-y-1/2">
+                          <Loader2 className="w-6 h-6 animate-spin text-primary" />
+                        </div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-3">
+                      <Button 
+                        onClick={handleVerifyManualOtp} 
+                        disabled={otp.length !== 6 || isVerifyingOtp}
+                        className="w-full h-14 bg-primary hover:bg-primary/90 text-black font-black text-base rounded-xl"
+                      >
+                        Verify & Generate ZK Proof
+                      </Button>
+                      <Button onClick={() => setOtpSent(false)} variant="ghost" className="text-zinc-500 hover:text-white font-bold text-xs uppercase tracking-widest">
+                        Back to Edit
+                      </Button>
+                    </div>
                   </div>
-
-                  <Button type="submit" className="w-full h-14 bg-primary text-black font-black uppercase tracking-widest rounded-xl hover:scale-[1.02] transition-all">
-                    Generate ZK Proof <ArrowRight className="ml-2 w-5 h-5" />
-                  </Button>
-                </form>
+                )}
               </GlowingCard>
             </motion.div>
           )}
