@@ -117,26 +117,18 @@ export default function KYCFlow() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(oracleBody),
       });
+      if (!oracleRes.ok) {
+        const text = await oracleRes.text();
+        throw new Error(`Oracle API error (${oracleRes.status}): ${text.substring(0, 200)}`);
+      }
       const oracleData = await oracleRes.json();
-      if (!oracleRes.ok) throw new Error(oracleData.error || "Oracle failed");
 
       await sleep(600);
-      addLog(
-        `✓ Oracle fetched data from ${token ? "DigiLocker (UIDAI)" : "manual input"}`,
-        true,
-      );
+      addLog(`✓ Oracle fetched data from ${token ? "DigiLocker (UIDAI)" : "manual input"}`, true);
       await sleep(400);
-      addLog(
-        `✓ sha256(identity data) → ${oracleData.dataHash?.substring(0, 20)}...`,
-        true,
-        oracleData.dataHash,
-      );
+      addLog(`✓ sha256(identity data) → ${oracleData.dataHash?.substring(0, 20)}...`, true, oracleData.dataHash);
       await sleep(400);
-      addLog(
-        `✓ HMAC-SHA256 oracle signature → ${oracleData.signature?.substring(0, 20)}...`,
-        true,
-        oracleData.signature,
-      );
+      addLog(`✓ HMAC-SHA256 oracle signature → ${oracleData.signature?.substring(0, 20)}...`, true, oracleData.signature);
 
       // ── Phase 3: ZK Proof ────────────────────────────────────────────────
       await sleep(800);
@@ -152,8 +144,11 @@ export default function KYCFlow() {
           proofSource: token ? "digilocker" : "manual",
         }),
       });
+      if (!zkRes.ok) {
+        const text = await zkRes.text();
+        throw new Error(`ZK API error (${zkRes.status}): ${text.substring(0, 200)}`);
+      }
       const zkData = await zkRes.json();
-      if (!zkRes.ok) throw new Error(zkData.error || "ZK generation failed");
 
       await sleep(500);
       addLog(
