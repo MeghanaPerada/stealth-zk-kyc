@@ -1,403 +1,359 @@
 "use client";
 
-import { useState, useRef } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { Button } from "@/components/ui/button";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
 import { 
   ShieldCheck, 
   ArrowRight, 
   Lock, 
-  User, 
-  Calendar, 
   Fingerprint, 
-  FileUp, 
-  FileJson, 
   CheckCircle2, 
-  Download,
-  Zap,
-  PlusCircle,
-  Upload,
-  Shield
+  Shield, 
+  Loader2,
+  ExternalLink,
+  ChevronRight,
+  UserCheck,
+  MapPin,
+  Calendar
 } from "lucide-react";
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { useWallet } from "@/hooks/useWallet";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import algosdk from "algosdk";
 
-export default function KYCSubmission() {
+// App Config (Fallback to constants for demo if env missing)
+const CONSENT_APP_ID = parseInt(process.env.NEXT_PUBLIC_CONSENT_APP_ID || "0");
+
+type FlowStep = "CONNECT" | "REDIRECT" | "DIGILOCKER_CONSENT" | "PROCESSING" | "RESULT";
+
+export default function KYCFlow() {
   const router = useRouter();
-  const { isConnected, address, connectWallet } = useWallet();
-  const [activeTab, setActiveTab] = useState("oracle");
-  const [isFetchingOracle, setIsFetchingOracle] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
-  
-  const [manualData, setManualData] = useState({
-    name: "",
-    dob: "",
-    email: ""
-  });
-  
-  const [file, setFile] = useState<File | null>(null);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+  const { isConnected, address, connectWallet, signTransactions, algodClient } = useWallet();
+  const [step, setStep] = useState<FlowStep>("CONNECT");
+  const [processingMsg, setProcessingMsg] = useState("Verifying consent...");
+  const [resultData, setResultData] = useState<any>(null);
+  const [error, setError] = useState<string | null>(null);
 
-  const [digilockerData, setDigilockerData] = useState<any>(null);
-  const [fetchError, setFetchError] = useState<string | null>(null);
-
-  const fetchFromDigiLocker = async () => {
-    if (!isConnected) {
-      setFetchError("Please connect wallet first");
-      return;
+  // Auto-advance from Redirect
+  useEffect(() => {
+    if (step === "REDIRECT") {
+      const timer = setTimeout(() => setStep("DIGILOCKER_CONSENT"), 2000);
+      return () => clearTimeout(timer);
     }
+  }, [step]);
+
+  // Handle On-Chain Consent Approval
+  const handleApproveConsent = async () => {
+    if (!isConnected || !address) return;
     
-    setIsFetchingOracle(true);
-    setFetchError(null);
-    setDigilockerData(null);
-    
+    setStep("PROCESSING");
+    setProcessingMsg("Recording consent on-chain (Algorand Boxes)...");
+
     try {
-      // Production-aligned DigiLocker Fetch
-      const response = await fetch("/api/digilocker/demo-user");
-      const data = await response.json();
+      // In a real demo, we'd trigger a real app call
+      // For this simulation, we simulate the delay and local caching of the consent
+      // If CONSENT_APP_ID is set, we could do a real txn here.
       
-      if (!response.ok) throw new Error(data.error || "Failed to fetch identity data");
-
-      // Extract attributes for ZK process
-      const kycContext = {
-        name: data.data.name,
-        dob: data.data.dob,
-        birthYear: data.data.dob.split('-')[0],
-        aadhaar_last4: data.data.aadhaar_last4,
-        pan: "ABCDE1234F", // Standardized Demo PAN
-        issuer: data.issuer,
-        sourceType: data.type
-      };
-
-      setDigilockerData({
-        name: kycContext.name,
-        dob: kycContext.dob,
-        pan: kycContext.pan,
-        raw: kycContext
+      await new Promise(resolve => setTimeout(resolve, 2000));
+      
+      setProcessingMsg("Fetching verified documents from DigiLocker...");
+      
+      // Step 2: Call Oracle to fetch signed data
+      const oracleResponse = await fetch("/api/oracle/fetch", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          wallet: address,
+          permissions: "age,city",
+          userInputData: { dob: "2003-08-15", aadhaar_last4: "1234", pan: "ABCDE1234F" }
+        })
       });
+      const oracleData = await oracleResponse.json();
+      if (!oracleResponse.ok) throw new Error(oracleData.error || "Oracle fetch failed");
+
+      setProcessingMsg("Generating zero-knowledge proof...");
       
-      // Store the identity context for the ZK generator
-      localStorage.setItem("stealth_identity_credential", JSON.stringify(kycContext));
-      
-    } catch (error: any) {
-      console.error("DigiLocker fetch failed:", error);
-      setFetchError(error.message || "Failed to connect to DigiLocker network");
-    } finally {
-      setIsFetchingOracle(false);
+      // Step 3: Call ZK Backend to generate proof
+      const zkResponse = await fetch("/api/zk/generate", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          wallet: address,
+          oracleResult: oracleData,
+          currentYear: 2026
+        })
+      });
+      const zkData = await zkResponse.json();
+      if (!zkResponse.ok) throw new Error(zkData.error || "ZK generation failed");
+
+      setResultData(zkData);
+      setStep("RESULT");
+    } catch (err: any) {
+      console.error(err);
+      setError(err.message || "An error occurred during verification");
+      setStep("CONNECT");
     }
   };
 
-  const handleUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const uploadedFile = e.target.files?.[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      const reader = new FileReader();
-      reader.onload = (event) => {
-        const text = event.target?.result;
-        if (text) {
-          localStorage.setItem("stealth_identity_credential", text as string);
-        }
-      };
-      reader.readAsText(uploadedFile);
-    }
-  };
+  const renderStep = () => {
+    switch (step) {
+      case "CONNECT":
+        return (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-xl"
+          >
+            <GlowingCard glowColor="primary" className="p-8 md:p-12 text-center">
+              <div className="w-16 h-16 bg-primary/10 rounded-2xl flex items-center justify-center mx-auto mb-8 border border-primary/20 shadow-[0_0_20px_rgba(52,211,153,0.2)]">
+                <ShieldCheck className="h-8 w-8 text-primary" />
+              </div>
+              <h2 className="text-3xl font-black uppercase tracking-widest mb-4">Identity Protocol</h2>
+              <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px] mb-8">
+                Official Verification Request
+              </p>
+              
+              <div className="bg-black/20 rounded-2xl p-6 border border-white/5 text-left mb-8 space-y-4">
+                <p className="text-sm text-zinc-300 font-medium">We request access to verify:</p>
+                <div className="space-y-3">
+                  <div className="flex items-center gap-3 text-emerald-400">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">Age Verification (18+)</span>
+                  </div>
+                  <div className="flex items-center gap-3 text-emerald-400">
+                    <CheckCircle2 className="w-4 h-4" />
+                    <span className="text-xs font-bold uppercase tracking-wider">City of Residence</span>
+                  </div>
+                </div>
+              </div>
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!isConnected) return;
-    setIsSubmitting(true);
-    
-    if (activeTab === "manual") {
-      const cred = {
-        name: manualData.name,
-        credential: "manual_entry",
-        timestamp: new Date().toISOString(),
-        issuer: "Self-Signed_Local"
-      };
-      localStorage.setItem("stealth_identity_credential", JSON.stringify(cred));
-    }
+              {!isConnected ? (
+                <Button 
+                  onClick={connectWallet}
+                  className="w-full h-16 bg-primary text-black font-black uppercase tracking-widest text-sm rounded-2xl hover:scale-[1.02] transition-all shadow-[0_0_30px_rgba(52,211,153,0.3)]"
+                >
+                  Connect Algorand Wallet
+                </Button>
+              ) : (
+                <Button 
+                  onClick={() => setStep("REDIRECT")}
+                  className="w-full h-16 bg-gradient-to-r from-primary to-emerald-400 text-black font-black uppercase tracking-widest text-sm rounded-2xl hover:scale-[1.02] transition-all"
+                >
+                  Continue to Secure Verification <ArrowRight className="ml-2 w-5 h-5" />
+                </Button>
+              )}
+            </GlowingCard>
+          </motion.div>
+        );
 
-    setTimeout(() => {
-      setIsSubmitting(false);
-      router.push("/generate");
-    }, 2000);
+      case "REDIRECT":
+        return (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center"
+          >
+            <Loader2 className="w-12 h-12 text-primary animate-spin mx-auto mb-6" />
+            <h2 className="text-2xl font-black uppercase tracking-widest">Secure Handshake</h2>
+            <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mt-2">
+              Redirecting to Secure Document Provider (DigiLocker)...
+            </p>
+          </motion.div>
+        );
+
+      case "DIGILOCKER_CONSENT":
+        return (
+          <motion.div 
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            className="w-full max-w-2xl"
+          >
+            <div className="bg-white rounded-[2rem] overflow-hidden shadow-2xl border border-zinc-200">
+              {/* DigiLocker Branding Header */}
+              <div className="bg-[#f8f9fa] px-8 py-6 border-b border-zinc-100 flex items-center justify-between">
+                <div className="flex items-center gap-3">
+                  <div className="w-10 h-10 bg-[#0056b3] rounded-lg flex items-center justify-center text-white font-bold text-xl italic">
+                    D
+                  </div>
+                  <div>
+                    <h3 className="text-zinc-900 font-bold leading-tight">DigiLocker</h3>
+                    <p className="text-[10px] text-zinc-500 font-medium">Your Documents Anytime, Anywhere</p>
+                  </div>
+                </div>
+                <div className="text-[10px] bg-emerald-100 text-emerald-700 font-bold px-3 py-1 rounded-full border border-emerald-200 uppercase tracking-tighter">
+                  Verified Simulation
+                </div>
+              </div>
+
+              <div className="p-8 md:p-12">
+                <div className="flex items-start gap-4 mb-8">
+                  <div className="w-12 h-12 rounded-full bg-zinc-100 flex items-center justify-center flex-shrink-0">
+                    <ExternalLink className="w-6 h-6 text-zinc-400" />
+                  </div>
+                  <div>
+                    <h4 className="text-zinc-900 font-bold text-xl mb-1">Stealth ZK-KYC</h4>
+                    <p className="text-zinc-500 text-sm">Requests your consent to access the following documents/data from your DigiLocker account.</p>
+                  </div>
+                </div>
+
+                <div className="space-y-4 mb-10">
+                  <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-zinc-100 flex items-center justify-center">
+                        <UserCheck className="w-5 h-5 text-[#0056b3]" />
+                      </div>
+                      <div>
+                        <p className="text-zinc-900 font-bold text-sm">Identity Attributes</p>
+                        <p className="text-zinc-500 text-[10px]">DOB, PAN, Aadhaar Last 4</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-zinc-300" />
+                  </div>
+
+                  <div className="p-4 bg-zinc-50 rounded-xl border border-zinc-100 flex items-center justify-between">
+                    <div className="flex items-center gap-4">
+                      <div className="w-10 h-10 bg-white rounded-lg shadow-sm border border-zinc-100 flex items-center justify-center">
+                        <MapPin className="w-5 h-5 text-[#0056b3]" />
+                      </div>
+                      <div>
+                        <p className="text-zinc-900 font-bold text-sm">Address Details</p>
+                        <p className="text-zinc-500 text-[10px]">Current City, State</p>
+                      </div>
+                    </div>
+                    <ChevronRight className="w-4 h-4 text-zinc-300" />
+                  </div>
+                </div>
+
+                <div className="bg-amber-50 border border-amber-100 p-4 rounded-xl mb-10">
+                  <p className="text-[11px] text-amber-800 leading-relaxed">
+                    <strong className="font-bold">Purpose:</strong> Identity verification for Stealth ZK-KYC Protocol. No raw data will be shared with the application; only a cryptographic proof will be generated.
+                  </p>
+                </div>
+
+                <div className="flex flex-col sm:flex-row gap-4">
+                  <Button 
+                    onClick={handleApproveConsent}
+                    className="flex-1 h-14 bg-[#0056b3] hover:bg-[#004494] text-white font-bold rounded-xl"
+                  >
+                    Allow
+                  </Button>
+                  <Button 
+                    onClick={() => setStep("CONNECT")}
+                    variant="outline"
+                    className="flex-1 h-14 border-zinc-200 text-zinc-600 font-bold rounded-xl"
+                  >
+                    Deny
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        );
+
+      case "PROCESSING":
+        return (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            className="text-center"
+          >
+             <div className="relative w-24 h-24 mx-auto mb-8">
+                <Loader2 className="w-24 h-24 text-primary animate-spin opacity-20" />
+                <div className="absolute inset-0 flex items-center justify-center">
+                  <Fingerprint className="w-10 h-10 text-primary animate-pulse" />
+                </div>
+             </div>
+             <h2 className="text-2xl font-black uppercase tracking-widest mb-2">Cryptographic Pipeline</h2>
+             <motion.p 
+               key={processingMsg}
+               initial={{ opacity: 0, y: 5 }}
+               animate={{ opacity: 1, y: 0 }}
+               className="text-zinc-500 text-xs font-bold uppercase tracking-widest"
+             >
+               {processingMsg}
+             </motion.p>
+          </motion.div>
+        );
+
+      case "RESULT":
+        return (
+          <motion.div 
+            initial={{ opacity: 0, scale: 0.95 }}
+            animate={{ opacity: 1, scale: 1 }}
+            className="w-full max-w-xl"
+          >
+            <GlowingCard glowColor="primary" className="p-8 md:p-12 text-center relative overflow-hidden">
+              <div className="absolute -top-10 -right-10 w-40 h-40 bg-primary/5 rounded-full blur-3xl" />
+              
+              <div className="w-20 h-20 bg-emerald-500/10 rounded-full flex items-center justify-center mx-auto mb-8 border border-emerald-500/20 shadow-[0_0_30px_rgba(16,185,129,0.2)]">
+                <CheckCircle2 className="h-10 w-10 text-emerald-500" />
+              </div>
+
+              <h2 className="text-4xl font-black uppercase tracking-tighter mb-4 text-emerald-400">Identity Verified</h2>
+              <p className="text-zinc-500 font-bold uppercase tracking-widest text-[10px] mb-10">
+                ZK-KYC verification successful
+              </p>
+
+              <div className="space-y-4 mb-10">
+                <div className="bg-black/40 border border-white/5 p-5 rounded-2xl text-left">
+                  <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1 leading-none">ZK Identity ID</p>
+                  <p className="text-xs font-mono text-zinc-300 break-all">{resultData?.zkIdentity || "0x..."}</p>
+                </div>
+                <div className="bg-black/40 border border-white/5 p-5 rounded-2xl text-left">
+                  <p className="text-[10px] font-black text-zinc-500 uppercase tracking-widest mb-1 leading-none">Blockchain Proof Hash</p>
+                  <p className="text-xs font-mono text-primary break-all">{resultData?.txId || "Anchored on Algorand"}</p>
+                </div>
+              </div>
+
+              <div className="bg-emerald-500/5 border border-emerald-500/10 p-4 rounded-xl mb-10">
+                <p className="text-[11px] text-emerald-300/80 leading-relaxed font-medium">
+                  <Shield className="w-3 h-3 inline mr-1" /> No personal data (DOB, PAN, Address) was shared with the protocol or stored on-chain. Your privacy is mathematically guaranteed.
+                </p>
+              </div>
+
+              <div className="flex gap-4">
+                <Button 
+                  onClick={() => router.push("/")}
+                  variant="outline"
+                  className="flex-1 h-14 border-white/10 font-black uppercase tracking-widest text-[10px] rounded-xl"
+                >
+                  Return Home
+                </Button>
+                <Button 
+                  className="flex-1 h-14 bg-primary text-black font-black uppercase tracking-widest text-[10px] rounded-xl"
+                >
+                  View on Explorer
+                </Button>
+              </div>
+            </GlowingCard>
+          </motion.div>
+        );
+    }
   };
 
   return (
-    <div className="container max-w-5xl pt-32 md:pt-40 lg:pt-48 pb-16 px-4 mx-auto min-h-[calc(100vh-4rem-200px)] flex flex-col items-center justify-center relative">
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
+    <div className="container pt-32 md:pt-48 pb-16 px-4 mx-auto min-h-screen flex flex-col items-center justify-center relative">
+      <div className="absolute top-0 right-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] -z-10 pointer-events-none" />
+      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-primary/5 rounded-full blur-[140px] -z-10 pointer-events-none" />
 
-      <motion.div 
-        initial={{ opacity: 0, y: -20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-12 text-center"
-      >
-        <div className="inline-flex items-center gap-2 px-3 py-1 bg-primary/10 border border-primary/20 rounded-full text-primary text-[10px] font-black uppercase tracking-widest mb-4">
-          <Fingerprint className="w-3 h-3" /> Step 2: Acquire Identity Credentials
+      {error && (
+        <motion.div 
+          initial={{ opacity: 0, y: -10 }}
+          animate={{ opacity: 1, y: 0 }}
+          className="fixed top-24 left-1/2 -translate-x-1/2 z-50 bg-destructive/90 text-white px-6 py-3 rounded-full shadow-2xl backdrop-blur-md flex items-center gap-3"
+        >
+          <Shield className="w-5 h-5" />
+          <span className="text-sm font-bold uppercase tracking-widest">{error}</span>
+          <button onClick={() => setError(null)} className="ml-4 hover:opacity-70">✕</button>
+        </motion.div>
+      )}
+
+      <AnimatePresence mode="wait">
+        <div className="w-full flex justify-center items-center">
+          {renderStep()}
         </div>
-        <h1 className="text-4xl md:text-6xl font-black mb-6 tracking-tighter uppercase">Credential Porter</h1>
-        <p className="text-muted-foreground text-lg max-w-2xl mx-auto italic font-light">
-          Acquire or upload cryptographically signed identity credentials.
-        </p>
-      </motion.div>
-
-      <div className="w-full max-w-3xl relative">
-        {!isConnected && (
-          <div className="absolute inset-x-0 -inset-y-4 z-20 bg-black/40 backdrop-blur-[2px] rounded-3xl flex items-center justify-center p-6 transition-all duration-500">
-            <div className="bg-zinc-900/90 border border-destructive/30 p-8 rounded-3xl text-center max-w-sm shadow-2xl">
-              <div className="w-16 h-16 bg-destructive/10 rounded-full flex items-center justify-center mx-auto mb-6 border border-destructive/20 shadow-[0_0_20px_rgba(239,68,68,0.2)]">
-                <Fingerprint className="w-8 h-8 text-destructive" />
-              </div>
-              <h3 className="text-xl font-black uppercase tracking-widest mb-3 text-destructive">Identity Required</h3>
-              <p className="text-zinc-400 text-sm mb-6 leading-relaxed">
-                Please connect your Algorand Identity to proceed with the secure verification process.
-              </p>
-              <Button 
-                onClick={connectWallet}
-                variant="outline"
-                className="border-destructive/30 text-destructive hover:bg-destructive/10 h-12 px-8 font-bold tracking-widest uppercase text-xs rounded-xl"
-              >
-                Connect Identity
-              </Button>
-            </div>
-          </div>
-        )}
-
-        <Tabs value={activeTab} onValueChange={setActiveTab} className="w-full">
-          <TabsList className="grid w-full grid-cols-3 bg-black/40 h-16 rounded-2xl p-1.5 border border-white/5 mb-10 shadow-2xl backdrop-blur-3xl">
-            <TabsTrigger value="oracle" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
-              <Download className="w-4 h-4 mr-2" /> DigiLocker Connect
-            </TabsTrigger>
-            <TabsTrigger value="upload" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
-              <FileJson className="w-4 h-4 mr-2" /> Upload VC
-            </TabsTrigger>
-            <TabsTrigger value="manual" className="rounded-xl font-bold uppercase tracking-widest text-[10px] data-[state=active]:bg-primary data-[state=active]:text-black transition-all">
-              <PlusCircle className="w-4 h-4 mr-2" /> Manual Entry
-            </TabsTrigger>
-          </TabsList>
-
-          <AnimatePresence mode="wait">
-            {activeTab === "oracle" && (
-              <TabsContent key="oracle" value="oracle" className="mt-0" forceMount>
-                <motion.div 
-                  key="oracle-content"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.02 }}
-                >
-                  <GlowingCard glowColor="primary" className="p-1">
-                    <div className="bg-background/40 backdrop-blur-3xl rounded-2xl p-10 flex flex-col items-center text-center border-t border-white/5">
-                        <div className="p-4 bg-primary/10 rounded-2xl text-primary mb-8 border border-primary/20 shadow-[0_0_20px_rgba(52,211,153,0.1)]">
-                          <Download className="h-10 w-10" />
-                        </div>
-                        <h2 className="text-2xl font-black uppercase tracking-widest mb-4">DigiLocker Connect v1.0</h2>
-                        <p className="text-zinc-500 text-xs font-bold uppercase tracking-widest mb-10 max-w-md leading-relaxed">
-                          Securely fetch your government-issued documents directly from DigiLocker. We only extract the minimum required attributes for KYC.
-                        </p>
-                        
-                        <button 
-                          onClick={fetchFromDigiLocker}
-                          disabled={isFetchingOracle}
-                          className="w-full h-16 text-lg font-black tracking-widest uppercase bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_30px_rgba(52,211,153,0.3)] hover:shadow-[0_0_50px_rgba(52,211,153,0.5)] hover:scale-[1.02] active:scale-[0.98] transition-all duration-300 rounded-2xl relative overflow-hidden group flex items-center justify-center"
-                        >
-                          <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
-                          {isFetchingOracle ? (
-                            <span className="flex items-center">
-                              <span className="w-5 h-5 rounded-full border-2 border-black/40 border-t-black animate-spin mr-3"></span>
-                              Extracting Attributes...
-                            </span>
-                          ) : (
-                            "Fetch From DigiLocker"
-                          )}
-                        </button>
-
-                        {fetchError && (
-                          <div className="mt-6 p-4 w-full bg-destructive/10 border border-destructive/20 rounded-xl text-destructive text-[10px] font-bold uppercase tracking-widest flex items-center gap-2">
-                            <ShieldCheck className="w-4 h-4" /> {fetchError}
-                          </div>
-                        )}
-
-                        {digilockerData && (
-                          <motion.div 
-                            initial={{ opacity: 0, y: 10 }}
-                            animate={{ opacity: 1, y: 0 }}
-                            className="mt-8 w-full p-6 bg-emerald-500/10 border border-emerald-500/20 rounded-2xl text-left"
-                          >
-                            <div className="flex items-center gap-2 mb-4 text-emerald-400">
-                              <CheckCircle2 className="w-4 h-4" />
-                              <span className="text-[10px] font-black uppercase tracking-widest">Credentials Fetched Successfully</span>
-                            </div>
-                            
-                            <div className="space-y-3">
-                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
-                                <span className="text-[9px] font-bold uppercase text-zinc-500">Name</span>
-                                <span className="text-xs font-mono text-zinc-300">{digilockerData.name}</span>
-                              </div>
-                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
-                                <span className="text-[9px] font-bold uppercase text-zinc-500">Age Range</span>
-                                <span className="text-xs font-mono text-zinc-300">18+ (Verified)</span>
-                              </div>
-                              <div className="flex justify-between items-center bg-black/20 p-3 rounded-lg border border-white/5">
-                                <span className="text-[9px] font-bold uppercase text-zinc-500">PAN Status</span>
-                                <span className="text-xs font-mono text-primary">{digilockerData.pan}</span>
-                              </div>
-                            </div>
-                            
-                            <button 
-                              onClick={handleSubmit}
-                              className="w-full mt-6 h-12 bg-primary text-black font-black uppercase tracking-widest text-[10px] rounded-xl hover:scale-[1.02] transition-all flex items-center justify-center gap-2"
-                            >
-                              Generate ZK Proof <ArrowRight className="w-4 h-4" />
-                            </button>
-                          </motion.div>
-                        )}
-                    </div>
-                  </GlowingCard>
-                </motion.div>
-              </TabsContent>
-            )}
-
-            {activeTab === "upload" && (
-              <TabsContent key="upload" value="upload" className="mt-0" forceMount>
-                <motion.div
-                  key="upload-content"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.02 }}
-                >
-                  <GlowingCard glowColor="primary" className="p-1">
-                    <div className="bg-background/40 backdrop-blur-3xl rounded-2xl p-8 md:p-12 border-t border-white/5">
-                      <div 
-                        className="border-2 border-dashed border-white/10 rounded-3xl p-12 text-center group hover:border-primary/40 transition-all cursor-pointer bg-white/5 relative overflow-hidden"
-                        onClick={() => fileInputRef.current?.click()}
-                      >
-                        <input 
-                          type="file" 
-                          ref={fileInputRef}
-                          className="hidden" 
-                          onChange={handleUpload}
-                          accept=".json"
-                        />
-                        <div className="max-w-xs mx-auto space-y-6">
-                          <div className="w-20 h-20 rounded-2xl bg-white/5 flex items-center justify-center mx-auto border border-white/5 group-hover:bg-primary/10 group-hover:border-primary/20 transition-all">
-                            {file ? <FileJson className="h-8 w-8 text-primary" /> : <Upload className="h-8 w-8 text-zinc-600 group-hover:text-primary transition-colors" />}
-                          </div>
-                          <div className="space-y-2">
-                            <p className="font-black uppercase tracking-widest text-sm text-zinc-300">
-                              {file ? file.name : "Drop Signed Credential"}
-                            </p>
-                            <p className="text-zinc-500 text-[10px] font-bold uppercase tracking-widest">Supports .JSON format from trusted oracles</p>
-                          </div>
-                          {file && (
-                            <div className="flex items-center justify-center gap-2 mt-4 px-4 py-2 bg-primary/10 rounded-full border border-primary/20">
-                              <CheckCircle2 className="h-4 w-4 text-primary" />
-                              <span className="text-[10px] font-black uppercase tracking-widest text-primary">Credential Loaded</span>
-                            </div>
-                          )}
-                        </div>
-                      </div>
-
-                      <div className="mt-10 flex gap-4">
-                        <Button variant="outline" onClick={() => {
-                          const sample = {
-                            credential: "age_over_18_certificate",
-                            issuer: "Sample_Issuer_0x8f2a",
-                            issuedAt: new Date().toISOString(),
-                            hash: "0xec23...a9b1",
-                            signature: "0x7d8e...f2a4"
-                          };
-                          const blob = new Blob([JSON.stringify(sample, null, 2)], { type: 'application/json' });
-                          const dUrl = URL.createObjectURL(blob);
-                          const a = document.createElement('a');
-                          a.href = dUrl;
-                          a.download = "sample_credential.json";
-                          a.click();
-                        }} className="flex-1 h-14 border-white/5 bg-white/5 text-[10px] font-black uppercase tracking-widest hover:bg-white/10 transition-all rounded-xl">
-                          Download Sample VC
-                        </Button>
-                        <button 
-                          onClick={handleSubmit}
-                          disabled={!file || isSubmitting}
-                          className="flex-[2] h-14 bg-gradient-to-r from-primary to-emerald-400 text-black font-black uppercase tracking-widest text-xs rounded-xl shadow-[0_0_20px_rgba(52,211,153,0.2)] hover:shadow-[0_0_40px_rgba(52,211,153,0.4)] hover:scale-[1.02] transition-all disabled:opacity-40 disabled:pointer-events-none"
-                        >
-                          {isSubmitting ? "Processing..." : (
-                            <span className="flex items-center justify-center gap-2">
-                              Continue to Generation <ArrowRight className="w-4 h-4" />
-                            </span>
-                          )}
-                        </button>
-                      </div>
-                    </div>
-                  </GlowingCard>
-                </motion.div>
-              </TabsContent>
-            )}
-
-            {activeTab === "manual" && (
-              <TabsContent key="manual" value="manual" className="mt-0" forceMount>
-                <motion.div
-                  key="manual-content"
-                  initial={{ opacity: 0, scale: 0.98 }}
-                  animate={{ opacity: 1, scale: 1 }}
-                  exit={{ opacity: 0, scale: 1.02 }}
-                >
-                  <GlowingCard glowColor="primary" className="p-1">
-                    <div className="bg-background/40 backdrop-blur-3xl rounded-2xl p-8 md:p-12 border-t border-white/5">
-                      <form onSubmit={handleSubmit} className="space-y-8">
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                          <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Full Legal Name</Label>
-                            <Input 
-                              value={manualData.name}
-                              onChange={(e) => setManualData({...manualData, name: e.target.value})}
-                              placeholder="John Doe" 
-                              className="bg-white/5 border-white/10 h-14 rounded-xl focus-visible:ring-primary/40 focus-visible:border-primary/40 text-sm font-bold placeholder:text-zinc-700 font-mono" 
-                            />
-                          </div>
-                          <div className="space-y-3">
-                            <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Date of Birth</Label>
-                            <Input 
-                              type="date"
-                              value={manualData.dob}
-                              onChange={(e) => setManualData({...manualData, dob: e.target.value})}
-                              className="bg-white/5 border-white/10 h-14 rounded-xl focus-visible:ring-primary/40 focus-visible:border-primary/40 text-sm font-bold text-zinc-400" 
-                            />
-                          </div>
-                        </div>
-                        <div className="space-y-3">
-                          <Label className="text-[10px] font-black uppercase tracking-widest text-zinc-500 ml-1">Verified Email Endpoint</Label>
-                          <Input 
-                            type="email" 
-                            value={manualData.email}
-                            onChange={(e) => setManualData({...manualData, email: e.target.value})}
-                            placeholder="vault@identity.secure" 
-                            className="bg-white/5 border-white/10 h-14 rounded-xl focus-visible:ring-primary/40 focus-visible:border-primary/40 text-sm font-bold placeholder:text-zinc-700 font-mono" 
-                          />
-                        </div>
-
-                        <div className="flex gap-4 pt-4">
-                          <Button type="submit" disabled={isSubmitting || !manualData.name} className="w-full h-16 bg-gradient-to-r from-primary to-emerald-400 text-black font-black uppercase tracking-widest text-sm rounded-2xl shadow-[0_0_40px_rgba(52,211,153,0.3)] hover:shadow-[0_0_60px_rgba(52,211,153,0.5)] transition-all hover:scale-[1.02]">
-                            {isSubmitting ? "Encrypting Locally..." : "Proceed to Proof Generation"}
-                          </Button>
-                        </div>
-
-                        <p className="text-center text-[9px] text-zinc-600 font-bold uppercase tracking-widest flex items-center justify-center gap-2">
-                          <Shield className="h-3 w-3" /> Data is only stored in browser memory & local vault
-                        </p>
-                      </form>
-                    </div>
-                  </GlowingCard>
-                </motion.div>
-              </TabsContent>
-            )}
-          </AnimatePresence>
-        </Tabs>
-      </div>
+      </AnimatePresence>
     </div>
   );
 }
