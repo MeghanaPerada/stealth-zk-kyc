@@ -38,9 +38,9 @@ export async function POST(request: Request) {
     const body = await request.json();
     const { 
       wallet, 
-      permissions,
       oracleResult, // { dataHash, signature, issuer, _internalData }
-      currentYear = 2026 
+      currentYear = 2026,
+      proofSource = "unknown"
     } = body;
 
     if (!wallet || !oracleResult || !oracleResult.signature) {
@@ -107,14 +107,14 @@ export async function POST(request: Request) {
 
     if (!fs.existsSync(wasmPath) || !fs.existsSync(zkeyPath)) {
       // Demo Mock fallback if binaries don't exist
-      // Since creating a real Groth16 proof requires binaries, we provide a structured mock for the UI
       return NextResponse.json({
         mock: true,
         message: "ZK Artifacts (WASM/ZKEY) missing. Displaying simulated proof for demo.",
         zkIdentity: identityHash,
+        proofSource,
         proof: { pi_a: ["0", "0", "0"], pi_b: [["0", "0"], ["0", "0"]], pi_c: ["0", "0", "0"] },
         publicSignals: [identityHash, "1"],
-        txId: "MOCK_TX_" + Math.random().toString(36).substring(7)
+        txId: "MOCK_TX_" + Math.random().toString(36).substring(7).toUpperCase()
       });
     }
 
@@ -158,6 +158,7 @@ export async function POST(request: Request) {
       proof,
       publicSignals,
       zkIdentity: identityHash,
+      proofSource,
       txId: txId,
       metadata: {
         timestamp: new Date().toISOString(),
