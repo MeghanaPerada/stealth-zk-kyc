@@ -19,7 +19,12 @@ export default function Navbar() {
 
   const { isConnected, address, shortAddress, isDemoMode, disconnectWallet } = useWallet();
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   useEffect(() => {
     function handleClickOutside(event: MouseEvent) {
@@ -86,7 +91,10 @@ export default function Navbar() {
 
         {/* Right side — Connect Wallet */}
         <div className="flex items-center gap-3">
-          {!isConnected ? (
+          {!mounted ? (
+            // Render a fixed placeholder on server to prevent hydration mismatch
+            <div className="h-10 w-36 rounded-full bg-primary/10 border border-primary/20 animate-pulse" />
+          ) : !isConnected ? (
             <div className="wui-custom-trigger relative">
               <WalletButton />
               <style jsx global>{`
