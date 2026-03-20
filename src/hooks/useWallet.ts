@@ -1,3 +1,4 @@
+// v1.0.2 - Force rebuild fixed algosdk
 "use client";
 
 import { useWallet as useTxnWallet } from "@txnlab/use-wallet-react";
