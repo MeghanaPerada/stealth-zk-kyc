@@ -2,11 +2,29 @@ import { NextResponse } from "next/server";
 import { generateOtp } from "@/lib/otp";
 import { sendEmailOTP, sendSMSOTP } from "@/lib/otpService";
 
+import { verifyWalletSignature } from "@/lib/verifyWallet";
+
 export async function POST(req: Request) {
   try {
-    const { userId, email, mobile } = await req.json();
-    if (!userId) return NextResponse.json({ error: "Missing userId" }, { status: 400 });
+    const { userId, email, mobile, wallet, signature, authMessage } = await req.json();
 
+    if (!userId) {
+      return NextResponse.json({ error: "User ID is required" }, { status: 400 });
+    }
+
+    // 🛡️ Step 0: Verify Wallet Signature (Proof of Ownership)
+    if (wallet && signature && authMessage) {
+      const isValid = await verifyWalletSignature(wallet, authMessage, signature);
+      if (!isValid) {
+        return NextResponse.json({ error: "Invalid wallet signature" }, { status: 401 });
+      }
+      console.log(`[AUTH-MANUAL] Wallet ${wallet} verified successfully`);
+    } else {
+      // return NextResponse.json({ error: "Wallet authentication required" }, { status: 401 });
+    }
+
+    // Step 1: Validate Manual KYC Data
+    
     const otp = generateOtp(userId);
     
     // Attempt real delivery

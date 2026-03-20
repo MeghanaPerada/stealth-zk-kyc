@@ -44,6 +44,33 @@ export const useWallet = () => {
     },
     signTransactions,
     algodClient,
+    signMessage: async (message: string) => {
+      if (!activeAddress || !signTransactions) {
+        throw new Error("Wallet not connected or cannot sign");
+      }
+      
+      const algosdk = await import("algosdk");
+      const params = await algodClient.getTransactionParams().do();
+      
+      // Create a dummy transaction to sign as a "message"
+      // We use a zero-amount payment to the user's own address
+      // with the message in the 'note' field.
+      const txn = algosdk.makePaymentTxnWithSuggestedParams(
+        activeAddress,
+        activeAddress,
+        0,
+        undefined,
+        new Uint8Array(Buffer.from(message)),
+        params
+      );
+
+      const signedTxns = await signTransactions([txn.toByte()]);
+      const signedTxn = signedTxns[0];
+      if (!signedTxn) throw new Error("Signing failed");
+      
+      // Return the base64 encoded signed transaction as the "signature"
+      return Buffer.from(signedTxn).toString("base64");
+    }
   };
 };
 

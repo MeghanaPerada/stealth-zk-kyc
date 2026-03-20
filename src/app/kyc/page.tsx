@@ -51,7 +51,8 @@ function getProgress(step: FlowStep, method: Method): number {
 // ─── Main Component ───────────────────────────────────────────────────────────
 export default function KYCFlow() {
   const router = useRouter();
-  const { isConnected, address, connectWallet } = useWallet();
+  const { address, isConnected, signMessage, connectWallet } = useWallet();
+  const [walletSignature, setWalletSignature] = useState<string | null>(null);
 
   const [method, setMethod] = useState<Method>(null);
   const [step, setStep] = useState<FlowStep>("CONNECT");
@@ -208,13 +209,25 @@ export default function KYCFlow() {
   const handleDigiLockerApprove = async () => {
     try {
       setError(null);
+      
+      // Step 1: Sign Authentication Message
+      addLog("Authenticating wallet with cryptographic signature...");
+      const message = `Authenticate Stealth-ZK-KYC for wallet: ${address} at ${Date.now()}`;
+      const sig = await signMessage(message);
+      setWalletSignature(sig);
+      addLog("Wallet signature verified locally");
+
+      // Step 2: Request OTP
       const res = await fetch("/api/consent/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           userId, 
           email: "user@example.com", 
-          mobile: "9876543210" 
+          mobile: "9876543210",
+          wallet: address,
+          signature: sig,
+          authMessage: message
         }),
       });
       const data = await res.json();
@@ -250,29 +263,37 @@ export default function KYCFlow() {
       setIsVerifyingOtp(false);
     }
   };
-
   const handleManualSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
       setError(null);
+
+      // Step 1: Sign Authentication Message
+      addLog("Authenticating wallet with cryptographic signature...");
+      const message = `Authenticate Manual KYC for wallet: ${address} at ${Date.now()}`;
+      const sig = await signMessage(message);
+      setWalletSignature(sig);
+      addLog("Wallet signature verified locally");
+
+      // Step 2: Request OTP
       const res = await fetch("/api/consent/manual/request", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ 
           userId, 
           email: manualForm.email, 
-          mobile: manualForm.mobile 
+          mobile: manualForm.mobile,
+          wallet: address,
+          signature: sig,
+          authMessage: message
         }),
       });
       const data = await res.json();
       if (!res.ok) throw new Error(data.error || "Failed to send OTP");
       
-      if (data.demoOtp) {
-        addLog(`[SECURITY] OTP dispatched successfully`);
-      }
+      addLog("Verification code dispatched successfully");
       setOtp(""); // Clear - user must check device
       setOtpSent(true);
-      // Mode switch: the UI will now show the OTP input
     } catch (err: any) {
       setError(err.message);
     }

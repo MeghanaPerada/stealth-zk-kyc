@@ -2,17 +2,27 @@ import { NextResponse } from "next/server";
 import crypto from "crypto";
 import { validateManualKYC } from "@/lib/manualValidation";
 import { verifyOtp } from "@/lib/otp";
+import { verifyWalletSignature } from "@/lib/verifyWallet";
 
 const { buildPoseidon } = require("circomlibjs");
 const ORACLE_SECRET = process.env.ORACLE_SECRET || 'stealth_zk_kyc_secret_12345';
 
 export async function POST(req: Request) {
   try {
-    const { userId, otp, wallet, manualData } = await req.json();
+    const { userId, otp, wallet, manualData, signature, authMessage } = await req.json();
 
     // 1. Verify consent
     if (!verifyOtp(userId, otp)) {
       return NextResponse.json({ error: "Consent not verified" }, { status: 401 });
+    }
+
+    // 🛡️ 1b. Verify Wallet Signature (Proof of Ownership)
+    if (wallet && signature && authMessage) {
+      const isValid = await verifyWalletSignature(wallet, authMessage, signature);
+      if (!isValid) {
+        return NextResponse.json({ error: "Invalid wallet signature" }, { status: 401 });
+      }
+      console.log(`[ORACLE-MANUAL] Wallet ${wallet} verified successfully`);
     }
 
     // 2. Validate input
@@ -29,14 +39,14 @@ export async function POST(req: Request) {
 
     const dataString = JSON.stringify(dataWithLast4);
     const dataHash = crypto.createHash("sha256").update(dataString).digest("hex");
-    const signature = crypto.createHmac("sha256", ORACLE_SECRET)
+    const oracleSignature = crypto.createHmac("sha256", ORACLE_SECRET)
       .update(dataHash)
       .digest("hex");
 
     return NextResponse.json({
       data: dataWithLast4,
       dataHash,
-      signature,
+      signature: oracleSignature,
       issuer: "ManualInputOracle",
       _internalData: dataWithLast4 
     });
