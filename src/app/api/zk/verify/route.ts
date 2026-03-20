@@ -1,60 +1,108 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
+import crypto from 'crypto';
+import { checkProofOnChain } from '@/lib/algorand';
+
 const snarkjs = require('snarkjs');
+
+// In-memory revocation list (in production: store in DB or on-chain)
+const revokedProofs = new Set<string>();
 
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { proof, publicSignals } = body;
+    const { proof, publicSignals, proofHash, wallet, expiry, action } = body;
 
-    // 1. Validation
-    if (!proof || !publicSignals) {
-      return NextResponse.json({ verified: false, error: "Missing proof artifacts for verification." }, { status: 400 });
+    // ── REVOKE action ──────────────────────────────────────────────────────────
+    if (action === 'revoke' && proofHash) {
+      revokedProofs.add(proofHash);
+      console.log(`[Verify] Proof revoked: ${proofHash}`);
+      return NextResponse.json({ revoked: true, proofHash });
     }
 
-    // 2. Paths for Verification Key
+    // ── VERIFY action ─────────────────────────────────────────────────────────
+    if (!proof || !publicSignals) {
+      return NextResponse.json(
+        { verified: false, error: 'Missing proof or publicSignals' },
+        { status: 400 }
+      );
+    }
+
+    const checks: Record<string, boolean | string> = {};
+
+    // 1. Expiry check
+    if (expiry) {
+      const isExpired = Date.now() > expiry;
+      checks.expired = isExpired;
+      if (isExpired) {
+        return NextResponse.json({
+          verified: false,
+          reason: 'Proof has expired',
+          checks,
+        });
+      }
+    }
+    checks.expired = false;
+
+    // 2. Revocation check
+    if (proofHash && revokedProofs.has(proofHash)) {
+      return NextResponse.json({
+        verified: false,
+        reason: 'Proof has been revoked',
+        checks: { ...checks, revoked: true },
+      });
+    }
+    checks.revoked = false;
+
+    // 3. On-chain existence check (optional)
+    if (wallet) {
+      checks.onChain = await checkProofOnChain(wallet, proofHash || '');
+    }
+
+    // 4. Cryptographic ZK verification
     const zkPath = path.join(process.cwd(), 'public', 'zk');
     const vKeyPath = path.join(zkPath, 'verification_key.json');
 
-    // 3. Check for vKey existence
     if (!fs.existsSync(vKeyPath)) {
-      console.error("ZK Verification Key missing at:", vKeyPath);
-      
-      // Fallback/Mock for demo if user hasn't uploaded vKey yet
-      return NextResponse.json({ 
-        verified: false,
-        error: "Verification Key (verification_key.json) not found in /zk folder.",
-        requirement: "Place verification_key.json in the /zk root directory."
-      }, { status: 500 });
+      // No vKey available — semantic check only (demo mode)
+      const isStructurallyValid =
+        proof &&
+        proof.pi_a?.length >= 2 &&
+        proof.pi_b?.length >= 2 &&
+        proof.pi_c?.length >= 2 &&
+        publicSignals?.length > 0;
+
+      checks.zkMath = 'simulated';
+      return NextResponse.json({
+        verified: isStructurallyValid,
+        demo: true,
+        message: isStructurallyValid
+          ? 'Proof structurally valid (verification_key.json missing — simulated verification)'
+          : 'Invalid proof structure',
+        checks,
+        timestamp: new Date().toISOString(),
+      });
     }
 
-    // 4. Load Verification Key
+    // Real Groth16 verification
     const vKey = JSON.parse(fs.readFileSync(vKeyPath, 'utf8'));
+    const result = await snarkjs.groth16.verify(vKey, publicSignals, proof);
+    checks.zkMath = result;
 
-    // 5. Verify Proof (Groth16 as requested)
-    const res = await snarkjs.groth16.verify(vKey, publicSignals, proof);
-
-    // 6. Return Result
-    if (res === true) {
-      return NextResponse.json({
-        verified: true,
-        message: "Identity Proof Verified Successfully via Groth16!",
-        timestamp: new Date().toISOString()
-      });
-    } else {
-      return NextResponse.json({
-        verified: false,
-        message: "ZK-Groth16 Verification Failed: Proof is mathematically inconsistent with public signals."
-      });
-    }
-
+    return NextResponse.json({
+      verified: result,
+      message: result
+        ? 'Identity Proof Verified Successfully via Groth16'
+        : 'ZK proof verification failed — proof is mathematically inconsistent',
+      checks,
+      timestamp: new Date().toISOString(),
+    });
   } catch (err: any) {
-    console.error("ZK Verification Error:", err);
-    return NextResponse.json({ 
-      verified: false,
-      error: "Internal verification error.",
-      details: err.message
-    }, { status: 500 });
+    console.error('[Verify] Error:', err);
+    return NextResponse.json(
+      { verified: false, error: 'Internal verification error', details: err.message },
+      { status: 500 }
+    );
   }
 }

@@ -13,6 +13,7 @@ export default function Navbar() {
 
   const navLinks = [
     { name: "Submit KYC", path: "/kyc" },
+    { name: "Credential", path: "/credential" },
     { name: "Verify Proof", path: "/verify" },
     { name: "Explorer", path: "/explorer" }
   ];

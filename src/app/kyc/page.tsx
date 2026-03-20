@@ -170,7 +170,19 @@ export default function KYCFlow() {
       await sleep(1000);
       addLog(`✓ Proof anchored → TxID: ${zkData.txId || "local_only"}`);
 
-      setResultData({ ...zkData, proofSource: token ? "digilocker" : "manual" });
+      const proofToStore = {
+        ...zkData,
+        proofSource: token ? "digilocker" : "manual",
+        wallet: address,
+        expiry: Date.now() + 24 * 60 * 60 * 1000, // 24h expiry
+      };
+
+      // Save to localStorage for credential reuse on /credential page
+      try {
+        localStorage.setItem("stealth_final_proof", JSON.stringify(proofToStore));
+      } catch {/* storage unavailable */}
+
+      setResultData(proofToStore);
       setStep("RESULT");
     } catch (err: any) {
       console.error(err);
