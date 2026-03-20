@@ -6,6 +6,7 @@ import algosdk from 'algosdk';
 
 const snarkjs = require('snarkjs');
 const { buildPoseidon } = require('circomlibjs');
+const { generateProofIdentifier, hashData } = require('@/lib/helpers');
 
 const ORACLE_SECRET = process.env.ORACLE_SECRET || 'stealth_zk_kyc_secret_12345';
 const ALGOD_SERVER = process.env.NEXT_PUBLIC_ALGOD_SERVER || 'https://testnet-api.algonode.cloud';
@@ -87,7 +88,19 @@ export async function POST(request: Request) {
 
     console.log("[ZK] Computed Poseidon Identity Hash:", identityHash);
 
-    // --- STEP 4: Prepare Circuit Input ---
+    // --- STEP 4: Dynamic Proof Identifier & Status ---
+    const timestamp = Date.now();
+    // Dynamic status logic: all fields non-empty = approved
+    const status = Object.values(pii).every(v => v) ? "approved" : "rejected";
+    
+    const proofIdentifier = await generateProofIdentifier(
+      wallet, 
+      proofSource === "digilocker" ? "digilocker" : "manual",
+      status,
+      timestamp
+    );
+
+    // --- STEP 5: Prepare Circuit Input ---
     const birthYear = parseInt(pii.dob.split('-')[0]);
     const circuitInput = {
       dob: dobNum,
@@ -97,10 +110,12 @@ export async function POST(request: Request) {
       aadhaar_last4: aadhaarLast4,
       pan: pan_ascii,
       issuer: issuerNum,
-      public_identity_hash: identityHash
+      public_identity_hash: identityHash,
+      proofIdentifier: proofIdentifier,
+      timestamp: timestamp
     };
 
-    // --- STEP 5: Generate Proof ---
+    // --- STEP 6: Generate Proof ---
     const zkPath = path.join(process.cwd(), 'public', 'zk');
     const wasmPath = path.join(zkPath, 'kycMain.wasm');
     const zkeyPath = path.join(zkPath, 'kyc.zkey');
@@ -112,8 +127,11 @@ export async function POST(request: Request) {
         message: "ZK Artifacts (WASM/ZKEY) missing. Displaying simulated proof for demo.",
         zkIdentity: identityHash,
         proofSource,
+        proofIdentifier,
+        status,
+        timestamp,
         proof: { pi_a: ["0", "0", "0"], pi_b: [["0", "0"], ["0", "0"]], pi_c: ["0", "0", "0"] },
-        publicSignals: [identityHash, "1"],
+        publicSignals: [identityHash, "1", proofIdentifier, timestamp.toString()],
         txId: "MOCK_TX_" + Math.random().toString(36).substring(7).toUpperCase()
       });
     }
@@ -159,6 +177,9 @@ export async function POST(request: Request) {
       publicSignals,
       zkIdentity: identityHash,
       proofSource,
+      proofIdentifier,
+      status,
+      timestamp,
       txId: txId,
       metadata: {
         timestamp: new Date().toISOString(),

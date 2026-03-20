@@ -1,6 +1,46 @@
 // /src/lib/helpers.ts
 // Shared utility helpers for ZK circuit input preparation
 
+import * as circomlibjs from "circomlibjs";
+import crypto from "crypto";
+
+/**
+ * generateProofIdentifier
+ * Creates a dynamic proof ID bound to wallet, proof type, status, and timestamp.
+ * Uses Poseidon for circuit compatibility (if used as public input).
+ */
+export async function generateProofIdentifier(
+  wallet: string,
+  proofType: "manual" | "digilocker",
+  status: "approved" | "rejected",
+  timestamp: number
+): Promise<string> {
+  const poseidon = await circomlibjs.buildPoseidon();
+  
+  // Create a numeric representation of the wallet for the hash
+  // Simple buffer sum for demo (in production, use wallet address bits directly)
+  const walletNumeric = BigInt(Buffer.from(wallet).reduce((acc, b) => acc + b, 0));
+  
+  const preImage = [
+    walletNumeric,
+    proofType === "manual" ? 1n : 2n,
+    status === "approved" ? 1n : 0n,
+    BigInt(timestamp)
+  ];
+  
+  const hash = poseidon(preImage);
+  return poseidon.F.toString(hash);
+}
+
+/**
+ * hashData
+ * Generic SHA256 helper for data integrity checks or proof hashing.
+ */
+export function hashData(data: any): string {
+  const str = typeof data === "string" ? data : JSON.stringify(data);
+  return crypto.createHash("sha256").update(str).digest("hex");
+}
+
 /**
  * panToAscii
  * Converts a 10-char PAN string into a fixed-length ASCII array (padded with 0s).

@@ -12,7 +12,7 @@ const revokedProofs = new Set<string>();
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { proof, publicSignals, proofHash, wallet, expiry, action } = body;
+    const { proof, publicSignals, proofHash, wallet, expiry, action, proofIdentifier } = body;
 
     // ── REVOKE action ──────────────────────────────────────────────────────────
     if (action === 'revoke' && proofHash) {
@@ -60,7 +60,18 @@ export async function POST(request: Request) {
       checks.onChain = await checkProofOnChain(wallet, proofHash || '');
     }
 
-    // 4. Cryptographic ZK verification
+    // 4. Proof Identifier check
+    const idValid = proofIdentifier ? publicSignals.includes(proofIdentifier) : true;
+    checks.identifier = idValid;
+    if (!idValid) {
+      return NextResponse.json({
+        verified: false,
+        reason: 'Proof identifier mismatch (proof not bound to this session/status)',
+        checks
+      });
+    }
+
+    // 5. Cryptographic ZK verification
     const zkPath = path.join(process.cwd(), 'public', 'zk');
     const vKeyPath = path.join(zkPath, 'verification_key.json');
 

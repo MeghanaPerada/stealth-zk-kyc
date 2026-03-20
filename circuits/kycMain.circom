@@ -15,6 +15,8 @@ template KYCMain() {
     signal input pan[10];         // PAN chars in ASCII
     signal input issuer;          // 1 for UIDAI
     signal input public_identity_hash;
+    signal input proofIdentifier; // Bound to wallet/type/status
+    signal input timestamp;       // Freshness
 
     // 2. Components
     component ageCheck = AgeProof();
