@@ -38,8 +38,8 @@ export default function Home() {
             </motion.div>
             
             <motion.h1 variants={itemVars} className="text-5xl md:text-7xl lg:text-8xl font-black tracking-tighter mb-8 text-transparent bg-clip-text bg-gradient-to-br from-foreground via-foreground/90 to-primary/70 filter drop-shadow-[0_0_30px_rgba(255,255,255,0.1)]">
-              Privacy-Preserving<br/>
-              <span className="text-primary filter drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">Identity Verification</span>
+              Stealth<br/>
+              <span className="text-primary filter drop-shadow-[0_0_20px_rgba(52,211,153,0.4)]">ZK-KYC Protocol</span>
             </motion.h1>
             
             <motion.p variants={itemVars} className="text-xl md:text-2xl text-muted-foreground mb-12 max-w-3xl mx-auto leading-relaxed">
