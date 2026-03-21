@@ -5,6 +5,15 @@
  * validateManualKYC
  * Performs regex-based validation for identity attributes.
  */
+/** Quick standalone validators used by the Oracle API for validation counting */
+export function isValidPAN(pan: string): boolean {
+  return /^[A-Z]{5}[0-9]{4}[A-Z]{1}$/.test(pan?.toUpperCase() || "");
+}
+
+export function isValidAadhaar(aadhaar: string): boolean {
+  return /^\d{12}$/.test(aadhaar || "");
+}
+
 export function validateManualKYC(data: any) {
   const errors: string[] = [];
 

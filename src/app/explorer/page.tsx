@@ -32,7 +32,8 @@ const INITIAL_PROOFS = [
     timestamp: new Date(Date.now() - 30000).toISOString(),
     status: "Verified",
     hash: "0x89A2E1C4D...2D4B7F9A",
-    algorandTx: "TX_7D9F2E4A8B1C6D5E0F9G8H7I6J5K4L3M2N1O0P9Q"
+    algorandTx: "TX_7D9F2E4A8B1C6D5E0F9G8H7I6J5K4L3M2N1O0P9Q",
+    trustScore: 95, proofType: "GOVT_GRADE", proofTypeLabel: "🟢 Govt-Grade", source: "digilocker"
   },
   {
     id: "prf_0x2c4e1f9b5a",
@@ -43,7 +44,8 @@ const INITIAL_PROOFS = [
     timestamp: new Date(Date.now() - 150000).toISOString(),
     status: "Verified",
     hash: "0x3F2B6C8D...E91C4A5D",
-    algorandTx: "TX_1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q8R9S0T"
+    algorandTx: "TX_1A2B3C4D5E6F7G8H9I0J1K2L3M4N5O6P7Q8R9S0T",
+    trustScore: 70, proofType: "VERIFIED", proofTypeLabel: "🟡 Verified", source: "manual"
   },
   {
     id: "prf_0x9d3b5a7c1f",
@@ -54,7 +56,8 @@ const INITIAL_PROOFS = [
     timestamp: new Date(Date.now() - 420000).toISOString(),
     status: "Verified",
     hash: "0x5E8A9B1D...1B2D3F4G",
-    algorandTx: "TX_9Z8Y7X6W5V4U3T2S1R0Q9P8O7N6M5L4K3J2I1H0G"
+    algorandTx: "TX_9Z8Y7X6W5V4U3T2S1R0Q9P8O7N6M5L4K3J2I1H0G",
+    trustScore: 95, proofType: "GOVT_GRADE", proofTypeLabel: "🟢 Govt-Grade", source: "digilocker"
   },
   {
     id: "prf_0x4k8m2n6p9q",
@@ -65,7 +68,8 @@ const INITIAL_PROOFS = [
     timestamp: new Date(Date.now() - 900000).toISOString(),
     status: "Verified",
     hash: "0x7J9L2M4N...5P6Q7R8S",
-    algorandTx: "TX_0A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T"
+    algorandTx: "TX_0A1B2C3D4E5F6G7H8I9J0K1L2M3N4O5P6Q7R8S9T",
+    trustScore: 40, proofType: "BASIC", proofTypeLabel: "🔴 Basic", source: "manual"
   },
   {
     id: "prf_0x1z5x9c4v8b",
@@ -76,7 +80,8 @@ const INITIAL_PROOFS = [
     timestamp: new Date(Date.now() - 1800000).toISOString(),
     status: "Verified",
     hash: "0x4A5D6F7G...8H9J0K1L",
-    algorandTx: "TX_5K4J3I2H1G0F9E8D7C6B5A4Z3Y2X1W0V9U8T7S6R"
+    algorandTx: "TX_5K4J3I2H1G0F9E8D7C6B5A4Z3Y2X1W0V9U8T7S6R",
+    trustScore: 70, proofType: "VERIFIED", proofTypeLabel: "🟡 Verified", source: "manual"
   }
 ];
 
@@ -115,7 +120,11 @@ function ExplorerContent() {
         status: "Verified",
         hash: p.proofHash,
         algorandTx: p.txId || "PENDING_SYNC",
-        fullProof: p.fullProof // Pass the real ZK artifacts to the UI
+        fullProof: p.fullProof,
+        trustScore: p.trustScore || 70,
+        proofType: p.proofType || "VERIFIED",
+        proofTypeLabel: p.proofTypeLabel || "🟡 Verified",
+        source: p.source || "manual",
       }));
 
       setProofs(mappedProofs.length > 0 ? mappedProofs : INITIAL_PROOFS);
@@ -415,7 +424,37 @@ function ExplorerContent() {
                       </div>
                     </div>
 
+                    {/* Trust Badge */}
+                    {selectedProof.trustScore && (
+                      <div className={`flex items-center justify-between px-4 py-3 rounded-2xl border mb-4 ${
+                        selectedProof.proofType === "GOVT_GRADE"
+                          ? "bg-emerald-500/5 border-emerald-500/20"
+                          : selectedProof.proofType === "VERIFIED"
+                          ? "bg-amber-500/5 border-amber-500/20"
+                          : "bg-red-500/5 border-red-500/20"
+                      }`}>
+                        <div>
+                          <p className={`text-[10px] font-black uppercase tracking-widest ${
+                            selectedProof.proofType === "GOVT_GRADE" ? "text-emerald-400" :
+                            selectedProof.proofType === "VERIFIED" ? "text-amber-400" : "text-red-400"
+                          }`}>
+                            {selectedProof.proofTypeLabel}
+                          </p>
+                          <p className="text-[9px] text-zinc-600 mt-0.5 uppercase tracking-wider">
+                            {selectedProof.source === "digilocker" ? "UIDAI DigiLocker" : "Manual Entry"}
+                          </p>
+                        </div>
+                        <div className={`text-2xl font-black tabular-nums ${
+                          selectedProof.proofType === "GOVT_GRADE" ? "text-emerald-400" :
+                          selectedProof.proofType === "VERIFIED" ? "text-amber-400" : "text-red-400"
+                        }`}>
+                          {selectedProof.trustScore}<span className="text-xs text-zinc-600 font-normal">/100</span>
+                        </div>
+                      </div>
+                    )}
+
                     {/* Meta row */}
+
                     <div className="grid grid-cols-3 gap-4 py-5 border-y border-white/5 mb-6">
                       <div className="space-y-1.5 text-center">
                         <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Verification</p>

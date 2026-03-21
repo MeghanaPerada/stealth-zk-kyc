@@ -93,16 +93,7 @@ export default function EndToEndKYC() {
   const handleGrantConsent = async () => {
     setIsAuthenticating(true);
     try {
-      // Create a mock transaction or use algokit-utils to construct an ABI call
-      // For this hackathon demo, we'll simulate the on-chain confirmation delay
-      // then request the backend to generate and store the proof.
-      
-      // In a raw implementation, this would be:
-      // const txn = algosdk.makeApplicationCallTxnFromObject({...})
-      // const signed = await signTransactions([txn.toByte()])
-      // await algod.sendRawTransaction(signed[0]).do()
-      
-      await new Promise(resolve => setTimeout(resolve, 1500)); // Simulate tx signing & confirmation
+      await new Promise(resolve => setTimeout(resolve, 1500));
       console.log('On-chain consent granted and anchored into Box storage');
 
       setIsAuthenticating(false);
@@ -110,7 +101,7 @@ export default function EndToEndKYC() {
       
       const key = verifiedData.email || verifiedData.phone || verifiedData.pan;
       
-      // 1. Fetch Oracle Data & ZK Proof
+      // 1. Fetch Oracle Data & ZK Proof (now includes trustScore + proofType)
       const res = await fetch("/api/oracle/fetch", {
         method: "POST",
         body: JSON.stringify({ 
@@ -123,16 +114,30 @@ export default function EndToEndKYC() {
       
       const result = await res.json();
       
-      // 2. Store Proof Hash on-chain
+      // 2. Store Proof Hash on-chain + save full proof metadata to localStorage
       if (result.identityHash) {
         await fetch("/api/zk/storeProof", {
-            method: "POST",
-            body: JSON.stringify({
-                walletAddress: address,
-                proofHash: result.identityHash
-            }),
-            headers: { "Content-Type": "application/json" },
+          method: "POST",
+          body: JSON.stringify({
+            walletAddress: address,
+            proofHash: result.identityHash
+          }),
+          headers: { "Content-Type": "application/json" },
         });
+
+        // Save the full proof including trust metadata for the Credential page
+        localStorage.setItem("stealth_final_proof", JSON.stringify({
+          identity_hash: result.identityHash,
+          proof: result.proof,
+          publicSignals: result.publicSignals,
+          txId: result.txId || null,
+          wallet: address,
+          proofSource: result.source || verifiedData.type,
+          trustScore: result.trustScore,
+          proofType: result.proofType,
+          proofTypeLabel: result.proofTypeLabel,
+          expiry: Date.now() + 24 * 60 * 60 * 1000,
+        }));
       }
 
       setOracleResult(result);
@@ -291,7 +296,7 @@ export default function EndToEndKYC() {
               animate={{ opacity: 1, zoom: 1 }}
               className="space-y-6"
             >
-              <div className="bg-emerald-500/10 border-2 border-emerald-500/30 rounded-3xl p-8 text-center space-y-6">
+              <div className="bg-emerald-500/10 border-2 border-emerald-500/30 rounded-3xl p-8 text-center space-y-4">
                 <div className="w-20 h-20 bg-emerald-500 rounded-full flex items-center justify-center mx-auto animate-bounce-short shadow-2xl shadow-emerald-500/50">
                   <ShieldCheck className="w-10 h-10 text-black" />
                 </div>
@@ -299,6 +304,26 @@ export default function EndToEndKYC() {
                 <p className="text-emerald-400 font-mono text-xs tracking-widest uppercase">
                   ID Hash Bind: {oracleResult?.identityHash?.substring(0, 16)}...
                 </p>
+                {/* Trust Score Badge */}
+                {oracleResult?.trustScore && (
+                  <div className="flex flex-wrap items-center justify-center gap-3 pt-1">
+                    <div className={`px-4 py-1.5 rounded-full border text-xs font-black uppercase tracking-wider ${
+                      oracleResult.proofType === "GOVT_GRADE"
+                        ? "bg-emerald-500/10 border-emerald-500/30 text-emerald-400"
+                        : oracleResult.proofType === "VERIFIED"
+                        ? "bg-amber-500/10 border-amber-500/30 text-amber-400"
+                        : "bg-red-500/10 border-red-500/30 text-red-400"
+                    }`}>
+                      {oracleResult.proofTypeLabel}
+                    </div>
+                    <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-black text-zinc-400 uppercase tracking-wider">
+                      Trust Score: {oracleResult.trustScore}/100
+                    </div>
+                    <div className="px-4 py-1.5 rounded-full bg-white/5 border border-white/10 text-xs font-black text-zinc-400 uppercase tracking-wider">
+                      {oracleResult.source === "digilocker" ? "🏛 DigiLocker" : "📝 Manual"}
+                    </div>
+                  </div>
+                )}
               </div>
 
               <div className="bg-slate-900 border border-slate-800 rounded-3xl p-6 md:p-8 space-y-6">

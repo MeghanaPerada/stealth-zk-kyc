@@ -23,6 +23,8 @@ const USE_CASES = [
     border: "border-blue-500/20",
     bg: "bg-blue-500/5",
     glow: "shadow-[0_0_20px_rgba(59,130,246,0.15)]",
+    minTrust: 80,
+    minTrustLabel: "🟢 Govt-Grade required",
   },
   {
     id: "bank",
@@ -33,6 +35,8 @@ const USE_CASES = [
     border: "border-purple-500/20",
     bg: "bg-purple-500/5",
     glow: "shadow-[0_0_20px_rgba(168,85,247,0.15)]",
+    minTrust: 65,
+    minTrustLabel: "🟡 Verified+ required",
   },
   {
     id: "gov",
@@ -43,8 +47,11 @@ const USE_CASES = [
     border: "border-amber-500/20",
     bg: "bg-amber-500/5",
     glow: "shadow-[0_0_20px_rgba(245,158,11,0.15)]",
+    minTrust: 80,
+    minTrustLabel: "🟢 Govt-Grade required",
   },
 ];
+
 
 type StoredProof = {
   identity_hash: string;
@@ -54,6 +61,9 @@ type StoredProof = {
   wallet: string;
   proofSource: string;
   expiry: number;
+  trustScore?: number;
+  proofType?: "GOVT_GRADE" | "VERIFIED" | "BASIC";
+  proofTypeLabel?: string;
   mock?: boolean;
 };
 
@@ -204,6 +214,35 @@ export default function CredentialPage() {
           {/* Left: Credential Card */}
           <div className="lg:col-span-1 space-y-4">
             <GlowingCard glowColor="primary" className="p-6">
+              {/* Trust level banner */}
+              {storedProof.trustScore && (
+                <div className={`mb-5 flex items-center justify-between px-4 py-3 rounded-2xl border ${
+                  storedProof.proofType === "GOVT_GRADE"
+                    ? "bg-emerald-500/5 border-emerald-500/20"
+                    : storedProof.proofType === "VERIFIED"
+                    ? "bg-amber-500/5 border-amber-500/20"
+                    : "bg-red-500/5 border-red-500/20"
+                }`}>
+                  <div>
+                    <p className={`text-[10px] font-black uppercase tracking-widest ${
+                      storedProof.proofType === "GOVT_GRADE" ? "text-emerald-400" :
+                      storedProof.proofType === "VERIFIED" ? "text-amber-400" : "text-red-400"
+                    }`}>
+                      {storedProof.proofTypeLabel || storedProof.proofType}
+                    </p>
+                    <p className="text-[9px] text-zinc-600 mt-0.5 uppercase tracking-wider">
+                      {storedProof.proofSource === "digilocker" ? "UIDAI DigiLocker" : "Manual Entry"}
+                    </p>
+                  </div>
+                  <div className={`text-2xl font-black tabular-nums ${
+                    storedProof.proofType === "GOVT_GRADE" ? "text-emerald-400" :
+                    storedProof.proofType === "VERIFIED" ? "text-amber-400" : "text-red-400"
+                  }`}>
+                    {storedProof.trustScore}<span className="text-xs text-zinc-600 font-normal">/100</span>
+                  </div>
+                </div>
+              )}
+
               <div className="flex items-center justify-between mb-6">
                 <div className="flex items-center gap-3">
                   <div className="w-10 h-10 bg-primary/10 rounded-xl border border-primary/20 flex items-center justify-center">
@@ -302,12 +341,18 @@ export default function CredentialPage() {
                 {USE_CASES.map((uc) => {
                   const Icon = uc.icon;
                   const isSelected = selectedUseCase === uc.id;
+                  const userTrust = storedProof.trustScore || 0;
+                  const isTrustBlocked = userTrust < (uc.minTrust || 0);
                   return (
                     <button
                       key={uc.id}
-                      onClick={() => handleReuseCredential(uc.id)}
-                      disabled={status === "loading" || proofStatus !== "active"}
-                      className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 ${uc.bg} ${uc.border} hover:${uc.glow} disabled:opacity-40 disabled:cursor-not-allowed ${isSelected ? uc.glow : ""}`}
+                      onClick={() => !isTrustBlocked && handleReuseCredential(uc.id)}
+                      disabled={status === "loading" || proofStatus !== "active" || isTrustBlocked}
+                      className={`w-full text-left p-5 rounded-2xl border transition-all duration-300 ${uc.bg} ${uc.border} ${
+                        isTrustBlocked
+                          ? "opacity-50 cursor-not-allowed"
+                          : `hover:${uc.glow} disabled:opacity-40 disabled:cursor-not-allowed`
+                      } ${isSelected ? uc.glow : ""}`}
                     >
                       <div className="flex items-center justify-between">
                         <div className="flex items-center gap-4">
@@ -317,9 +362,21 @@ export default function CredentialPage() {
                           <div>
                             <h3 className={`font-black text-base ${uc.color}`}>{uc.title}</h3>
                             <p className="text-zinc-500 text-xs mt-0.5">{uc.description}</p>
+                            {isTrustBlocked && (
+                              <p className="text-[9px] text-red-400 font-black uppercase tracking-widest mt-1 flex items-center gap-1">
+                                <Lock className="w-2.5 h-2.5" /> {uc.minTrustLabel} · yours: {userTrust}/100
+                              </p>
+                            )}
+                            {!isTrustBlocked && uc.minTrust && (
+                              <p className="text-[9px] text-emerald-500/70 font-bold uppercase tracking-widest mt-1">
+                                ✓ Trust threshold met ({userTrust}/100)
+                              </p>
+                            )}
                           </div>
                         </div>
-                        {isSelected && status === "loading" ? (
+                        {isTrustBlocked ? (
+                          <Lock className="w-4 h-4 text-zinc-600" />
+                        ) : isSelected && status === "loading" ? (
                           <Loader2 className="w-5 h-5 text-zinc-400 animate-spin" />
                         ) : isSelected && status === "verified" ? (
                           <CheckCircle2 className="w-5 h-5 text-emerald-400" />
