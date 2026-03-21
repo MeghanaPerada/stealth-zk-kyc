@@ -4,6 +4,7 @@ include "identityHash.circom";
 include "ageProof.circom";
 include "panValidation.circom";
 include "issuerCheck.circom";
+include "merkleTree.circom";
 
 template KYCMain() {
     // 1. Inputs
@@ -18,6 +19,8 @@ template KYCMain() {
     signal input proofIdentifier; // Bound to wallet/type/status
     signal input timestamp;       // Freshness
     signal input userSecret;      // Private secret for nullifier
+    signal input merkle_path_elements[10]; // Merkle tree siblings (depth 10)
+    signal input merkle_path_indices[10];  // 0 for left, 1 for right
 
     // 2. Components
     component ageCheck = AgeProof();
@@ -39,6 +42,14 @@ template KYCMain() {
     nullifierHasher.inputs[0] <== userSecret;
     nullifierHasher.inputs[1] <== public_identity_hash;
 
+    // Merkle Tree Inclusion Proof
+    component merkleTree = MerkleTreeInclusionProof(10);
+    merkleTree.leaf <== identity.hash;
+    for (var i = 0; i < 10; i++) {
+        merkleTree.pathElements[i] <== merkle_path_elements[i];
+        merkleTree.pathIndices[i] <== merkle_path_indices[i];
+    }
+
     // 3. Assertions
     // Identity hash must match public identity hash (anchor)
     identity.hash === public_identity_hash;
@@ -52,6 +63,9 @@ template KYCMain() {
 
     signal output nullifier;
     nullifier <== nullifierHasher.out;
+
+    signal output merkle_root;
+    merkle_root <== merkleTree.root;
 }
 
 component main = KYCMain();

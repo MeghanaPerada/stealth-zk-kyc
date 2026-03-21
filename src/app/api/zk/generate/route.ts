@@ -5,8 +5,13 @@ import crypto from 'crypto';
 import algosdk from 'algosdk';
 
 import { generateProofIdentifier, hashData } from '@/lib/helpers';
+import { merkleService } from '@/lib/merkleService';
+
 const snarkjs = require('snarkjs');
 const { buildPoseidon } = require('circomlibjs');
+
+// Initialize the Merkle Service if not already initialized
+let merkleInitialized = false;
 
 const ORACLE_SECRET = process.env.ORACLE_SECRET || 'stealth_zk_kyc_secret_12345';
 const ALGOD_SERVER = process.env.NEXT_PUBLIC_ALGOD_SERVER || 'https://testnet-api.algonode.cloud';
@@ -57,6 +62,11 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Oracle signature verification failed. Untrusted identity data." }, { status: 403 });
     }
     console.log("[ZK] Oracle HMAC verified.");
+
+    if (!merkleInitialized) {
+      await merkleService.init();
+      merkleInitialized = true;
+    }
 
     // --- STEP 2: Verify On-Chain Consent ---
     if (CONSENT_APP_ID > 0) {
@@ -111,7 +121,13 @@ export async function POST(request: Request) {
     const nullifier = poseidon.F.toObject(poseidon([userSecretNum, identityHash])).toString();
     console.log("[ZK] Generated Nullifier:", nullifier);
 
-    // --- STEP 6: Prepare Circuit Input ---
+    // --- STEP 6: Merkle Tree Inclusion Proof ---
+    // Add the user to our off-chain Merkle Tree
+    merkleService.addLeaf(identityHash);
+    const merkleData = merkleService.getProof(identityHash);
+    console.log("[ZK] Merkle Root:", merkleData.root);
+
+    // --- STEP 7: Prepare Circuit Input ---
     const birthYear = parseInt(pii.dob.split('-')[0]);
     const circuitInput = {
       dob: dobNum,
@@ -124,7 +140,9 @@ export async function POST(request: Request) {
       public_identity_hash: identityHash,
       proofIdentifier: proofIdentifier,
       timestamp: timestamp,
-      userSecret: userSecretNum
+      userSecret: userSecretNum,
+      merkle_path_elements: merkleData.pathElements,
+      merkle_path_indices: merkleData.pathIndices
     };
 
     // --- STEP 6: Generate Proof ---
@@ -144,7 +162,8 @@ export async function POST(request: Request) {
         status,
         timestamp,
         proof: { pi_a: ["0", "0", "0"], pi_b: [["0", "0"], ["0", "0"]], pi_c: ["0", "0", "0"] },
-        publicSignals: ["1", nullifier, identityHash, proofIdentifier, timestamp.toString()],
+        // Circuit Output order: [isVerified, nullifier, merkle_root]
+        publicSignals: ["1", nullifier, identityHash, proofIdentifier, timestamp.toString(), merkleData.root],
         txId: "MOCK_TX_" + Math.random().toString(36).substring(7).toUpperCase()
       });
     }

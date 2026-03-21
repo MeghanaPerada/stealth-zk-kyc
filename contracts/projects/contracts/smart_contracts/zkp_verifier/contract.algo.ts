@@ -1,4 +1,4 @@
-import { Contract, GlobalState, Account, Txn, Uint64, uint64, assert, op, bytes, itxn, Application, Bytes, BigUint, biguint, Ec, arc4, BoxMap } from '@algorandfoundation/algorand-typescript'
+import { Contract, GlobalState, Account, Txn, Uint64, uint64, assert, op, bytes, itxn, Application, Bytes, BigUint, biguint, Ec, arc4, BoxMap, Global } from '@algorandfoundation/algorand-typescript'
 import { methodSelector } from '@algorandfoundation/algorand-typescript/arc4'
 
 /**
@@ -12,6 +12,9 @@ export class ZkpVerifier extends Contract {
 
   /** The public key of the trusted Identity Oracle */
   oraclePubKey = GlobalState<bytes>({ key: 'opk' })
+
+  /** The Merkle Root of verified identities */
+  merkleRoot = GlobalState<bytes>({ key: 'mr' })
 
   /** The Application ID of the Identity Registry */
   registryAppId = GlobalState<uint64>({ key: 'rai' })
@@ -57,8 +60,8 @@ export class ZkpVerifier extends Contract {
     assert(isZkValid, 'ZK Proof verification failed')
 
     // 3. Logic Checks on Public Signals
-    // signals order (Circom standard): [isVerified, nullifier, identityHash, proofId, timestamp]
-    assert(publicInputs.length === Uint64(160), 'Invalid public inputs length (expected 5 signals)')
+    // signals order: [isVerified, nullifier, identityHash, proofId, timestamp, merkleRoot]
+    assert(publicInputs.length === Uint64(192), 'Invalid public inputs length (expected 6 signals)')
     
     // Check isVerified signal (index 0)
     const isVerified = publicInputs.slice(0, 32)
@@ -68,15 +71,19 @@ export class ZkpVerifier extends Contract {
     const nullifier = publicInputs.slice(32, 64)
     assert(!this.usedNullifiers(nullifier).exists, 'This identity has already registered a wallet')
     
-    // Store the nullifier to prevent reuse
+    // 5. Merkle Root Check (Stateless Set-Membership)
+    const proofRoot = publicInputs.slice(160, 192)
+    assert(proofRoot === this.merkleRoot.value, 'Identity Merkle Root mismatch')
+
+    // 6. Store the nullifier to prevent reuse
     this.usedNullifiers(nullifier).value = true
 
-    // 5. Proof-to-Sender Binding Check
+    // 6. Proof-to-Sender Binding Check
     // We bind the proof to the sender's address (often part of the identityHash or a separate input)
     // For now, we continue the previous check if identityHash contains binding, or simply validate proof presence.
     assert(proof.length === Uint64(256), 'Invalid ZK proof length')
 
-    // 5. Update Registry via Inner Transaction
+    // 7. Update Registry via Inner Transaction
     const selector = methodSelector('registerVerification(account,string)void')
     
     itxn.applicationCall({
@@ -85,6 +92,17 @@ export class ZkpVerifier extends Contract {
       accounts: [Txn.sender],
       fee: Uint64(0),
     }).submit()
+  }
+
+  /**
+   * Admin method to update the Merkle Root of verified identities.
+   * Only the contract creator can call this.
+   * @param newRoot The new 32-byte Merkle root
+   */
+  public updateMerkleRoot(newRoot: bytes): void {
+    assert(Txn.sender === Global.creatorAddress, 'Only creator can update Merkle root')
+    assert(newRoot.length === Uint64(32), 'Merkle root must be 32 bytes')
+    this.merkleRoot.value = newRoot
   }
 
   /**
