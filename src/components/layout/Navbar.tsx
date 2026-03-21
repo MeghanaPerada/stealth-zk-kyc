@@ -15,7 +15,8 @@ export default function Navbar() {
     { name: "Submit KYC", path: "/kyc" },
     { name: "Credential", path: "/credential" },
     { name: "Verify Proof", path: "/verify" },
-    { name: "Explorer", path: "/explorer" }
+    { name: "Explorer", path: "/explorer" },
+    { name: "Hacker Mode", path: "/simulate" }
   ];
 
   const { isConnected, address, shortAddress, isDemoMode, disconnectWallet } = useWallet();

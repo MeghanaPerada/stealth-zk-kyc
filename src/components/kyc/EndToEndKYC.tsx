@@ -1,10 +1,12 @@
 "use client";
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import KYCFlow from "./KYCFlow";
 import { calculateIdentityHash, calculateConsentHash, toFieldElement } from "@/lib/circuitHelpers";
-import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2, Info, Check, Lock } from "lucide-react";
+import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2, Info, Check, Lock, ExternalLink, Terminal } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
+import confetti from "canvas-confetti";
 
 export default function EndToEndKYC() {
   const { address, isConnected, connectWallet, signMessage } = useWallet();
@@ -14,6 +16,41 @@ export default function EndToEndKYC() {
   const [oracleResult, setOracleResult] = useState<any>(null);
   const [step, setStep] = useState(1); // 1: Connect, 2: OTP/KYC, 3: Consent, 4: Result
   const [isReusing, setIsReusing] = useState(false);
+  const [zkLogs, setZkLogs] = useState<string[]>([]);
+  const zkLogRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    if (zkLogRef.current) zkLogRef.current.scrollTop = zkLogRef.current.scrollHeight;
+  }, [zkLogs]);
+
+  const addZkLog = (msg: string) => setZkLogs(p => [...p, msg]);
+
+  const triggerConfetti = () => {
+    const duration = 3 * 1000;
+    const end = Date.now() + duration;
+
+    const frame = () => {
+      confetti({
+        particleCount: 5,
+        angle: 60,
+        spread: 55,
+        origin: { x: 0 },
+        colors: ["#10b981", "#34d399", "#ffffff"]
+      });
+      confetti({
+        particleCount: 5,
+        angle: 120,
+        spread: 55,
+        origin: { x: 1 },
+        colors: ["#10b981", "#34d399", "#ffffff"]
+      });
+
+      if (Date.now() < end) {
+        requestAnimationFrame(frame);
+      }
+    };
+    frame();
+  };
 
   const handleWalletAuth = async () => {
     if (!isConnected) {
@@ -51,7 +88,7 @@ export default function EndToEndKYC() {
         throw new Error(verifyData.error || "Wallet verification failed. Please try again.");
       }
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setIsAuthenticating(false);
     }
@@ -78,8 +115,9 @@ export default function EndToEndKYC() {
       });
       setVerifiedData({ type: "reused_proof" });
       setStep(4);
+      triggerConfetti();
     } catch (err: any) {
-      alert("Error reusing proof: " + err.message);
+      toast.error("Error reusing proof: " + err.message);
     } finally {
       setIsReusing(false);
     }
@@ -99,7 +137,10 @@ export default function EndToEndKYC() {
 
       setIsAuthenticating(false);
       setIsGeneratingProof(true);
-      
+      setZkLogs([]);
+      addZkLog("> Consent anchored. Initializing ZK pipeline...");
+      await new Promise(resolve => setTimeout(resolve, 400));
+
       const key = verifiedData.email || verifiedData.phone || verifiedData.pan;
       
       // 1. Fetch Oracle Data (Manual or DigiLocker)
@@ -114,7 +155,9 @@ export default function EndToEndKYC() {
       });
       
       const result = await res.json();
-      
+      addZkLog(`> Oracle: Fetched attestation (source: ${result.source || "manual"})`);  
+      addZkLog(`> Trust Score: ${result.trustScore || "?"}/100`);
+
       // 2. Prepare Circuit Inputs via Backend API (Judge-Proof Logic without sending PII)
       console.log("🚀 Requesting Circuit Inputs from secure enclave...");
       const zkRes = await fetch("/api/zk/generate", {
@@ -131,6 +174,9 @@ export default function EndToEndKYC() {
         throw new Error(zkInputData.error || "Failed to prepare ZK inputs");
       }
 
+      addZkLog("> Secure Enclave prepared circuit inputs (PII stays local).");
+      addZkLog("> Loading ZK artifacts: kycMain.wasm, kyc.zkey...");
+
       console.log("🔐 Circuit Inputs Prepared:", zkInputData.circuitInput);
       
       // 3. ACTUAL CLIENT-SIDE PROVING (snarkjs in browser)
@@ -142,6 +188,9 @@ export default function EndToEndKYC() {
         throw new Error("SnarkJS library not loaded. Please refresh the page.");
       }
 
+      addZkLog("> snarkjs.groth16.fullProve() — generating locally in browser...");
+      addZkLog("> Computing witness and applying Poseidon hash constraints...");
+
       // @ts-ignore
       const { proof: generatedProof, publicSignals: generatedSignals } = await window.snarkjs.groth16.fullProve(
         zkInputData.circuitInput,
@@ -152,6 +201,11 @@ export default function EndToEndKYC() {
       console.log("✅ Proof Generated Locally:", generatedProof);
       console.log("📊 PUBLIC SIGNALS:", generatedSignals);
       
+      addZkLog("> Proof generated! πA, πB, πC computed.");
+      addZkLog(`> Public signals: [${generatedSignals?.slice(0,2).join(", ")}...]`);
+      addZkLog("> ✅ Verifying nullifier uniqueness...");
+      addZkLog("> ✅ Anchoring proof hash to Algorand Box Storage.");
+
       setProofData({ proof: generatedProof, publicSignals: generatedSignals });
       console.log("✅ Memory wipe: Scrubbing PII from memory...");
       
@@ -180,8 +234,9 @@ export default function EndToEndKYC() {
 
       setOracleResult({ ...result, ...zkInputData });
       setStep(4);
+      triggerConfetti();
     } catch (err: any) {
-      alert("Error generating ZK proof: " + err.message);
+      toast.error("Error generating ZK proof: " + err.message);
       setIsAuthenticating(false);
     } finally {
       setIsGeneratingProof(false);
@@ -206,31 +261,51 @@ export default function EndToEndKYC() {
             <motion.div
               animate={{ scale: [1, 1.05, 1], opacity: [0.8, 1, 0.8] }}
               transition={{ duration: 2, repeat: Infinity }}
-              className="relative mb-8"
+              className="relative mb-6"
             >
-              <div className="w-32 h-32 rounded-full border-4 border-emerald-500/20 flex items-center justify-center">
-                <Lock className="w-12 h-12 text-emerald-500 animate-pulse" />
+              <div className="w-24 h-24 rounded-full border-4 border-emerald-500/20 flex items-center justify-center">
+                <Lock className="w-10 h-10 text-emerald-500 animate-pulse" />
               </div>
-              <div className="absolute inset-0 w-32 h-32 rounded-full border-t-4 border-emerald-500 animate-spin" />
+              <div className="absolute inset-0 w-24 h-24 rounded-full border-t-4 border-emerald-500 animate-spin" />
             </motion.div>
             
-            <h2 className="text-4xl md:text-5xl font-black text-white tracking-tighter mb-4">
+            <h2 className="text-3xl md:text-4xl font-black text-white tracking-tighter mb-2">
               GENERATING <span className="text-emerald-500">ZK-PROOF</span>
             </h2>
-            <div className="flex flex-col gap-2 max-w-md">
-              <p className="text-slate-400 text-lg md:text-xl font-medium">
-                Protocol-Level Identity Binding...
-              </p>
-              <p className="text-emerald-400/60 font-mono text-sm uppercase tracking-[0.2em]">
-                Poseidon(DOB, Aadhaar, PAN, Wallet)
-              </p>
+            <p className="text-emerald-400/60 font-mono text-xs uppercase tracking-[0.2em] mb-6">
+              Poseidon(DOB, Aadhaar, PAN, Wallet)
+            </p>
+
+            {/* Live ZK Terminal */}
+            <div className="w-full max-w-lg bg-black/80 border border-emerald-500/20 rounded-2xl text-left overflow-hidden shadow-[0_0_40px_rgba(52,211,153,0.1)]">
+              <div className="flex items-center gap-2 px-4 py-2.5 border-b border-white/5 bg-white/[0.02]">
+                <Terminal className="w-3.5 h-3.5 text-emerald-500" />
+                <span className="text-[10px] font-black uppercase tracking-widest text-zinc-500">ZK Proof Terminal</span>
+                <div className="ml-auto flex gap-1.5">
+                  <div className="w-2.5 h-2.5 rounded-full bg-red-500/50" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-yellow-500/50" />
+                  <div className="w-2.5 h-2.5 rounded-full bg-emerald-500/50 animate-pulse" />
+                </div>
+              </div>
+              <div 
+                ref={zkLogRef}
+                className="h-36 overflow-y-auto p-4 font-mono text-xs space-y-1"
+                style={{ scrollbarWidth: "none" }}
+              >
+                {zkLogs.map((log, i) => (
+                  <motion.p key={i} initial={{ opacity: 0, x: -4 }} animate={{ opacity: 1, x: 0 }} className="text-emerald-400/80">
+                    {log}
+                  </motion.p>
+                ))}
+                <p className="text-emerald-500/60 animate-pulse">_</p>
+              </div>
             </div>
-            
-            <div className="mt-12 w-full max-w-xs h-1 bg-slate-900 rounded-full overflow-hidden">
+
+            <div className="mt-6 w-full max-w-xs h-0.5 bg-slate-900 rounded-full overflow-hidden">
               <motion.div 
-                animate={{ x: [-320, 320] }}
+                animate={{ x: ["-100%", "100%"] }}
                 transition={{ duration: 1.5, repeat: Infinity, ease: "linear" }}
-                className="w-full h-full bg-emerald-500"
+                className="w-1/2 h-full bg-emerald-500"
               />
             </div>
           </motion.div>

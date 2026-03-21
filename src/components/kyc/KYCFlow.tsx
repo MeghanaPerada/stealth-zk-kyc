@@ -1,6 +1,7 @@
 "use client";
 import React, { useState } from "react";
 import { Loader2, Send, CheckCircle2, ShieldCheck, Mail, Phone, Fingerprint, Building2, AlertTriangle } from "lucide-react";
+import { toast } from "sonner";
 
 interface KYCFlowProps {
   onVerified: (data: any) => void;
@@ -21,7 +22,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
 
   // 1️⃣ Send OTP
   const sendOtp = async () => {
-    if (!key) return alert("Please enter an email or phone number.");
+    if (!key) return toast.error("Please enter an email or phone number.");
     setIsSending(true);
     try {
       const res = await fetch("/api/otp/send", {
@@ -34,8 +35,9 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
         throw new Error(errData?.error || "Failed to send OTP");
       }
       setOtpSent(true);
+      toast.success("OTP Code Sent!");
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setIsSending(false);
     }
@@ -43,7 +45,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
 
   // 2️⃣ Verify OTP & Release Data
   const verifyOtp = async () => {
-    if (!otp) return alert("Please enter the OTP.");
+    if (!otp) return toast.error("Please enter the OTP.");
     setIsVerifying(true);
     try {
       const res = await fetch("/api/otp/verify", {
@@ -74,8 +76,9 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
           wallet: walletAddress,
         });
       }
+      toast.success("Identity Verified Locally!");
     } catch (err: any) {
-      alert(err.message);
+      toast.error(err.message);
     } finally {
       setIsVerifying(false);
     }

@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { toast } from "sonner";
 import algosdk from "algosdk";
 import { 
   Copy, 
@@ -213,9 +214,9 @@ function ExplorerContent() {
       // Update local state to reflect revoked.
       setProofs((prev) => prev.map(p => p.fullWallet === walletAddress ? { ...p, status: "Revoked" } : p));
       if (selectedProof) setSelectedProof({ ...selectedProof, status: "Revoked" });
-      alert("Consent revoked successfully on Algorand.");
+      toast.success("Consent revoked successfully on Algorand.");
     } catch(err: any) {
-      alert("Failed to revoke: " + err.message);
+      toast.error("Failed to revoke: " + err.message);
     } finally {
       setIsRevoking(false);
     }

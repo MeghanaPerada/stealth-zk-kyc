@@ -5,6 +5,7 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import ParticlesBackground from "@/components/ui/particles-background";
 import { WalletProvider } from "@/context/WalletContext";
+import { Toaster } from "sonner";
 
 const geistSans = Geist({
   variable: "--font-geist-sans",
@@ -40,6 +41,7 @@ export default function RootLayout({
           <Footer />
         </WalletProvider>
         <script src="https://cdn.jsdelivr.net/npm/snarkjs@0.7.0/build/snarkjs.min.js" defer></script>
+        <Toaster theme="dark" position="bottom-right" richColors />
       </body>
     </html>
   );
