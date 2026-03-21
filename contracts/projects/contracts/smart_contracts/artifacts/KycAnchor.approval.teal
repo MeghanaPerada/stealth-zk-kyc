@@ -4,22 +4,31 @@
 // @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
 main:
     intcblock 0 1 2 32
-    bytecblock "configopk" "expiry" "fields" 0x00 0x151f7c75 "proof"
+    bytecblock "minOracleConsensus" "ao" "expiry" "fields" 0x151f7c75 "proof"
+    txn ApplicationID
+    bnz main_after_if_else@2
+    // smart_contracts/kyc_consolidated.algo.ts:19
+    // minOracleConsensus = GlobalState<uint64>({ initialValue: 1 });
+    bytec_0 // "minOracleConsensus"
+    intc_1 // 1
+    app_global_put
+
+main_after_if_else@2:
     // smart_contracts/kyc_consolidated.algo.ts:9
     // export class KycAnchor extends Contract {
     txn NumAppArgs
-    bz main___algots__.defaultCreate@13
+    bz main___algots__.defaultCreate@17
     txn OnCompletion
     !
     assert
     txn ApplicationID
     assert
-    pushbytess 0x1160e932 0x6948557b 0xbb87b4c0 0x87aa53c3 0xdf7521f3 0xa2bfe548 // method "setupOracle(byte[])void", method "grantConsent(address,string,uint64)void", method "revokeConsent(address)void", method "hasValidConsent(address)bool", method "storeProof(address,byte[],byte[])void", method "verifyOnChain(address,byte[])bool"
+    pushbytess 0x2792a587 0x664ba410 0x8e51dfc6 0x6948557b 0xbb87b4c0 0x87aa53c3 0x8ef74809 0xa2bfe548 // method "addOracle(byte[])void", method "removeOracle(byte[])void", method "setMinConsensus(uint64)void", method "grantConsent(address,string,uint64)void", method "revokeConsent(address)void", method "hasValidConsent(address)bool", method "storeProof(address,byte[],byte[][],byte[][])void", method "verifyOnChain(address,byte[])bool"
     txna ApplicationArgs 0
-    match setupOracle grantConsent revokeConsent hasValidConsent storeProof verifyOnChain
+    match addOracle removeOracle setMinConsensus grantConsent revokeConsent hasValidConsent storeProof verifyOnChain
     err
 
-main___algots__.defaultCreate@13:
+main___algots__.defaultCreate@17:
     // smart_contracts/kyc_consolidated.algo.ts:9
     // export class KycAnchor extends Contract {
     txn OnCompletion
@@ -30,10 +39,10 @@ main___algots__.defaultCreate@13:
     return
 
 
-// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.setupOracle[routing]() -> void:
-setupOracle:
-    // smart_contracts/kyc_consolidated.algo.ts:24
-    // setupOracle(pubKey: bytes): void {
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.addOracle[routing]() -> void:
+addOracle:
+    // smart_contracts/kyc_consolidated.algo.ts:31
+    // addOracle(pubKey: bytes): void {
     txna ApplicationArgs 1
     dup
     intc_0 // 0
@@ -45,33 +54,100 @@ setupOracle:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // smart_contracts/kyc_consolidated.algo.ts:17
-    // oraclePubKeyRecord = BoxMap<string, bytes>({ keyPrefix: 'config' });
-    bytec_0 // "configopk"
-    // smart_contracts/kyc_consolidated.algo.ts:26
-    // this.oraclePubKeyRecord('opk').value = pubKey;
+    // smart_contracts/kyc_consolidated.algo.ts:24
+    // authorizedOracles = BoxMap<bytes, boolean>({ keyPrefix: 'ao' });
+    bytec_1 // "ao"
+    swap
+    concat
+    // smart_contracts/kyc_consolidated.algo.ts:33
+    // this.authorizedOracles(pubKey).value = true;
+    intc_1 // 1
+    itob
+    box_put
+    // smart_contracts/kyc_consolidated.algo.ts:34
+    // log('ORACLE_ADDED');
+    pushbytes "ORACLE_ADDED"
+    log
+    // smart_contracts/kyc_consolidated.algo.ts:31
+    // addOracle(pubKey: bytes): void {
+    intc_1 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.removeOracle[routing]() -> void:
+removeOracle:
+    // smart_contracts/kyc_consolidated.algo.ts:41
+    // removeOracle(pubKey: bytes): void {
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/kyc_consolidated.algo.ts:24
+    // authorizedOracles = BoxMap<bytes, boolean>({ keyPrefix: 'ao' });
+    bytec_1 // "ao"
+    swap
+    concat
+    dup
+    // smart_contracts/kyc_consolidated.algo.ts:43
+    // if (this.authorizedOracles(pubKey).exists) {
+    box_len
+    bury 1
+    bz removeOracle_after_if_else@3
+    // smart_contracts/kyc_consolidated.algo.ts:44
+    // this.authorizedOracles(pubKey).delete();
+    dup
     box_del
     pop
-    // smart_contracts/kyc_consolidated.algo.ts:17
-    // oraclePubKeyRecord = BoxMap<string, bytes>({ keyPrefix: 'config' });
-    bytec_0 // "configopk"
-    // smart_contracts/kyc_consolidated.algo.ts:26
-    // this.oraclePubKeyRecord('opk').value = pubKey;
-    swap
-    box_put
-    // smart_contracts/kyc_consolidated.algo.ts:27
-    // log('ORACLE_SETUP');
-    pushbytes "ORACLE_SETUP"
+    // smart_contracts/kyc_consolidated.algo.ts:45
+    // log('ORACLE_REMOVED');
+    pushbytes "ORACLE_REMOVED"
     log
-    // smart_contracts/kyc_consolidated.algo.ts:24
-    // setupOracle(pubKey: bytes): void {
+
+removeOracle_after_if_else@3:
+    // smart_contracts/kyc_consolidated.algo.ts:41
+    // removeOracle(pubKey: bytes): void {
+    intc_1 // 1
+    return
+
+
+// smart_contracts/kyc_consolidated.algo.ts::KycAnchor.setMinConsensus[routing]() -> void:
+setMinConsensus:
+    // smart_contracts/kyc_consolidated.algo.ts:53
+    // setMinConsensus(m: uint64): void {
+    txna ApplicationArgs 1
+    dup
+    len
+    pushint 8
+    ==
+    assert // invalid number of bytes for arc4.uint64
+    btoi
+    // smart_contracts/kyc_consolidated.algo.ts:19
+    // minOracleConsensus = GlobalState<uint64>({ initialValue: 1 });
+    bytec_0 // "minOracleConsensus"
+    // smart_contracts/kyc_consolidated.algo.ts:55
+    // this.minOracleConsensus.value = m;
+    swap
+    app_global_put
+    // smart_contracts/kyc_consolidated.algo.ts:56
+    // log('MIN_CONSENSUS_UPDATED');
+    pushbytes "MIN_CONSENSUS_UPDATED"
+    log
+    // smart_contracts/kyc_consolidated.algo.ts:53
+    // setMinConsensus(m: uint64): void {
     intc_1 // 1
     return
 
 
 // smart_contracts/kyc_consolidated.algo.ts::KycAnchor.grantConsent[routing]() -> void:
 grantConsent:
-    // smart_contracts/kyc_consolidated.algo.ts:34
+    // smart_contracts/kyc_consolidated.algo.ts:63
     // grantConsent(wallet: Account, allowed_fields: string, expiry: uint64): void {
     txna ApplicationArgs 1
     dup
@@ -97,13 +173,13 @@ grantConsent:
     ==
     assert // invalid number of bytes for arc4.uint64
     btoi
-    // smart_contracts/kyc_consolidated.algo.ts:35
+    // smart_contracts/kyc_consolidated.algo.ts:64
     // assert(Txn.sender === wallet, 'Only the wallet owner can grant consent');
     txn Sender
     dig 3
     ==
     assert // Only the wallet owner can grant consent
-    // smart_contracts/kyc_consolidated.algo.ts:36
+    // smart_contracts/kyc_consolidated.algo.ts:65
     // assert(expiry > Global.latestTimestamp, 'Expiry must be in the future');
     dup
     global LatestTimestamp
@@ -111,31 +187,31 @@ grantConsent:
     assert // Expiry must be in the future
     // smart_contracts/kyc_consolidated.algo.ts:11
     // consentExpiry = BoxMap<Account, uint64>({ keyPrefix: 'expiry' });
-    bytec_1 // "expiry"
+    bytec_2 // "expiry"
     dig 3
     concat
-    // smart_contracts/kyc_consolidated.algo.ts:38
+    // smart_contracts/kyc_consolidated.algo.ts:67
     // this.consentExpiry(wallet).value = expiry;
     swap
     itob
     box_put
     // smart_contracts/kyc_consolidated.algo.ts:12
     // consentFields = BoxMap<Account, string>({ keyPrefix: 'fields' });
-    bytec_2 // "fields"
+    bytec_3 // "fields"
     uncover 2
     concat
-    // smart_contracts/kyc_consolidated.algo.ts:39
+    // smart_contracts/kyc_consolidated.algo.ts:68
     // this.consentFields(wallet).value = allowed_fields;
     dup
     box_del
     pop
     swap
     box_put
-    // smart_contracts/kyc_consolidated.algo.ts:41
+    // smart_contracts/kyc_consolidated.algo.ts:70
     // log('CONSENT_GRANTED');
     pushbytes "CONSENT_GRANTED"
     log
-    // smart_contracts/kyc_consolidated.algo.ts:34
+    // smart_contracts/kyc_consolidated.algo.ts:63
     // grantConsent(wallet: Account, allowed_fields: string, expiry: uint64): void {
     intc_1 // 1
     return
@@ -144,7 +220,7 @@ grantConsent:
 // smart_contracts/kyc_consolidated.algo.ts::KycAnchor.revokeConsent[routing]() -> void:
 revokeConsent:
     intc_0 // 0
-    // smart_contracts/kyc_consolidated.algo.ts:48
+    // smart_contracts/kyc_consolidated.algo.ts:77
     // revokeConsent(wallet: Account): void {
     txna ApplicationArgs 1
     dupn 2
@@ -152,7 +228,7 @@ revokeConsent:
     intc_3 // 32
     ==
     assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
-    // smart_contracts/kyc_consolidated.algo.ts:49
+    // smart_contracts/kyc_consolidated.algo.ts:78
     // assert(Txn.sender === wallet, 'Only the wallet owner can revoke consent');
     txn Sender
     dig 1
@@ -160,16 +236,16 @@ revokeConsent:
     assert // Only the wallet owner can revoke consent
     // smart_contracts/kyc_consolidated.algo.ts:11
     // consentExpiry = BoxMap<Account, uint64>({ keyPrefix: 'expiry' });
-    bytec_1 // "expiry"
+    bytec_2 // "expiry"
     swap
     concat
     dup
-    // smart_contracts/kyc_consolidated.algo.ts:51
+    // smart_contracts/kyc_consolidated.algo.ts:80
     // if (this.consentExpiry(wallet).exists) {
     box_len
     bury 1
     bz revokeConsent_after_if_else@3
-    // smart_contracts/kyc_consolidated.algo.ts:52
+    // smart_contracts/kyc_consolidated.algo.ts:81
     // this.consentExpiry(wallet).delete();
     dup
     box_del
@@ -178,28 +254,28 @@ revokeConsent:
 revokeConsent_after_if_else@3:
     // smart_contracts/kyc_consolidated.algo.ts:12
     // consentFields = BoxMap<Account, string>({ keyPrefix: 'fields' });
-    bytec_2 // "fields"
+    bytec_3 // "fields"
     dig 2
     concat
     dup
     bury 4
-    // smart_contracts/kyc_consolidated.algo.ts:54
+    // smart_contracts/kyc_consolidated.algo.ts:83
     // if (this.consentFields(wallet).exists) {
     box_len
     bury 1
     bz revokeConsent_after_if_else@5
-    // smart_contracts/kyc_consolidated.algo.ts:55
+    // smart_contracts/kyc_consolidated.algo.ts:84
     // this.consentFields(wallet).delete();
     dig 2
     box_del
     pop
 
 revokeConsent_after_if_else@5:
-    // smart_contracts/kyc_consolidated.algo.ts:58
+    // smart_contracts/kyc_consolidated.algo.ts:87
     // log('CONSENT_REVOKED');
     pushbytes "CONSENT_REVOKED"
     log
-    // smart_contracts/kyc_consolidated.algo.ts:48
+    // smart_contracts/kyc_consolidated.algo.ts:77
     // revokeConsent(wallet: Account): void {
     intc_1 // 1
     return
@@ -207,7 +283,7 @@ revokeConsent_after_if_else@5:
 
 // smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent[routing]() -> void:
 hasValidConsent:
-    // smart_contracts/kyc_consolidated.algo.ts:64
+    // smart_contracts/kyc_consolidated.algo.ts:93
     // hasValidConsent(wallet: Account): boolean {
     txna ApplicationArgs 1
     dup
@@ -216,7 +292,7 @@ hasValidConsent:
     ==
     assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
     callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent
-    bytec_3 // 0x00
+    pushbytes 0x00
     intc_0 // 0
     uncover 2
     setbit
@@ -230,8 +306,17 @@ hasValidConsent:
 
 // smart_contracts/kyc_consolidated.algo.ts::KycAnchor.storeProof[routing]() -> void:
 storeProof:
-    // smart_contracts/kyc_consolidated.algo.ts:73
-    // storeProof(wallet: Account, proofHash: bytes, oracleSignature: bytes): void {
+    intc_0 // 0
+    dupn 3
+    pushbytes ""
+    dupn 8
+    // smart_contracts/kyc_consolidated.algo.ts:102-107
+    // storeProof(
+    //   wallet: Account,
+    //   proofHash: bytes,
+    //   oraclePubKeysInputs: bytes[],
+    //   oracleSignaturesInputs: bytes[]
+    // ): void {
     txna ApplicationArgs 1
     dup
     len
@@ -253,78 +338,367 @@ storeProof:
     dup
     intc_0 // 0
     extract_uint16 // on error: invalid array length header
+    dup
+    cover 2
+    intc_2 // 2
+    *
+    swap
+    dup
+    len
+    swap
+    extract 2 0
+    intc_0 // 0
+
+storeProof_for_header@1:
+    // smart_contracts/kyc_consolidated.algo.ts:102-107
+    // storeProof(
+    //   wallet: Account,
+    //   proofHash: bytes,
+    //   oraclePubKeysInputs: bytes[],
+    //   oracleSignaturesInputs: bytes[]
+    // ): void {
+    dup
+    dig 5
+    <
+    bz storeProof_after_for@4
+    dupn 2
+    intc_2 // 2
+    *
+    dig 3
+    dup
+    uncover 2
+    extract_uint16 // on error: invalid array encoding
+    dup
+    dig 7
+    dup
+    cover 4
+    ==
+    assert // invalid tail pointer for (len+(len+uint8[])[])
+    dig 1
+    len
+    substring3
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
     intc_2 // 2
     +
+    +
+    bury 5
+    intc_1 // 1
+    +
+    bury 1
+    b storeProof_for_header@1
+
+storeProof_after_for@4:
+    // smart_contracts/kyc_consolidated.algo.ts:102-107
+    // storeProof(
+    //   wallet: Account,
+    //   proofHash: bytes,
+    //   oraclePubKeysInputs: bytes[],
+    //   oracleSignaturesInputs: bytes[]
+    // ): void {
+    dig 3
+    intc_2 // 2
+    +
+    dig 3
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<bytes>
+    txna ApplicationArgs 4
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    dup
+    bury 18
+    intc_2 // 2
+    *
+    bury 12
+    dup
+    len
+    bury 10
+    extract 2 0
+    bury 20
+    intc_0 // 0
+    bury 14
+
+storeProof_for_header@5:
+    // smart_contracts/kyc_consolidated.algo.ts:102-107
+    // storeProof(
+    //   wallet: Account,
+    //   proofHash: bytes,
+    //   oraclePubKeysInputs: bytes[],
+    //   oracleSignaturesInputs: bytes[]
+    // ): void {
+    dig 13
+    dig 16
+    <
+    bz storeProof_after_for@8
+    dig 13
+    dup
+    intc_2 // 2
+    *
+    dig 21
+    dup
+    uncover 2
+    extract_uint16 // on error: invalid array encoding
+    dup
+    dig 14
+    dup
+    cover 4
+    ==
+    assert // invalid tail pointer for (len+(len+uint8[])[])
     dig 1
     len
+    substring3
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    +
+    bury 12
+    intc_1 // 1
+    +
+    bury 14
+    b storeProof_for_header@5
+
+storeProof_after_for@8:
+    // smart_contracts/kyc_consolidated.algo.ts:102-107
+    // storeProof(
+    //   wallet: Account,
+    //   proofHash: bytes,
+    //   oraclePubKeysInputs: bytes[],
+    //   oracleSignaturesInputs: bytes[]
+    // ): void {
+    dig 10
+    intc_2 // 2
+    +
+    dig 9
     ==
-    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
-    extract 2 0
-    // smart_contracts/kyc_consolidated.algo.ts:74
+    assert // invalid number of bytes for arc4.dynamic_array<bytes>
+    // smart_contracts/kyc_consolidated.algo.ts:108
     // assert(this.hasValidConsent(wallet), 'Active consent is required to store proof');
-    dig 2
+    dig 6
     callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent
     assert // Active consent is required to store proof
-    // smart_contracts/kyc_consolidated.algo.ts:75
+    // smart_contracts/kyc_consolidated.algo.ts:109
     // assert(proofHash.length > 0, 'Proof hash cannot be empty');
-    dig 1
+    dig 5
     len
     assert // Proof hash cannot be empty
-    // smart_contracts/kyc_consolidated.algo.ts:17
-    // oraclePubKeyRecord = BoxMap<string, bytes>({ keyPrefix: 'config' });
-    bytec_0 // "configopk"
-    // smart_contracts/kyc_consolidated.algo.ts:78
-    // const opk = this.oraclePubKeyRecord('opk').value;
+    // smart_contracts/kyc_consolidated.algo.ts:112
+    // const m = this.minOracleConsensus.value;
+    intc_0 // 0
+    // smart_contracts/kyc_consolidated.algo.ts:19
+    // minOracleConsensus = GlobalState<uint64>({ initialValue: 1 });
+    bytec_0 // "minOracleConsensus"
+    // smart_contracts/kyc_consolidated.algo.ts:112
+    // const m = this.minOracleConsensus.value;
+    app_global_get_ex
+    swap
+    dup
+    cover 2
+    bury 14
+    assert // check GlobalState exists
+    // smart_contracts/kyc_consolidated.algo.ts:113
+    // assert(oraclePubKeysInputs.length >= m, 'Not enough signatures provided');
+    dig 5
+    dup
+    uncover 2
+    >=
+    assert // Not enough signatures provided
+    // smart_contracts/kyc_consolidated.algo.ts:114
+    // assert(oraclePubKeysInputs.length === oracleSignaturesInputs.length, 'Public key and signature arrays must match in length');
+    dig 16
+    ==
+    assert // Public key and signature arrays must match in length
+    // smart_contracts/kyc_consolidated.algo.ts:116
+    // let validSignatureCount = Uint64(0);
+    intc_0 // 0
+    bury 8
+    // smart_contracts/kyc_consolidated.algo.ts:118
+    // for (let i = Uint64(0); i < oraclePubKeysInputs.length; i++) {
+    intc_0 // 0
+    bury 15
+
+storeProof_while_top@10:
+    // smart_contracts/kyc_consolidated.algo.ts:118
+    // for (let i = Uint64(0); i < oraclePubKeysInputs.length; i++) {
+    dig 14
+    dig 5
+    <
+    dup
+    bury 11
+    bz storeProof_after_while@19
+    // smart_contracts/kyc_consolidated.algo.ts:119
+    // const pubKey = oraclePubKeysInputs[i];
+    dig 9
+    assert // index access is out of bounds
+    dig 14
+    dup
+    intc_2 // 2
+    *
+    dig 3
+    dup
+    cover 2
+    dig 1
+    extract_uint16
+    dig 2
+    dig 1
+    extract_uint16
+    intc_2 // 2
+    +
+    uncover 3
+    cover 2
+    extract3
+    extract 2 0
+    bury 20
+    // smart_contracts/kyc_consolidated.algo.ts:120
+    // const sig = oracleSignaturesInputs[i];
+    swap
+    dig 17
+    <
+    assert // index access is out of bounds
+    dig 20
+    dup
+    uncover 2
+    extract_uint16
+    dup2
+    extract_uint16
+    intc_2 // 2
+    +
+    extract3
+    extract 2 0
+    bury 17
+    // smart_contracts/kyc_consolidated.algo.ts:123
+    // for (let j = Uint64(0); j < i; j++) {
+    intc_0 // 0
+    bury 13
+
+storeProof_while_top@12:
+    // smart_contracts/kyc_consolidated.algo.ts:123
+    // for (let j = Uint64(0); j < i; j++) {
+    dig 12
+    dig 15
+    <
+    bz storeProof_after_while@14
+    // smart_contracts/kyc_consolidated.algo.ts:124
+    // assert(pubKey !== oraclePubKeysInputs[j], 'Oracle public keys must be unique');
+    dig 12
+    dup
+    dig 6
+    <
+    assert // index access is out of bounds
+    dup
+    intc_2 // 2
+    *
+    dig 3
+    dup
+    uncover 2
+    extract_uint16
+    dup2
+    extract_uint16
+    intc_2 // 2
+    +
+    extract3
+    extract 2 0
+    dig 19
+    !=
+    assert // Oracle public keys must be unique
+    // smart_contracts/kyc_consolidated.algo.ts:123
+    // for (let j = Uint64(0); j < i; j++) {
+    intc_1 // 1
+    +
+    bury 13
+    b storeProof_while_top@12
+
+storeProof_after_while@14:
+    // smart_contracts/kyc_consolidated.algo.ts:24
+    // authorizedOracles = BoxMap<bytes, boolean>({ keyPrefix: 'ao' });
+    bytec_1 // "ao"
+    dig 18
+    concat
+    dup
+    bury 20
+    // smart_contracts/kyc_consolidated.algo.ts:128
+    // assert(this.authorizedOracles(pubKey).exists && this.authorizedOracles(pubKey).value === true, 'Unauthorized Oracle');
+    box_len
+    bury 1
+    bz storeProof_bool_false@17
+    dig 18
     box_get
     assert // Box must have value
-    // smart_contracts/kyc_consolidated.algo.ts:17
-    // oraclePubKeyRecord = BoxMap<string, bytes>({ keyPrefix: 'config' });
-    bytec_0 // "configopk"
-    // smart_contracts/kyc_consolidated.algo.ts:78-79
-    // const opk = this.oraclePubKeyRecord('opk').value;
-    // assert(opk.length > 0, 'Oracle public key not configured');
-    box_len
-    pop
-    // smart_contracts/kyc_consolidated.algo.ts:79
-    // assert(opk.length > 0, 'Oracle public key not configured');
-    assert // Oracle public key not configured
-    // smart_contracts/kyc_consolidated.algo.ts:81-85
-    // const isSignatureValid = op.ed25519verifyBare(
-    //   proofHash,
-    //   oracleSignature,
-    //   opk
-    // );
-    dig 2
-    cover 2
+    btoi
+    intc_1 // 1
+    ==
+    bz storeProof_bool_false@17
+    intc_1 // 1
+
+storeProof_bool_merge@18:
+    // smart_contracts/kyc_consolidated.algo.ts:128
+    // assert(this.authorizedOracles(pubKey).exists && this.authorizedOracles(pubKey).value === true, 'Unauthorized Oracle');
+    assert // Unauthorized Oracle
+    // smart_contracts/kyc_consolidated.algo.ts:131
+    // const isSignatureValid = op.ed25519verifyBare(proofHash, sig, pubKey);
+    dig 5
+    dig 17
+    dig 19
     ed25519verify_bare
-    // smart_contracts/kyc_consolidated.algo.ts:86
+    // smart_contracts/kyc_consolidated.algo.ts:132
     // assert(isSignatureValid, 'Invalid Oracle signature: Proof tampering detected');
     assert // Invalid Oracle signature: Proof tampering detected
+    // smart_contracts/kyc_consolidated.algo.ts:134
+    // validSignatureCount++;
+    dig 7
+    intc_1 // 1
+    +
+    bury 8
+    // smart_contracts/kyc_consolidated.algo.ts:118
+    // for (let i = Uint64(0); i < oraclePubKeysInputs.length; i++) {
+    dig 14
+    intc_1 // 1
+    +
+    bury 15
+    b storeProof_while_top@10
+
+storeProof_bool_false@17:
+    intc_0 // 0
+    b storeProof_bool_merge@18
+
+storeProof_after_while@19:
+    // smart_contracts/kyc_consolidated.algo.ts:137
+    // assert(validSignatureCount >= m, 'M-of-N Oracle threshold not met');
+    dig 7
+    dig 12
+    >=
+    assert // M-of-N Oracle threshold not met
     // smart_contracts/kyc_consolidated.algo.ts:13
     // proofHashBoxes = BoxMap<Account, bytes>({ keyPrefix: 'proof' });
     bytec 5 // "proof"
-    uncover 2
+    dig 7
     concat
-    // smart_contracts/kyc_consolidated.algo.ts:89
+    // smart_contracts/kyc_consolidated.algo.ts:140
     // this.proofHashBoxes(wallet).value = proofHash;
     dup
     box_del
     pop
-    swap
+    dig 6
     box_put
-    // smart_contracts/kyc_consolidated.algo.ts:90
+    // smart_contracts/kyc_consolidated.algo.ts:141
     // log('PROOF_STORED_ON_CHAIN');
     pushbytes "PROOF_STORED_ON_CHAIN"
     log
-    // smart_contracts/kyc_consolidated.algo.ts:73
-    // storeProof(wallet: Account, proofHash: bytes, oracleSignature: bytes): void {
+    // smart_contracts/kyc_consolidated.algo.ts:102-107
+    // storeProof(
+    //   wallet: Account,
+    //   proofHash: bytes,
+    //   oraclePubKeysInputs: bytes[],
+    //   oracleSignaturesInputs: bytes[]
+    // ): void {
     intc_1 // 1
     return
 
 
 // smart_contracts/kyc_consolidated.algo.ts::KycAnchor.verifyOnChain[routing]() -> void:
 verifyOnChain:
-    // smart_contracts/kyc_consolidated.algo.ts:97
+    // smart_contracts/kyc_consolidated.algo.ts:148
     // verifyOnChain(wallet: Account, hashToVerify: bytes): boolean {
     txna ApplicationArgs 1
     dup
@@ -348,20 +722,20 @@ verifyOnChain:
     bytec 5 // "proof"
     uncover 2
     concat
-    // smart_contracts/kyc_consolidated.algo.ts:98
+    // smart_contracts/kyc_consolidated.algo.ts:149
     // assert(this.proofHashBoxes(wallet).exists, 'No proof exists for this wallet');
     dup
     box_len
     bury 1
     assert // No proof exists for this wallet
-    // smart_contracts/kyc_consolidated.algo.ts:99
+    // smart_contracts/kyc_consolidated.algo.ts:150
     // return this.proofHashBoxes(wallet).value === hashToVerify;
     box_get
     pop
     ==
-    // smart_contracts/kyc_consolidated.algo.ts:97
+    // smart_contracts/kyc_consolidated.algo.ts:148
     // verifyOnChain(wallet: Account, hashToVerify: bytes): boolean {
-    bytec_3 // 0x00
+    pushbytes 0x00
     intc_0 // 0
     uncover 2
     setbit
@@ -375,16 +749,16 @@ verifyOnChain:
 
 // smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent(wallet: bytes) -> uint64:
 smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent:
-    // smart_contracts/kyc_consolidated.algo.ts:64
+    // smart_contracts/kyc_consolidated.algo.ts:93
     // hasValidConsent(wallet: Account): boolean {
     proto 1 1
     // smart_contracts/kyc_consolidated.algo.ts:11
     // consentExpiry = BoxMap<Account, uint64>({ keyPrefix: 'expiry' });
-    bytec_1 // "expiry"
+    bytec_2 // "expiry"
     frame_dig -1
     concat
     dup
-    // smart_contracts/kyc_consolidated.algo.ts:65
+    // smart_contracts/kyc_consolidated.algo.ts:94
     // return this.consentExpiry(wallet).exists && Global.latestTimestamp < this.consentExpiry(wallet).value;
     box_len
     bury 1
@@ -399,7 +773,7 @@ smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent:
     intc_1 // 1
 
 smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_merge@4:
-    // smart_contracts/kyc_consolidated.algo.ts:65
+    // smart_contracts/kyc_consolidated.algo.ts:94
     // return this.consentExpiry(wallet).exists && Global.latestTimestamp < this.consentExpiry(wallet).value;
     swap
     retsub

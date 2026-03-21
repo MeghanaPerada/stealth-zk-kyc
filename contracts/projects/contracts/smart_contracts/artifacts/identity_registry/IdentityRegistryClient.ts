@@ -23,7 +23,7 @@ import { TransactionComposer, AppCallMethodCall, AppMethodCallTransactionArgumen
 import { SendParams, SendSingleTransactionResult, SendAtomicTransactionComposerResults } from '@algorandfoundation/algokit-utils/types/transaction'
 import { Address, encodeAddress, modelsv2, OnApplicationComplete, Transaction, TransactionSigner } from 'algosdk'
 
-export const APP_SPEC: Arc56Contract = {"name":"IdentityRegistry","structs":{},"methods":[{"name":"registerVerification","args":[{"type":"address","name":"wallet","desc":"The account to verify"},{"type":"string","name":"proofId","desc":"The unique ID associated with the user's ZK proof"}],"returns":{"type":"void"},"actions":{"create":[],"call":["NoOp"]},"readonly":false,"desc":"Registers a wallet as verified.","events":[],"recommendations":{}},{"name":"isVerified","args":[{"type":"address","name":"wallet","desc":"The account to check"}],"returns":{"type":"bool","desc":"True if the wallet is in the registry"},"actions":{"create":[],"call":["NoOp"]},"readonly":false,"desc":"Checks if a wallet is verified.","events":[],"recommendations":{}},{"name":"getProofId","args":[{"type":"address","name":"wallet","desc":"The account to query"}],"returns":{"type":"string","desc":"The associated proof ID"},"actions":{"create":[],"call":["NoOp"]},"readonly":false,"desc":"Retrieves the proof ID for a verified wallet.","events":[],"recommendations":{}}],"arcs":[22,28],"desc":"IdentityRegistry Contract\nMaintains a public registry of verified wallets and their associated proof IDs.\nAllows organizations to query if a user has completed ZK-KYC.","networks":{},"state":{"schema":{"global":{"ints":0,"bytes":0},"local":{"ints":0,"bytes":0}},"keys":{"global":{},"local":{},"box":{}},"maps":{"global":{},"local":{},"box":{"verifiedWallets":{"keyType":"address","valueType":"AVMString","desc":"Mapping of Wallet Address -> Proof ID","prefix":"dg=="}}}},"bareActions":{"create":["NoOp"],"call":[]},"sourceInfo":{"approval":{"sourceInfo":[{"pc":[93],"errorMessage":"Proof ID cannot be empty"},{"pc":[147],"errorMessage":"Wallet not found in verified registry"},{"pc":[77],"errorMessage":"invalid array length header"},{"pc":[85],"errorMessage":"invalid number of bytes for arc4.dynamic_array<arc4.uint8>"},{"pc":[71,112,139],"errorMessage":"invalid number of bytes for arc4.static_array<arc4.uint8, 32>"}],"pcOffsetMethod":"none"},"clear":{"sourceInfo":[],"pcOffsetMethod":"none"}},"source":{"approval":"I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYXJjNC9pbmRleC5kLnRzOjpDb250cmFjdC5hcHByb3ZhbFByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICBpbnRjYmxvY2sgMzIgMSAwCiAgICBieXRlY2Jsb2NrICJ2IiAweDE1MWY3Yzc1CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo4CiAgICAvLyBleHBvcnQgY2xhc3MgSWRlbnRpdHlSZWdpc3RyeSBleHRlbmRzIENvbnRyYWN0IHsKICAgIHR4biBOdW1BcHBBcmdzCiAgICBieiBtYWluX19fYWxnb3RzX18uZGVmYXVsdENyZWF0ZUAxMAogICAgdHhuIE9uQ29tcGxldGlvbgogICAgIQogICAgYXNzZXJ0CiAgICB0eG4gQXBwbGljYXRpb25JRAogICAgYXNzZXJ0CiAgICBwdXNoYnl0ZXNzIDB4MGFiNjQ3ODYgMHhlMzFlZDQ3NCAweGY5MjU5YzNmIC8vIG1ldGhvZCAicmVnaXN0ZXJWZXJpZmljYXRpb24oYWRkcmVzcyxzdHJpbmcpdm9pZCIsIG1ldGhvZCAiaXNWZXJpZmllZChhZGRyZXNzKWJvb2wiLCBtZXRob2QgImdldFByb29mSWQoYWRkcmVzcylzdHJpbmciCiAgICB0eG5hIEFwcGxpY2F0aW9uQXJncyAwCiAgICBtYXRjaCByZWdpc3RlclZlcmlmaWNhdGlvbiBpc1ZlcmlmaWVkIGdldFByb29mSWQKICAgIGVycgoKbWFpbl9fX2FsZ290c19fLmRlZmF1bHRDcmVhdGVAMTA6CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo4CiAgICAvLyBleHBvcnQgY2xhc3MgSWRlbnRpdHlSZWdpc3RyeSBleHRlbmRzIENvbnRyYWN0IHsKICAgIHR4biBPbkNvbXBsZXRpb24KICAgICEKICAgIHR4biBBcHBsaWNhdGlvbklECiAgICAhCiAgICAmJgogICAgcmV0dXJuCgoKLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6OklkZW50aXR5UmVnaXN0cnkucmVnaXN0ZXJWZXJpZmljYXRpb25bcm91dGluZ10oKSAtPiB2b2lkOgpyZWdpc3RlclZlcmlmaWNhdGlvbjoKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjE3CiAgICAvLyBwdWJsaWMgcmVnaXN0ZXJWZXJpZmljYXRpb24od2FsbGV0OiBBY2NvdW50LCBwcm9vZklkOiBzdHJpbmcpOiB2b2lkIHsKICAgIHR4bmEgQXBwbGljYXRpb25BcmdzIDEKICAgIGR1cAogICAgbGVuCiAgICBpbnRjXzAgLy8gMzIKICAgID09CiAgICBhc3NlcnQgLy8gaW52YWxpZCBudW1iZXIgb2YgYnl0ZXMgZm9yIGFyYzQuc3RhdGljX2FycmF5PGFyYzQudWludDgsIDMyPgogICAgdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMgogICAgZHVwCiAgICBpbnRjXzIgLy8gMAogICAgZXh0cmFjdF91aW50MTYgLy8gb24gZXJyb3I6IGludmFsaWQgYXJyYXkgbGVuZ3RoIGhlYWRlcgogICAgcHVzaGludCAyCiAgICArCiAgICBkaWcgMQogICAgbGVuCiAgICA9PQogICAgYXNzZXJ0IC8vIGludmFsaWQgbnVtYmVyIG9mIGJ5dGVzIGZvciBhcmM0LmR5bmFtaWNfYXJyYXk8YXJjNC51aW50OD4KICAgIGV4dHJhY3QgMiAwCiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czoxOAogICAgLy8gYXNzZXJ0KHByb29mSWQgIT09ICcnLCAnUHJvb2YgSUQgY2Fubm90IGJlIGVtcHR5JykKICAgIGR1cAogICAgcHVzaGJ5dGVzICIiCiAgICAhPQogICAgYXNzZXJ0IC8vIFByb29mIElEIGNhbm5vdCBiZSBlbXB0eQogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MTAKICAgIC8vIHZlcmlmaWVkV2FsbGV0cyA9IEJveE1hcDxBY2NvdW50LCBzdHJpbmc+KHsga2V5UHJlZml4OiAndicgfSkKICAgIGJ5dGVjXzAgLy8gInYiCiAgICB1bmNvdmVyIDIKICAgIGNvbmNhdAogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MjEKICAgIC8vIHRoaXMudmVyaWZpZWRXYWxsZXRzKHdhbGxldCkudmFsdWUgPSBwcm9vZklkCiAgICBkdXAKICAgIGJveF9kZWwKICAgIHBvcAogICAgc3dhcAogICAgYm94X3B1dAogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MTcKICAgIC8vIHB1YmxpYyByZWdpc3RlclZlcmlmaWNhdGlvbih3YWxsZXQ6IEFjY291bnQsIHByb29mSWQ6IHN0cmluZyk6IHZvaWQgewogICAgaW50Y18xIC8vIDEKICAgIHJldHVybgoKCi8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjpJZGVudGl0eVJlZ2lzdHJ5LmlzVmVyaWZpZWRbcm91dGluZ10oKSAtPiB2b2lkOgppc1ZlcmlmaWVkOgogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MjkKICAgIC8vIHB1YmxpYyBpc1ZlcmlmaWVkKHdhbGxldDogQWNjb3VudCk6IGJvb2xlYW4gewogICAgdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMQogICAgZHVwCiAgICBsZW4KICAgIGludGNfMCAvLyAzMgogICAgPT0KICAgIGFzc2VydCAvLyBpbnZhbGlkIG51bWJlciBvZiBieXRlcyBmb3IgYXJjNC5zdGF0aWNfYXJyYXk8YXJjNC51aW50OCwgMzI+CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czoxMAogICAgLy8gdmVyaWZpZWRXYWxsZXRzID0gQm94TWFwPEFjY291bnQsIHN0cmluZz4oeyBrZXlQcmVmaXg6ICd2JyB9KQogICAgYnl0ZWNfMCAvLyAidiIKICAgIHN3YXAKICAgIGNvbmNhdAogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MzAKICAgIC8vIHJldHVybiB0aGlzLnZlcmlmaWVkV2FsbGV0cyh3YWxsZXQpLmV4aXN0cwogICAgYm94X2xlbgogICAgYnVyeSAxCiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czoyOQogICAgLy8gcHVibGljIGlzVmVyaWZpZWQod2FsbGV0OiBBY2NvdW50KTogYm9vbGVhbiB7CiAgICBwdXNoYnl0ZXMgMHgwMAogICAgaW50Y18yIC8vIDAKICAgIHVuY292ZXIgMgogICAgc2V0Yml0CiAgICBieXRlY18xIC8vIDB4MTUxZjdjNzUKICAgIHN3YXAKICAgIGNvbmNhdAogICAgbG9nCiAgICBpbnRjXzEgLy8gMQogICAgcmV0dXJuCgoKLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6OklkZW50aXR5UmVnaXN0cnkuZ2V0UHJvb2ZJZFtyb3V0aW5nXSgpIC0+IHZvaWQ6CmdldFByb29mSWQ6CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czozOAogICAgLy8gcHVibGljIGdldFByb29mSWQod2FsbGV0OiBBY2NvdW50KTogc3RyaW5nIHsKICAgIHR4bmEgQXBwbGljYXRpb25BcmdzIDEKICAgIGR1cAogICAgbGVuCiAgICBpbnRjXzAgLy8gMzIKICAgID09CiAgICBhc3NlcnQgLy8gaW52YWxpZCBudW1iZXIgb2YgYnl0ZXMgZm9yIGFyYzQuc3RhdGljX2FycmF5PGFyYzQudWludDgsIDMyPgogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MTAKICAgIC8vIHZlcmlmaWVkV2FsbGV0cyA9IEJveE1hcDxBY2NvdW50LCBzdHJpbmc+KHsga2V5UHJlZml4OiAndicgfSkKICAgIGJ5dGVjXzAgLy8gInYiCiAgICBzd2FwCiAgICBjb25jYXQKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjM5CiAgICAvLyBhc3NlcnQodGhpcy52ZXJpZmllZFdhbGxldHMod2FsbGV0KS5leGlzdHMsICdXYWxsZXQgbm90IGZvdW5kIGluIHZlcmlmaWVkIHJlZ2lzdHJ5JykKICAgIGR1cAogICAgYm94X2xlbgogICAgYnVyeSAxCiAgICBhc3NlcnQgLy8gV2FsbGV0IG5vdCBmb3VuZCBpbiB2ZXJpZmllZCByZWdpc3RyeQogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6NDAKICAgIC8vIHJldHVybiB0aGlzLnZlcmlmaWVkV2FsbGV0cyh3YWxsZXQpLnZhbHVlCiAgICBib3hfZ2V0CiAgICBwb3AKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjM4CiAgICAvLyBwdWJsaWMgZ2V0UHJvb2ZJZCh3YWxsZXQ6IEFjY291bnQpOiBzdHJpbmcgewogICAgZHVwCiAgICBsZW4KICAgIGl0b2IKICAgIGV4dHJhY3QgNiAyCiAgICBzd2FwCiAgICBjb25jYXQKICAgIGJ5dGVjXzEgLy8gMHgxNTFmN2M3NQogICAgc3dhcAogICAgY29uY2F0CiAgICBsb2cKICAgIGludGNfMSAvLyAxCiAgICByZXR1cm4K","clear":"I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYmFzZS1jb250cmFjdC5kLnRzOjpCYXNlQ29udHJhY3QuY2xlYXJTdGF0ZVByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICBwdXNoaW50IDEKICAgIHJldHVybgo="},"byteCode":{"approval":"CyADIAEAJgIBdgQVH3x1MRtBACQxGRREMRhEggMECrZHhgTjHtR0BPklnD82GgCOAwAJADIATQAxGRQxGBQQQzYaAUkVIhJENhoCSSRZgQIISwEVEkRXAgBJgAATRChPAlBJvEhMvyNDNhoBSRUiEkQoTFC9RQGAAQAkTwJUKUxQsCNDNhoBSRUiEkQoTFBJvUUBRL5ISRUWVwYCTFApTFCwI0M=","clear":"C4EBQw=="},"events":[],"templateVariables":{}} as unknown as Arc56Contract
+export const APP_SPEC: Arc56Contract = {"name":"IdentityRegistry","structs":{},"methods":[{"name":"updateAppSecret","args":[{"type":"byte[]","name":"newSecret"}],"returns":{"type":"void"},"actions":{"create":[],"call":["NoOp"]},"readonly":false,"desc":"Admin method to set or update the secret key.\nOnly the contract creator can call this.","events":[],"recommendations":{}},{"name":"registerVerification","args":[{"type":"address","name":"wallet","desc":"The account to verify"},{"type":"string","name":"proofId","desc":"The unique ID associated with the user's ZK proof"}],"returns":{"type":"void"},"actions":{"create":[],"call":["NoOp"]},"readonly":false,"desc":"Registers a wallet as verified.","events":[],"recommendations":{}},{"name":"isVerified","args":[{"type":"address","name":"wallet","desc":"The account to check"}],"returns":{"type":"bool","desc":"True if the wallet is in the registry"},"actions":{"create":[],"call":["NoOp"]},"readonly":false,"desc":"Checks if a wallet is verified.","events":[],"recommendations":{}},{"name":"getProofId","args":[{"type":"address","name":"wallet","desc":"The account to query"}],"returns":{"type":"string","desc":"The associated proof ID"},"actions":{"create":[],"call":["NoOp"]},"readonly":false,"desc":"Retrieves the proof ID for a verified wallet.","events":[],"recommendations":{}}],"arcs":[22,28],"desc":"IdentityRegistry Contract\nMaintains a public registry of verified wallets and their associated proof IDs.\nAllows organizations to query if a user has completed ZK-KYC.","networks":{},"state":{"schema":{"global":{"ints":0,"bytes":1},"local":{"ints":0,"bytes":0}},"keys":{"global":{"appSecret":{"keyType":"AVMString","valueType":"AVMBytes","key":"c2Vj","desc":"Contract secret used to hash wallet addresses into stealth keys"}},"local":{},"box":{}},"maps":{"global":{},"local":{},"box":{"verifiedWallets":{"keyType":"AVMBytes","valueType":"AVMString","desc":"Mapping of Stealth Key (SHA256(Wallet + Secret)) -> Proof ID","prefix":"dg=="}}}},"bareActions":{"create":["NoOp"],"call":[]},"sourceInfo":{"approval":{"sourceInfo":[{"pc":[202],"errorMessage":"Box must have value"},{"pc":[97],"errorMessage":"Only creator can execute"},{"pc":[131],"errorMessage":"Proof ID cannot be empty"},{"pc":[194],"errorMessage":"Wallet not found in verified registry"},{"pc":[223],"errorMessage":"check GlobalState exists"},{"pc":[81,116],"errorMessage":"invalid array length header"},{"pc":[88,123],"errorMessage":"invalid number of bytes for arc4.dynamic_array<arc4.uint8>"},{"pc":[110,153,183],"errorMessage":"invalid number of bytes for arc4.static_array<arc4.uint8, 32>"}],"pcOffsetMethod":"none"},"clear":{"sourceInfo":[],"pcOffsetMethod":"none"}},"source":{"approval":"I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYXJjNC9pbmRleC5kLnRzOjpDb250cmFjdC5hcHByb3ZhbFByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICBpbnRjYmxvY2sgMCAxIDMyIDIKICAgIGJ5dGVjYmxvY2sgInYiICJzZWMiIDB4MTUxZjdjNzUKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjgKICAgIC8vIGV4cG9ydCBjbGFzcyBJZGVudGl0eVJlZ2lzdHJ5IGV4dGVuZHMgQ29udHJhY3QgewogICAgdHhuIE51bUFwcEFyZ3MKICAgIGJ6IG1haW5fX19hbGdvdHNfXy5kZWZhdWx0Q3JlYXRlQDExCiAgICB0eG4gT25Db21wbGV0aW9uCiAgICAhCiAgICBhc3NlcnQKICAgIHR4biBBcHBsaWNhdGlvbklECiAgICBhc3NlcnQKICAgIHB1c2hieXRlc3MgMHgzZDkxNjkxZiAweDBhYjY0Nzg2IDB4ZTMxZWQ0NzQgMHhmOTI1OWMzZiAvLyBtZXRob2QgInVwZGF0ZUFwcFNlY3JldChieXRlW10pdm9pZCIsIG1ldGhvZCAicmVnaXN0ZXJWZXJpZmljYXRpb24oYWRkcmVzcyxzdHJpbmcpdm9pZCIsIG1ldGhvZCAiaXNWZXJpZmllZChhZGRyZXNzKWJvb2wiLCBtZXRob2QgImdldFByb29mSWQoYWRkcmVzcylzdHJpbmciCiAgICB0eG5hIEFwcGxpY2F0aW9uQXJncyAwCiAgICBtYXRjaCB1cGRhdGVBcHBTZWNyZXQgcmVnaXN0ZXJWZXJpZmljYXRpb24gaXNWZXJpZmllZCBnZXRQcm9vZklkCiAgICBlcnIKCm1haW5fX19hbGdvdHNfXy5kZWZhdWx0Q3JlYXRlQDExOgogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6OAogICAgLy8gZXhwb3J0IGNsYXNzIElkZW50aXR5UmVnaXN0cnkgZXh0ZW5kcyBDb250cmFjdCB7CiAgICB0eG4gT25Db21wbGV0aW9uCiAgICAhCiAgICB0eG4gQXBwbGljYXRpb25JRAogICAgIQogICAgJiYKICAgIHJldHVybgoKCi8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjpJZGVudGl0eVJlZ2lzdHJ5LnVwZGF0ZUFwcFNlY3JldFtyb3V0aW5nXSgpIC0+IHZvaWQ6CnVwZGF0ZUFwcFNlY3JldDoKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjI3CiAgICAvLyBwdWJsaWMgdXBkYXRlQXBwU2VjcmV0KG5ld1NlY3JldDogYnl0ZXMpOiB2b2lkIHsKICAgIHR4bmEgQXBwbGljYXRpb25BcmdzIDEKICAgIGR1cAogICAgaW50Y18wIC8vIDAKICAgIGV4dHJhY3RfdWludDE2IC8vIG9uIGVycm9yOiBpbnZhbGlkIGFycmF5IGxlbmd0aCBoZWFkZXIKICAgIGludGNfMyAvLyAyCiAgICArCiAgICBkaWcgMQogICAgbGVuCiAgICA9PQogICAgYXNzZXJ0IC8vIGludmFsaWQgbnVtYmVyIG9mIGJ5dGVzIGZvciBhcmM0LmR5bmFtaWNfYXJyYXk8YXJjNC51aW50OD4KICAgIGV4dHJhY3QgMiAwCiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czoyOAogICAgLy8gYXNzZXJ0KFR4bi5zZW5kZXIgPT09IEdsb2JhbC5jcmVhdG9yQWRkcmVzcywgJ09ubHkgY3JlYXRvciBjYW4gZXhlY3V0ZScpCiAgICB0eG4gU2VuZGVyCiAgICBnbG9iYWwgQ3JlYXRvckFkZHJlc3MKICAgID09CiAgICBhc3NlcnQgLy8gT25seSBjcmVhdG9yIGNhbiBleGVjdXRlCiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czoxMAogICAgLy8gYXBwU2VjcmV0ID0gR2xvYmFsU3RhdGU8Ynl0ZXM+KHsga2V5OiAnc2VjJyB9KQogICAgYnl0ZWNfMSAvLyAic2VjIgogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MjkKICAgIC8vIHRoaXMuYXBwU2VjcmV0LnZhbHVlID0gbmV3U2VjcmV0CiAgICBzd2FwCiAgICBhcHBfZ2xvYmFsX3B1dAogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MjcKICAgIC8vIHB1YmxpYyB1cGRhdGVBcHBTZWNyZXQobmV3U2VjcmV0OiBieXRlcyk6IHZvaWQgewogICAgaW50Y18xIC8vIDEKICAgIHJldHVybgoKCi8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjpJZGVudGl0eVJlZ2lzdHJ5LnJlZ2lzdGVyVmVyaWZpY2F0aW9uW3JvdXRpbmddKCkgLT4gdm9pZDoKcmVnaXN0ZXJWZXJpZmljYXRpb246CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czozNwogICAgLy8gcHVibGljIHJlZ2lzdGVyVmVyaWZpY2F0aW9uKHdhbGxldDogQWNjb3VudCwgcHJvb2ZJZDogc3RyaW5nKTogdm9pZCB7CiAgICB0eG5hIEFwcGxpY2F0aW9uQXJncyAxCiAgICBkdXAKICAgIGxlbgogICAgaW50Y18yIC8vIDMyCiAgICA9PQogICAgYXNzZXJ0IC8vIGludmFsaWQgbnVtYmVyIG9mIGJ5dGVzIGZvciBhcmM0LnN0YXRpY19hcnJheTxhcmM0LnVpbnQ4LCAzMj4KICAgIHR4bmEgQXBwbGljYXRpb25BcmdzIDIKICAgIGR1cAogICAgaW50Y18wIC8vIDAKICAgIGV4dHJhY3RfdWludDE2IC8vIG9uIGVycm9yOiBpbnZhbGlkIGFycmF5IGxlbmd0aCBoZWFkZXIKICAgIGludGNfMyAvLyAyCiAgICArCiAgICBkaWcgMQogICAgbGVuCiAgICA9PQogICAgYXNzZXJ0IC8vIGludmFsaWQgbnVtYmVyIG9mIGJ5dGVzIGZvciBhcmM0LmR5bmFtaWNfYXJyYXk8YXJjNC51aW50OD4KICAgIGV4dHJhY3QgMiAwCiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czozOAogICAgLy8gYXNzZXJ0KHByb29mSWQgIT09ICcnLCAnUHJvb2YgSUQgY2Fubm90IGJlIGVtcHR5JykKICAgIGR1cAogICAgcHVzaGJ5dGVzICIiCiAgICAhPQogICAgYXNzZXJ0IC8vIFByb29mIElEIGNhbm5vdCBiZSBlbXB0eQogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6NDEKICAgIC8vIHRoaXMudmVyaWZpZWRXYWxsZXRzKHRoaXMuZ2V0U3RlYWx0aEtleSh3YWxsZXQpKS52YWx1ZSA9IHByb29mSWQKICAgIHN3YXAKICAgIGNhbGxzdWIgZ2V0U3RlYWx0aEtleQogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MTMKICAgIC8vIHZlcmlmaWVkV2FsbGV0cyA9IEJveE1hcDxieXRlcywgc3RyaW5nPih7IGtleVByZWZpeDogJ3YnIH0pCiAgICBieXRlY18wIC8vICJ2IgogICAgc3dhcAogICAgY29uY2F0CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo0MQogICAgLy8gdGhpcy52ZXJpZmllZFdhbGxldHModGhpcy5nZXRTdGVhbHRoS2V5KHdhbGxldCkpLnZhbHVlID0gcHJvb2ZJZAogICAgZHVwCiAgICBib3hfZGVsCiAgICBwb3AKICAgIHN3YXAKICAgIGJveF9wdXQKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjM3CiAgICAvLyBwdWJsaWMgcmVnaXN0ZXJWZXJpZmljYXRpb24od2FsbGV0OiBBY2NvdW50LCBwcm9vZklkOiBzdHJpbmcpOiB2b2lkIHsKICAgIGludGNfMSAvLyAxCiAgICByZXR1cm4KCgovLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo6SWRlbnRpdHlSZWdpc3RyeS5pc1ZlcmlmaWVkW3JvdXRpbmddKCkgLT4gdm9pZDoKaXNWZXJpZmllZDoKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjQ5CiAgICAvLyBwdWJsaWMgaXNWZXJpZmllZCh3YWxsZXQ6IEFjY291bnQpOiBib29sZWFuIHsKICAgIHR4bmEgQXBwbGljYXRpb25BcmdzIDEKICAgIGR1cAogICAgbGVuCiAgICBpbnRjXzIgLy8gMzIKICAgID09CiAgICBhc3NlcnQgLy8gaW52YWxpZCBudW1iZXIgb2YgYnl0ZXMgZm9yIGFyYzQuc3RhdGljX2FycmF5PGFyYzQudWludDgsIDMyPgogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6NTAKICAgIC8vIHJldHVybiB0aGlzLnZlcmlmaWVkV2FsbGV0cyh0aGlzLmdldFN0ZWFsdGhLZXkod2FsbGV0KSkuZXhpc3RzCiAgICBjYWxsc3ViIGdldFN0ZWFsdGhLZXkKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjEzCiAgICAvLyB2ZXJpZmllZFdhbGxldHMgPSBCb3hNYXA8Ynl0ZXMsIHN0cmluZz4oeyBrZXlQcmVmaXg6ICd2JyB9KQogICAgYnl0ZWNfMCAvLyAidiIKICAgIHN3YXAKICAgIGNvbmNhdAogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6NTAKICAgIC8vIHJldHVybiB0aGlzLnZlcmlmaWVkV2FsbGV0cyh0aGlzLmdldFN0ZWFsdGhLZXkod2FsbGV0KSkuZXhpc3RzCiAgICBib3hfbGVuCiAgICBidXJ5IDEKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjQ5CiAgICAvLyBwdWJsaWMgaXNWZXJpZmllZCh3YWxsZXQ6IEFjY291bnQpOiBib29sZWFuIHsKICAgIHB1c2hieXRlcyAweDAwCiAgICBpbnRjXzAgLy8gMAogICAgdW5jb3ZlciAyCiAgICBzZXRiaXQKICAgIGJ5dGVjXzIgLy8gMHgxNTFmN2M3NQogICAgc3dhcAogICAgY29uY2F0CiAgICBsb2cKICAgIGludGNfMSAvLyAxCiAgICByZXR1cm4KCgovLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo6SWRlbnRpdHlSZWdpc3RyeS5nZXRQcm9vZklkW3JvdXRpbmddKCkgLT4gdm9pZDoKZ2V0UHJvb2ZJZDoKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjU4CiAgICAvLyBwdWJsaWMgZ2V0UHJvb2ZJZCh3YWxsZXQ6IEFjY291bnQpOiBzdHJpbmcgewogICAgdHhuYSBBcHBsaWNhdGlvbkFyZ3MgMQogICAgZHVwCiAgICBsZW4KICAgIGludGNfMiAvLyAzMgogICAgPT0KICAgIGFzc2VydCAvLyBpbnZhbGlkIG51bWJlciBvZiBieXRlcyBmb3IgYXJjNC5zdGF0aWNfYXJyYXk8YXJjNC51aW50OCwgMzI+CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo1OQogICAgLy8gYXNzZXJ0KHRoaXMudmVyaWZpZWRXYWxsZXRzKHRoaXMuZ2V0U3RlYWx0aEtleSh3YWxsZXQpKS5leGlzdHMsICdXYWxsZXQgbm90IGZvdW5kIGluIHZlcmlmaWVkIHJlZ2lzdHJ5JykKICAgIGR1cAogICAgY2FsbHN1YiBnZXRTdGVhbHRoS2V5CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czoxMwogICAgLy8gdmVyaWZpZWRXYWxsZXRzID0gQm94TWFwPGJ5dGVzLCBzdHJpbmc+KHsga2V5UHJlZml4OiAndicgfSkKICAgIGJ5dGVjXzAgLy8gInYiCiAgICBzd2FwCiAgICBjb25jYXQKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjU5CiAgICAvLyBhc3NlcnQodGhpcy52ZXJpZmllZFdhbGxldHModGhpcy5nZXRTdGVhbHRoS2V5KHdhbGxldCkpLmV4aXN0cywgJ1dhbGxldCBub3QgZm91bmQgaW4gdmVyaWZpZWQgcmVnaXN0cnknKQogICAgYm94X2xlbgogICAgYnVyeSAxCiAgICBhc3NlcnQgLy8gV2FsbGV0IG5vdCBmb3VuZCBpbiB2ZXJpZmllZCByZWdpc3RyeQogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6NjAKICAgIC8vIHJldHVybiB0aGlzLnZlcmlmaWVkV2FsbGV0cyh0aGlzLmdldFN0ZWFsdGhLZXkod2FsbGV0KSkudmFsdWUKICAgIGNhbGxzdWIgZ2V0U3RlYWx0aEtleQogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MTMKICAgIC8vIHZlcmlmaWVkV2FsbGV0cyA9IEJveE1hcDxieXRlcywgc3RyaW5nPih7IGtleVByZWZpeDogJ3YnIH0pCiAgICBieXRlY18wIC8vICJ2IgogICAgc3dhcAogICAgY29uY2F0CiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo2MAogICAgLy8gcmV0dXJuIHRoaXMudmVyaWZpZWRXYWxsZXRzKHRoaXMuZ2V0U3RlYWx0aEtleSh3YWxsZXQpKS52YWx1ZQogICAgYm94X2dldAogICAgYXNzZXJ0IC8vIEJveCBtdXN0IGhhdmUgdmFsdWUKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjU4CiAgICAvLyBwdWJsaWMgZ2V0UHJvb2ZJZCh3YWxsZXQ6IEFjY291bnQpOiBzdHJpbmcgewogICAgZHVwCiAgICBsZW4KICAgIGl0b2IKICAgIGV4dHJhY3QgNiAyCiAgICBzd2FwCiAgICBjb25jYXQKICAgIGJ5dGVjXzIgLy8gMHgxNTFmN2M3NQogICAgc3dhcAogICAgY29uY2F0CiAgICBsb2cKICAgIGludGNfMSAvLyAxCiAgICByZXR1cm4KCgovLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czo6SWRlbnRpdHlSZWdpc3RyeS5nZXRTdGVhbHRoS2V5KHdhbGxldDogYnl0ZXMpIC0+IGJ5dGVzOgpnZXRTdGVhbHRoS2V5OgogICAgLy8gc21hcnRfY29udHJhY3RzL2lkZW50aXR5X3JlZ2lzdHJ5L2NvbnRyYWN0LmFsZ28udHM6MTkKICAgIC8vIHByaXZhdGUgZ2V0U3RlYWx0aEtleSh3YWxsZXQ6IEFjY291bnQpOiBieXRlcyB7CiAgICBwcm90byAxIDEKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjIwCiAgICAvLyByZXR1cm4gb3Auc2hhMjU2KHdhbGxldC5ieXRlcy5jb25jYXQodGhpcy5hcHBTZWNyZXQudmFsdWUpKQogICAgaW50Y18wIC8vIDAKICAgIC8vIHNtYXJ0X2NvbnRyYWN0cy9pZGVudGl0eV9yZWdpc3RyeS9jb250cmFjdC5hbGdvLnRzOjEwCiAgICAvLyBhcHBTZWNyZXQgPSBHbG9iYWxTdGF0ZTxieXRlcz4oeyBrZXk6ICdzZWMnIH0pCiAgICBieXRlY18xIC8vICJzZWMiCiAgICAvLyBzbWFydF9jb250cmFjdHMvaWRlbnRpdHlfcmVnaXN0cnkvY29udHJhY3QuYWxnby50czoyMAogICAgLy8gcmV0dXJuIG9wLnNoYTI1Nih3YWxsZXQuYnl0ZXMuY29uY2F0KHRoaXMuYXBwU2VjcmV0LnZhbHVlKSkKICAgIGFwcF9nbG9iYWxfZ2V0X2V4CiAgICBhc3NlcnQgLy8gY2hlY2sgR2xvYmFsU3RhdGUgZXhpc3RzCiAgICBmcmFtZV9kaWcgLTEKICAgIHN3YXAKICAgIGNvbmNhdAogICAgc2hhMjU2CiAgICByZXRzdWIK","clear":"I3ByYWdtYSB2ZXJzaW9uIDExCiNwcmFnbWEgdHlwZXRyYWNrIGZhbHNlCgovLyBAYWxnb3JhbmRmb3VuZGF0aW9uL2FsZ29yYW5kLXR5cGVzY3JpcHQvYmFzZS1jb250cmFjdC5kLnRzOjpCYXNlQ29udHJhY3QuY2xlYXJTdGF0ZVByb2dyYW0oKSAtPiB1aW50NjQ6Cm1haW46CiAgICBwdXNoaW50IDEKICAgIHJldHVybgo="},"byteCode":{"approval":"CyAEAAEgAiYDAXYDc2VjBBUffHUxG0EAKzEZFEQxGESCBAQ9kWkfBAq2R4YE4x7UdAT5JZw/NhoAjgQACQAkAE8AbQAxGRQxGBQQQzYaAUkiWSUISwEVEkRXAgAxADIJEkQpTGcjQzYaAUkVJBJENhoCSSJZJQhLARUSRFcCAEmAABNETIgAUShMUEm8SEy/I0M2GgFJFSQSRIgAPChMUL1FAYABACJPAlQqTFCwI0M2GgFJFSQSREmIAB0oTFC9RQFEiAATKExQvkRJFRZXBgJMUCpMULAjQ4oBASIpZUSL/0xQAYk=","clear":"C4EBQw=="},"events":[],"templateVariables":{}} as unknown as Arc56Contract
 
 /**
  * A state record containing binary data
@@ -70,6 +70,9 @@ export type IdentityRegistryArgs = {
    * The object representation of the arguments for each method
    */
   obj: {
+    'updateAppSecret(byte[])void': {
+      newSecret: Uint8Array
+    }
     'registerVerification(address,string)void': {
       /**
        * The account to verify
@@ -97,6 +100,7 @@ export type IdentityRegistryArgs = {
    * The tuple representation of the arguments for each method
    */
   tuple: {
+    'updateAppSecret(byte[])void': [newSecret: Uint8Array]
     'registerVerification(address,string)void': [wallet: string, proofId: string]
     'isVerified(address)bool': [wallet: string]
     'getProofId(address)string': [wallet: string]
@@ -107,6 +111,7 @@ export type IdentityRegistryArgs = {
  * The return type for each method
  */
 export type IdentityRegistryReturns = {
+  'updateAppSecret(byte[])void': void
   'registerVerification(address,string)void': void
   'isVerified(address)bool': boolean
   'getProofId(address)string': string
@@ -120,6 +125,11 @@ export type IdentityRegistryTypes = {
    * Maps method signatures / names to their argument and return types.
    */
   methods:
+    & Record<'updateAppSecret(byte[])void' | 'updateAppSecret', {
+      argsObj: IdentityRegistryArgs['obj']['updateAppSecret(byte[])void']
+      argsTuple: IdentityRegistryArgs['tuple']['updateAppSecret(byte[])void']
+      returns: IdentityRegistryReturns['updateAppSecret(byte[])void']
+    }>
     & Record<'registerVerification(address,string)void' | 'registerVerification', {
       argsObj: IdentityRegistryArgs['obj']['registerVerification(address,string)void']
       argsTuple: IdentityRegistryArgs['tuple']['registerVerification(address,string)void']
@@ -145,13 +155,22 @@ export type IdentityRegistryTypes = {
    * Defines the shape of the state of the application.
    */
   state: {
+    global: {
+      keys: {
+        /**
+         * Contract secret used to hash wallet addresses into stealth keys
+         */
+        appSecret: BinaryState
+      }
+      maps: {}
+    }
     box: {
       keys: {}
       maps: {
         /**
-         * Mapping of Wallet Address -> Proof ID
+         * Mapping of Stealth Key (SHA256(Wallet + Secret)) -> Proof ID
          */
-        verifiedWallets: Map<string, string>
+        verifiedWallets: Map<Uint8Array | string, string>
       }
     }
   }
@@ -185,6 +204,11 @@ export type MethodArgs<TSignature extends IdentityRegistrySignatures> = Identity
 export type MethodReturn<TSignature extends IdentityRegistrySignatures> = IdentityRegistryTypes['methods'][TSignature]['returns']
 
 /**
+ * Defines the shape of the keyed global state of the application.
+ */
+export type GlobalKeysState = IdentityRegistryTypes['state']['global']['keys']
+
+/**
  * Defines the shape of the keyed box state of the application.
  */
 export type BoxKeysState = IdentityRegistryTypes['state']['box']['keys']
@@ -210,6 +234,23 @@ export type IdentityRegistryDeployParams = Expand<Omit<AppFactoryDeployParams, '
  * Exposes methods for constructing `AppClient` params objects for ABI calls to the IdentityRegistry smart contract
  */
 export abstract class IdentityRegistryParamsFactory {
+  /**
+   * Constructs a no op call for the updateAppSecret(byte[])void ABI method
+   *
+  * Admin method to set or update the secret key.
+  Only the contract creator can call this.
+
+   *
+   * @param params Parameters for the call
+   * @returns An `AppClientMethodCallParams` object for the call
+   */
+  static updateAppSecret(params: CallParams<IdentityRegistryArgs['obj']['updateAppSecret(byte[])void'] | IdentityRegistryArgs['tuple']['updateAppSecret(byte[])void']> & CallOnComplete): AppClientMethodCallParams & CallOnComplete {
+    return {
+      ...params,
+      method: 'updateAppSecret(byte[])void' as const,
+      args: Array.isArray(params.args) ? params.args : [params.args.newSecret],
+    }
+  }
   /**
    * Constructs a no op call for the registerVerification(address,string)void ABI method
    *
@@ -496,6 +537,20 @@ export class IdentityRegistryClient {
     },
 
     /**
+     * Makes a call to the IdentityRegistry smart contract using the `updateAppSecret(byte[])void` ABI method.
+     *
+    * Admin method to set or update the secret key.
+    Only the contract creator can call this.
+
+     *
+     * @param params The params for the smart contract call
+     * @returns The call params
+     */
+    updateAppSecret: (params: CallParams<IdentityRegistryArgs['obj']['updateAppSecret(byte[])void'] | IdentityRegistryArgs['tuple']['updateAppSecret(byte[])void']> & {onComplete?: OnApplicationComplete.NoOpOC}) => {
+      return this.appClient.params.call(IdentityRegistryParamsFactory.updateAppSecret(params))
+    },
+
+    /**
      * Makes a call to the IdentityRegistry smart contract using the `registerVerification(address,string)void` ABI method.
      *
      * Registers a wallet as verified.
@@ -548,6 +603,20 @@ export class IdentityRegistryClient {
     },
 
     /**
+     * Makes a call to the IdentityRegistry smart contract using the `updateAppSecret(byte[])void` ABI method.
+     *
+    * Admin method to set or update the secret key.
+    Only the contract creator can call this.
+
+     *
+     * @param params The params for the smart contract call
+     * @returns The call transaction
+     */
+    updateAppSecret: (params: CallParams<IdentityRegistryArgs['obj']['updateAppSecret(byte[])void'] | IdentityRegistryArgs['tuple']['updateAppSecret(byte[])void']> & {onComplete?: OnApplicationComplete.NoOpOC}) => {
+      return this.appClient.createTransaction.call(IdentityRegistryParamsFactory.updateAppSecret(params))
+    },
+
+    /**
      * Makes a call to the IdentityRegistry smart contract using the `registerVerification(address,string)void` ABI method.
      *
      * Registers a wallet as verified.
@@ -597,6 +666,21 @@ export class IdentityRegistryClient {
      */
     clearState: (params?: Expand<AppClientBareCallParams & SendParams>) => {
       return this.appClient.send.bare.clearState(params)
+    },
+
+    /**
+     * Makes a call to the IdentityRegistry smart contract using the `updateAppSecret(byte[])void` ABI method.
+     *
+    * Admin method to set or update the secret key.
+    Only the contract creator can call this.
+
+     *
+     * @param params The params for the smart contract call
+     * @returns The call result
+     */
+    updateAppSecret: async (params: CallParams<IdentityRegistryArgs['obj']['updateAppSecret(byte[])void'] | IdentityRegistryArgs['tuple']['updateAppSecret(byte[])void']> & SendParams & {onComplete?: OnApplicationComplete.NoOpOC}) => {
+      const result = await this.appClient.send.call(IdentityRegistryParamsFactory.updateAppSecret(params))
+      return {...result, return: result.return as unknown as (undefined | IdentityRegistryReturns['updateAppSecret(byte[])void'])}
     },
 
     /**
@@ -655,6 +739,24 @@ export class IdentityRegistryClient {
    */
   state = {
     /**
+     * Methods to access global state for the current IdentityRegistry app
+     */
+    global: {
+      /**
+       * Get all current keyed values from global state
+       */
+      getAll: async (): Promise<Partial<Expand<GlobalKeysState>>> => {
+        const result = await this.appClient.state.global.getAll()
+        return {
+          appSecret: new BinaryStateValue(result.appSecret),
+        }
+      },
+      /**
+       * Get the current value of the appSecret key in global state
+       */
+      appSecret: async (): Promise<BinaryState> => { return new BinaryStateValue((await this.appClient.state.global.getValue("appSecret")) as Uint8Array | undefined) },
+    },
+    /**
      * Methods to access box state for the current IdentityRegistry app
      */
     box: {
@@ -673,11 +775,11 @@ export class IdentityRegistryClient {
         /**
          * Get all current values of the verifiedWallets map in box state
          */
-        getMap: async (): Promise<Map<string, string>> => { return (await this.appClient.state.box.getMap("verifiedWallets")) as Map<string, string> },
+        getMap: async (): Promise<Map<Uint8Array, string>> => { return (await this.appClient.state.box.getMap("verifiedWallets")) as Map<Uint8Array, string> },
         /**
          * Get a current value of the verifiedWallets map by key from box state
          */
-        value: async (key: string): Promise<string | undefined> => { return await this.appClient.state.box.getMapValue("verifiedWallets", key) as string | undefined },
+        value: async (key: Uint8Array | string): Promise<string | undefined> => { return await this.appClient.state.box.getMapValue("verifiedWallets", key) as string | undefined },
       },
     },
   }
@@ -688,6 +790,14 @@ export class IdentityRegistryClient {
     let promiseChain:Promise<unknown> = Promise.resolve()
     const resultMappers: Array<undefined | ((x: ABIReturn | undefined) => any)> = []
     return {
+      /**
+       * Add a updateAppSecret(byte[])void method call against the IdentityRegistry contract
+       */
+      updateAppSecret(params: CallParams<IdentityRegistryArgs['obj']['updateAppSecret(byte[])void'] | IdentityRegistryArgs['tuple']['updateAppSecret(byte[])void']> & {onComplete?: OnApplicationComplete.NoOpOC}) {
+        promiseChain = promiseChain.then(async () => composer.addAppCallMethodCall(await client.params.updateAppSecret(params)))
+        resultMappers.push(undefined)
+        return this
+      },
       /**
        * Add a registerVerification(address,string)void method call against the IdentityRegistry contract
        */
@@ -747,6 +857,19 @@ export class IdentityRegistryClient {
   }
 }
 export type IdentityRegistryComposer<TReturns extends [...any[]] = []> = {
+  /**
+   * Calls the updateAppSecret(byte[])void ABI method.
+   *
+  * Admin method to set or update the secret key.
+  Only the contract creator can call this.
+
+   *
+   * @param args The arguments for the contract call
+   * @param params Any additional parameters for the call
+   * @returns The typed transaction composer so you can fluently chain multiple calls or call execute to execute all queued up transactions
+   */
+  updateAppSecret(params?: CallParams<IdentityRegistryArgs['obj']['updateAppSecret(byte[])void'] | IdentityRegistryArgs['tuple']['updateAppSecret(byte[])void']>): IdentityRegistryComposer<[...TReturns, IdentityRegistryReturns['updateAppSecret(byte[])void'] | undefined]>
+
   /**
    * Calls the registerVerification(address,string)void ABI method.
    *

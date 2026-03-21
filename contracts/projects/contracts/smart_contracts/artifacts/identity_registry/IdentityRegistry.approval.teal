@@ -3,23 +3,23 @@
 
 // @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
 main:
-    intcblock 32 1 0
-    bytecblock "v" 0x151f7c75
+    intcblock 0 1 32 2
+    bytecblock "v" "sec" 0x151f7c75
     // smart_contracts/identity_registry/contract.algo.ts:8
     // export class IdentityRegistry extends Contract {
     txn NumAppArgs
-    bz main___algots__.defaultCreate@10
+    bz main___algots__.defaultCreate@11
     txn OnCompletion
     !
     assert
     txn ApplicationID
     assert
-    pushbytess 0x0ab64786 0xe31ed474 0xf9259c3f // method "registerVerification(address,string)void", method "isVerified(address)bool", method "getProofId(address)string"
+    pushbytess 0x3d91691f 0x0ab64786 0xe31ed474 0xf9259c3f // method "updateAppSecret(byte[])void", method "registerVerification(address,string)void", method "isVerified(address)bool", method "getProofId(address)string"
     txna ApplicationArgs 0
-    match registerVerification isVerified getProofId
+    match updateAppSecret registerVerification isVerified getProofId
     err
 
-main___algots__.defaultCreate@10:
+main___algots__.defaultCreate@11:
     // smart_contracts/identity_registry/contract.algo.ts:8
     // export class IdentityRegistry extends Contract {
     txn OnCompletion
@@ -30,46 +30,84 @@ main___algots__.defaultCreate@10:
     return
 
 
-// smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.registerVerification[routing]() -> void:
-registerVerification:
-    // smart_contracts/identity_registry/contract.algo.ts:17
-    // public registerVerification(wallet: Account, proofId: string): void {
+// smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.updateAppSecret[routing]() -> void:
+updateAppSecret:
+    // smart_contracts/identity_registry/contract.algo.ts:27
+    // public updateAppSecret(newSecret: bytes): void {
     txna ApplicationArgs 1
     dup
-    len
-    intc_0 // 32
-    ==
-    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
-    txna ApplicationArgs 2
-    dup
-    intc_2 // 0
+    intc_0 // 0
     extract_uint16 // on error: invalid array length header
-    pushint 2
+    intc_3 // 2
     +
     dig 1
     len
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // smart_contracts/identity_registry/contract.algo.ts:18
+    // smart_contracts/identity_registry/contract.algo.ts:28
+    // assert(Txn.sender === Global.creatorAddress, 'Only creator can execute')
+    txn Sender
+    global CreatorAddress
+    ==
+    assert // Only creator can execute
+    // smart_contracts/identity_registry/contract.algo.ts:10
+    // appSecret = GlobalState<bytes>({ key: 'sec' })
+    bytec_1 // "sec"
+    // smart_contracts/identity_registry/contract.algo.ts:29
+    // this.appSecret.value = newSecret
+    swap
+    app_global_put
+    // smart_contracts/identity_registry/contract.algo.ts:27
+    // public updateAppSecret(newSecret: bytes): void {
+    intc_1 // 1
+    return
+
+
+// smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.registerVerification[routing]() -> void:
+registerVerification:
+    // smart_contracts/identity_registry/contract.algo.ts:37
+    // public registerVerification(wallet: Account, proofId: string): void {
+    txna ApplicationArgs 1
+    dup
+    len
+    intc_2 // 32
+    ==
+    assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
+    txna ApplicationArgs 2
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_3 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/identity_registry/contract.algo.ts:38
     // assert(proofId !== '', 'Proof ID cannot be empty')
     dup
     pushbytes ""
     !=
     assert // Proof ID cannot be empty
-    // smart_contracts/identity_registry/contract.algo.ts:10
-    // verifiedWallets = BoxMap<Account, string>({ keyPrefix: 'v' })
+    // smart_contracts/identity_registry/contract.algo.ts:41
+    // this.verifiedWallets(this.getStealthKey(wallet)).value = proofId
+    swap
+    callsub getStealthKey
+    // smart_contracts/identity_registry/contract.algo.ts:13
+    // verifiedWallets = BoxMap<bytes, string>({ keyPrefix: 'v' })
     bytec_0 // "v"
-    uncover 2
+    swap
     concat
-    // smart_contracts/identity_registry/contract.algo.ts:21
-    // this.verifiedWallets(wallet).value = proofId
+    // smart_contracts/identity_registry/contract.algo.ts:41
+    // this.verifiedWallets(this.getStealthKey(wallet)).value = proofId
     dup
     box_del
     pop
     swap
     box_put
-    // smart_contracts/identity_registry/contract.algo.ts:17
+    // smart_contracts/identity_registry/contract.algo.ts:37
     // public registerVerification(wallet: Account, proofId: string): void {
     intc_1 // 1
     return
@@ -77,30 +115,33 @@ registerVerification:
 
 // smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.isVerified[routing]() -> void:
 isVerified:
-    // smart_contracts/identity_registry/contract.algo.ts:29
+    // smart_contracts/identity_registry/contract.algo.ts:49
     // public isVerified(wallet: Account): boolean {
     txna ApplicationArgs 1
     dup
     len
-    intc_0 // 32
+    intc_2 // 32
     ==
     assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
-    // smart_contracts/identity_registry/contract.algo.ts:10
-    // verifiedWallets = BoxMap<Account, string>({ keyPrefix: 'v' })
+    // smart_contracts/identity_registry/contract.algo.ts:50
+    // return this.verifiedWallets(this.getStealthKey(wallet)).exists
+    callsub getStealthKey
+    // smart_contracts/identity_registry/contract.algo.ts:13
+    // verifiedWallets = BoxMap<bytes, string>({ keyPrefix: 'v' })
     bytec_0 // "v"
     swap
     concat
-    // smart_contracts/identity_registry/contract.algo.ts:30
-    // return this.verifiedWallets(wallet).exists
+    // smart_contracts/identity_registry/contract.algo.ts:50
+    // return this.verifiedWallets(this.getStealthKey(wallet)).exists
     box_len
     bury 1
-    // smart_contracts/identity_registry/contract.algo.ts:29
+    // smart_contracts/identity_registry/contract.algo.ts:49
     // public isVerified(wallet: Account): boolean {
     pushbytes 0x00
-    intc_2 // 0
+    intc_0 // 0
     uncover 2
     setbit
-    bytec_1 // 0x151f7c75
+    bytec_2 // 0x151f7c75
     swap
     concat
     log
@@ -110,30 +151,41 @@ isVerified:
 
 // smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.getProofId[routing]() -> void:
 getProofId:
-    // smart_contracts/identity_registry/contract.algo.ts:38
+    // smart_contracts/identity_registry/contract.algo.ts:58
     // public getProofId(wallet: Account): string {
     txna ApplicationArgs 1
     dup
     len
-    intc_0 // 32
+    intc_2 // 32
     ==
     assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
-    // smart_contracts/identity_registry/contract.algo.ts:10
-    // verifiedWallets = BoxMap<Account, string>({ keyPrefix: 'v' })
+    // smart_contracts/identity_registry/contract.algo.ts:59
+    // assert(this.verifiedWallets(this.getStealthKey(wallet)).exists, 'Wallet not found in verified registry')
+    dup
+    callsub getStealthKey
+    // smart_contracts/identity_registry/contract.algo.ts:13
+    // verifiedWallets = BoxMap<bytes, string>({ keyPrefix: 'v' })
     bytec_0 // "v"
     swap
     concat
-    // smart_contracts/identity_registry/contract.algo.ts:39
-    // assert(this.verifiedWallets(wallet).exists, 'Wallet not found in verified registry')
-    dup
+    // smart_contracts/identity_registry/contract.algo.ts:59
+    // assert(this.verifiedWallets(this.getStealthKey(wallet)).exists, 'Wallet not found in verified registry')
     box_len
     bury 1
     assert // Wallet not found in verified registry
-    // smart_contracts/identity_registry/contract.algo.ts:40
-    // return this.verifiedWallets(wallet).value
+    // smart_contracts/identity_registry/contract.algo.ts:60
+    // return this.verifiedWallets(this.getStealthKey(wallet)).value
+    callsub getStealthKey
+    // smart_contracts/identity_registry/contract.algo.ts:13
+    // verifiedWallets = BoxMap<bytes, string>({ keyPrefix: 'v' })
+    bytec_0 // "v"
+    swap
+    concat
+    // smart_contracts/identity_registry/contract.algo.ts:60
+    // return this.verifiedWallets(this.getStealthKey(wallet)).value
     box_get
-    pop
-    // smart_contracts/identity_registry/contract.algo.ts:38
+    assert // Box must have value
+    // smart_contracts/identity_registry/contract.algo.ts:58
     // public getProofId(wallet: Account): string {
     dup
     len
@@ -141,9 +193,31 @@ getProofId:
     extract 6 2
     swap
     concat
-    bytec_1 // 0x151f7c75
+    bytec_2 // 0x151f7c75
     swap
     concat
     log
     intc_1 // 1
     return
+
+
+// smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.getStealthKey(wallet: bytes) -> bytes:
+getStealthKey:
+    // smart_contracts/identity_registry/contract.algo.ts:19
+    // private getStealthKey(wallet: Account): bytes {
+    proto 1 1
+    // smart_contracts/identity_registry/contract.algo.ts:20
+    // return op.sha256(wallet.bytes.concat(this.appSecret.value))
+    intc_0 // 0
+    // smart_contracts/identity_registry/contract.algo.ts:10
+    // appSecret = GlobalState<bytes>({ key: 'sec' })
+    bytec_1 // "sec"
+    // smart_contracts/identity_registry/contract.algo.ts:20
+    // return op.sha256(wallet.bytes.concat(this.appSecret.value))
+    app_global_get_ex
+    assert // check GlobalState exists
+    frame_dig -1
+    swap
+    concat
+    sha256
+    retsub

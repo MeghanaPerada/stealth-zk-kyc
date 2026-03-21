@@ -10,8 +10,11 @@ export class ZkpVerifier extends Contract {
   /** Storage for used nullifiers to prevent double-claiming (Identity Sybil protection) */
   usedNullifiers = BoxMap<bytes, boolean>({ keyPrefix: 'n' })
 
-  /** The public key of the trusted Identity Oracle */
-  oraclePubKey = GlobalState<bytes>({ key: 'opk' })
+  /** Authorized Oracle Public Keys */
+  authorizedOracles = BoxMap<bytes, boolean>({ keyPrefix: 'ao' })
+
+  /** Minimum required oracle signatures for consensus (M-of-N) */
+  minOracleConsensus = GlobalState<uint64>({ key: 'moc' })
 
   /** The Merkle Root of verified identities */
   merkleRoot = GlobalState<bytes>({ key: 'mr' })
@@ -20,11 +23,27 @@ export class ZkpVerifier extends Contract {
   registryAppId = GlobalState<uint64>({ key: 'rai' })
 
   /**
-   * Sets the Oracle public key.
+   * Authorize a new Oracle.
    */
-  public setOraclePubKey(pubKey: bytes): void {
-    // In a real system, add admin check (e.g., Txn.sender == Global.creatorAddress)
-    this.oraclePubKey.value = pubKey
+  public addOracle(pubKey: bytes): void {
+    assert(Txn.sender === Global.creatorAddress, 'Unrecognized admin')
+    this.authorizedOracles(pubKey).value = true
+  }
+
+  /**
+   * Revoke an Oracle.
+   */
+  public removeOracle(pubKey: bytes): void {
+    assert(Txn.sender === Global.creatorAddress, 'Unrecognized admin')
+    this.authorizedOracles(pubKey).delete()
+  }
+
+  /**
+   * Set the minimum consensus count (M).
+   */
+  public setMinConsensus(m: uint64): void {
+    assert(Txn.sender === Global.creatorAddress, 'Unrecognized admin')
+    this.minOracleConsensus.value = m
   }
 
   /**
@@ -35,24 +54,48 @@ export class ZkpVerifier extends Contract {
   }
 
   /**
-   * Verifies a ZK proof and its associated oracle signature.
+   * Verifies a ZK proof and its associated M-of-N oracle signatures.
    * If valid, registers the user in the identity registry.
    * @param proof The 256-byte Groth16 proof bytes (A, B, C)
-   * @param publicInputs Concatenated 32-byte public signals (identityHash, isVerified, proofId, timestamp)
-   * @param oracleData The data signed by the trusted oracle
-   * @param oracleSignature The oracle's digital signature
+   * @param publicInputs Concatenated 32-byte public signals
+   * @param oracleData The data signed by the trusted oracles
+   * @param oraclePubKeys Array of oracle public keys used for signing
+   * @param oracleSignatures Array of digital signatures corresponding to the pubkeys
    * @param proofId The human-readable ID to associate with the verification
    */
   public verifyAndRegister(
     proof: bytes,
     publicInputs: bytes,
     oracleData: bytes,
-    oracleSignature: bytes,
+    oraclePubKeys: bytes[],
+    oracleSignatures: bytes[],
     proofId: string
   ): void {
-    // 1. Verify Oracle Signature (Legacy/Fallback Trust)
-    const isOracleValid = op.ed25519verifyBare(oracleData, oracleSignature, this.oraclePubKey.value)
-    assert(isOracleValid, 'Invalid Oracle signature')
+    // 1. Verify M-of-N Oracle Consensus
+    assert(oraclePubKeys.length === oracleSignatures.length, 'PubKeys and Signatures count mismatch')
+    assert(oracleSignatures.length >= this.minOracleConsensus.value, 'Not enough signatures provided')
+        let validSignatureCount = Uint64(0);
+
+        for (let i = Uint64(0); i < oraclePubKeys.length; i++) {
+            const pubKey = oraclePubKeys[i];
+            const sig = oracleSignatures[i];
+
+            for (let j = Uint64(0); j < i; j++) {
+                assert(pubKey !== oraclePubKeys[j], 'Oracle public keys must be unique');
+            }
+
+            // Only count signatures from authorized oracles
+            if (this.authorizedOracles(pubKey).exists && this.authorizedOracles(pubKey).value === true) {
+                if (op.ed25519verifyBare(
+                    oracleData, 
+                    sig, 
+                    pubKey
+                )) {
+                    validSignatureCount++;
+                }
+            }
+        }
+    assert(validSignatureCount >= this.minOracleConsensus.value, 'Insufficient valid oracle signatures')
 
     // 2. Direct On-Chain ZK Verification (Stateless Trust)
     // This is the primary security upgrade: verifying the proof directly against public signals

@@ -3,7 +3,7 @@
   "sources": [
     "../../proof_anchor/contract.algo.ts"
   ],
-  "mappings": ";;;;;;;;;;;;;;;;;AAMA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAYE;;;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAES;AAAc;;AAAd;AAAP;AATO;AAaK;;AAbL;AAaP;AAAA;;AAAA;AAAA;AAGyB;AAnBb;AAmBa;AAAA;AAAgC;AAAhC;AAnBb;AAmBZ;AAAA;AATF;AAAA;AAiBA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AAxBS;AAAA;AAAA;AAyBA;AAAA;AAAA;;AAAP;AACO;AAAA;AAFT;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AASS;AApCK;AAoCL;AAAA;AADT;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA",
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;AAMA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAqBE;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACS;;AAAe;;AAAf;AAAP;AAjBU;AAkBV;AAAA;AAFF;AAAA;AAUA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAES;AAAc;;AAAd;AAAP;AAI+B;;AAAnB;;;AA7BL;AAAA;AAAA;AA6BP;AAAA;;AAAA;AAAA;AAGyB;AAtCb;AAsCa;AAAA;AAAgC;AAAhC;AAtCb;AAsCZ;AAAA;AATF;AAAA;AAiBA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AACqB;AAAA;;;AAzCZ;AAAA;AAAA;AAyCA;AAAA;;AAAP;AACmB;;;AA1CZ;AAAA;AAAA;AA0CA;AAAA;AAFT;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AASS;AAvDK;AAuDL;AAAA;AADT;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AA3CA;;;AACuC;AAT3B;AAS2B;AAAA;AAApB;;AAAA;AAAA;AAAV;AAAP",
   "op_pc_offset": 0,
   "pc_events": {
     "1": {
@@ -11,12 +11,12 @@
       "params": {},
       "block": "main",
       "stack_in": [],
-      "op": "intcblock 1 0"
+      "op": "intcblock 0 1 2"
     },
-    "5": {
-      "op": "bytecblock \"tp\" \"p\" 0x151f7c75"
+    "6": {
+      "op": "bytecblock \"p\" \"tp\" \"sec\" 0x151f7c75"
     },
-    "17": {
+    "22": {
       "op": "txn NumAppArgs",
       "defined_out": [
         "tmp%0#1"
@@ -25,11 +25,11 @@
         "tmp%0#1"
       ]
     },
-    "19": {
-      "op": "bz main___algots__.defaultCreate@10",
+    "24": {
+      "op": "bz main___algots__.defaultCreate@11",
       "stack_out": []
     },
-    "22": {
+    "27": {
       "op": "txn OnCompletion",
       "defined_out": [
         "tmp%2#0"
@@ -38,7 +38,7 @@
         "tmp%2#0"
       ]
     },
-    "24": {
+    "29": {
       "op": "!",
       "defined_out": [
         "tmp%3#0"
@@ -47,11 +47,11 @@
         "tmp%3#0"
       ]
     },
-    "25": {
+    "30": {
       "op": "assert",
       "stack_out": []
     },
-    "26": {
+    "31": {
       "op": "txn ApplicationID",
       "defined_out": [
         "tmp%4#0"
@@ -60,47 +60,51 @@
         "tmp%4#0"
       ]
     },
-    "28": {
+    "33": {
       "op": "assert",
       "stack_out": []
     },
-    "29": {
-      "op": "pushbytess 0xd52aefb3 0x08107459 0x1f6cf001 // method \"submitProof(string)void\", method \"getProof(address)string\", method \"getTotalProofs()uint64\"",
+    "34": {
+      "op": "pushbytess 0x3d91691f 0xd52aefb3 0x08107459 0x1f6cf001 // method \"updateAppSecret(byte[])void\", method \"submitProof(string)void\", method \"getProof(address)string\", method \"getTotalProofs()uint64\"",
       "defined_out": [
         "Method(getProof(address)string)",
         "Method(getTotalProofs()uint64)",
-        "Method(submitProof(string)void)"
+        "Method(submitProof(string)void)",
+        "Method(updateAppSecret(byte[])void)"
       ],
       "stack_out": [
+        "Method(updateAppSecret(byte[])void)",
         "Method(submitProof(string)void)",
         "Method(getProof(address)string)",
         "Method(getTotalProofs()uint64)"
       ]
     },
-    "46": {
+    "56": {
       "op": "txna ApplicationArgs 0",
       "defined_out": [
         "Method(getProof(address)string)",
         "Method(getTotalProofs()uint64)",
         "Method(submitProof(string)void)",
+        "Method(updateAppSecret(byte[])void)",
         "tmp%6#0"
       ],
       "stack_out": [
+        "Method(updateAppSecret(byte[])void)",
         "Method(submitProof(string)void)",
         "Method(getProof(address)string)",
         "Method(getTotalProofs()uint64)",
         "tmp%6#0"
       ]
     },
-    "49": {
-      "op": "match submitProof getProof getTotalProofs",
+    "59": {
+      "op": "match updateAppSecret submitProof getProof getTotalProofs",
       "stack_out": []
     },
-    "57": {
+    "69": {
       "op": "err"
     },
-    "58": {
-      "block": "main___algots__.defaultCreate@10",
+    "70": {
+      "block": "main___algots__.defaultCreate@11",
       "stack_in": [],
       "op": "txn OnCompletion",
       "defined_out": [
@@ -110,7 +114,7 @@
         "tmp%7#0"
       ]
     },
-    "60": {
+    "72": {
       "op": "!",
       "defined_out": [
         "tmp%8#0"
@@ -119,7 +123,7 @@
         "tmp%8#0"
       ]
     },
-    "61": {
+    "73": {
       "op": "txn ApplicationID",
       "defined_out": [
         "tmp%8#0",
@@ -130,7 +134,7 @@
         "tmp%9#0"
       ]
     },
-    "63": {
+    "75": {
       "op": "!",
       "defined_out": [
         "tmp%10#0",
@@ -141,7 +145,7 @@
         "tmp%10#0"
       ]
     },
-    "64": {
+    "76": {
       "op": "&&",
       "defined_out": [
         "tmp%11#0"
@@ -150,12 +154,210 @@
         "tmp%11#0"
       ]
     },
-    "65": {
+    "77": {
       "op": "return",
       "defined_out": [],
       "stack_out": []
     },
-    "66": {
+    "78": {
+      "subroutine": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.updateAppSecret[routing]",
+      "params": {},
+      "block": "updateAppSecret",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "81": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "82": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "83": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "84": {
+      "op": "intc_2 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "85": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "86": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "88": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "89": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "90": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "91": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "newSecret#0"
+      ],
+      "stack_out": [
+        "newSecret#0"
+      ]
+    },
+    "94": {
+      "op": "txn Sender",
+      "defined_out": [
+        "newSecret#0",
+        "tmp%0#1"
+      ],
+      "stack_out": [
+        "newSecret#0",
+        "tmp%0#1"
+      ]
+    },
+    "96": {
+      "op": "global CreatorAddress",
+      "defined_out": [
+        "newSecret#0",
+        "tmp%0#1",
+        "tmp%1#1"
+      ],
+      "stack_out": [
+        "newSecret#0",
+        "tmp%0#1",
+        "tmp%1#1"
+      ]
+    },
+    "98": {
+      "op": "==",
+      "defined_out": [
+        "newSecret#0",
+        "tmp%2#0"
+      ],
+      "stack_out": [
+        "newSecret#0",
+        "tmp%2#0"
+      ]
+    },
+    "99": {
+      "error": "Only creator can execute",
+      "op": "assert // Only creator can execute",
+      "stack_out": [
+        "newSecret#0"
+      ]
+    },
+    "100": {
+      "op": "bytec_2 // \"sec\"",
+      "defined_out": [
+        "\"sec\"",
+        "newSecret#0"
+      ],
+      "stack_out": [
+        "newSecret#0",
+        "\"sec\""
+      ]
+    },
+    "101": {
+      "op": "swap",
+      "stack_out": [
+        "\"sec\"",
+        "newSecret#0"
+      ]
+    },
+    "102": {
+      "op": "app_global_put",
+      "stack_out": []
+    },
+    "103": {
+      "op": "intc_1 // 1",
+      "defined_out": [
+        "1"
+      ],
+      "stack_out": [
+        "1"
+      ]
+    },
+    "104": {
+      "op": "return",
+      "stack_out": []
+    },
+    "105": {
       "subroutine": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.submitProof[routing]",
       "params": {},
       "block": "submitProof",
@@ -168,7 +370,7 @@
         "tmp%0#0"
       ]
     },
-    "69": {
+    "108": {
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
@@ -179,8 +381,8 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "70": {
-      "op": "intc_1 // 0",
+    "109": {
+      "op": "intc_0 // 0",
       "defined_out": [
         "0",
         "tmp%0#0",
@@ -192,7 +394,7 @@
         "0"
       ]
     },
-    "71": {
+    "110": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -204,8 +406,8 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "72": {
-      "op": "pushint 2",
+    "111": {
+      "op": "intc_2 // 2",
       "defined_out": [
         "2",
         "aggregate%array_length%0#0",
@@ -217,7 +419,7 @@
         "2"
       ]
     },
-    "74": {
+    "112": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -228,7 +430,7 @@
         "add%0#0"
       ]
     },
-    "75": {
+    "113": {
       "op": "dig 1",
       "stack_out": [
         "tmp%0#0",
@@ -236,7 +438,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "77": {
+    "115": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -249,7 +451,7 @@
         "len%0#0"
       ]
     },
-    "78": {
+    "116": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -260,14 +462,14 @@
         "eq%0#0"
       ]
     },
-    "79": {
+    "117": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
         "tmp%0#0"
       ]
     },
-    "80": {
+    "118": {
       "op": "extract 2 0",
       "defined_out": [
         "proofHash#0"
@@ -276,7 +478,7 @@
         "proofHash#0"
       ]
     },
-    "83": {
+    "121": {
       "op": "dup",
       "defined_out": [
         "proofHash#0",
@@ -287,7 +489,7 @@
         "proofHash#0 (copy)"
       ]
     },
-    "84": {
+    "122": {
       "op": "pushbytes \"\"",
       "defined_out": [
         "\"\"",
@@ -300,7 +502,7 @@
         "\"\""
       ]
     },
-    "86": {
+    "124": {
       "op": "!=",
       "defined_out": [
         "proofHash#0",
@@ -311,26 +513,38 @@
         "tmp%0#1"
       ]
     },
-    "87": {
+    "125": {
       "error": "Proof hash cannot be empty",
       "op": "assert // Proof hash cannot be empty",
       "stack_out": [
         "proofHash#0"
       ]
     },
-    "88": {
-      "op": "bytec_1 // \"p\"",
+    "126": {
+      "op": "txn Sender",
       "defined_out": [
-        "\"p\"",
+        "proofHash#0",
+        "tmp%1#1"
+      ],
+      "stack_out": [
+        "proofHash#0",
+        "tmp%1#1"
+      ]
+    },
+    "128": {
+      "callsub": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getStealthKey",
+      "op": "callsub getStealthKey",
+      "defined_out": [
+        "materialized_values%0#0",
         "proofHash#0"
       ],
       "stack_out": [
         "proofHash#0",
-        "\"p\""
+        "materialized_values%0#0"
       ]
     },
-    "89": {
-      "op": "txn Sender",
+    "131": {
+      "op": "bytec_0 // \"p\"",
       "defined_out": [
         "\"p\"",
         "materialized_values%0#0",
@@ -338,11 +552,19 @@
       ],
       "stack_out": [
         "proofHash#0",
+        "materialized_values%0#0",
+        "\"p\""
+      ]
+    },
+    "132": {
+      "op": "swap",
+      "stack_out": [
+        "proofHash#0",
         "\"p\"",
         "materialized_values%0#0"
       ]
     },
-    "91": {
+    "133": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -353,7 +575,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "92": {
+    "134": {
       "op": "dup",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -366,7 +588,7 @@
         "box_prefixed_key%0#0 (copy)"
       ]
     },
-    "93": {
+    "135": {
       "op": "box_del",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -379,32 +601,32 @@
         "{box_del}"
       ]
     },
-    "94": {
+    "136": {
       "op": "pop",
       "stack_out": [
         "proofHash#0",
         "box_prefixed_key%0#0"
       ]
     },
-    "95": {
+    "137": {
       "op": "swap",
       "stack_out": [
         "box_prefixed_key%0#0",
         "proofHash#0"
       ]
     },
-    "96": {
+    "138": {
       "op": "box_put",
       "stack_out": []
     },
-    "97": {
-      "op": "intc_1 // 0",
+    "139": {
+      "op": "intc_0 // 0",
       "stack_out": [
         "0"
       ]
     },
-    "98": {
-      "op": "bytec_0 // \"tp\"",
+    "140": {
+      "op": "bytec_1 // \"tp\"",
       "defined_out": [
         "\"tp\"",
         "0"
@@ -414,7 +636,7 @@
         "\"tp\""
       ]
     },
-    "99": {
+    "141": {
       "op": "app_global_get_ex",
       "defined_out": [
         "maybe_exists%0#0",
@@ -425,15 +647,15 @@
         "maybe_exists%0#0"
       ]
     },
-    "100": {
+    "142": {
       "error": "check GlobalState exists",
       "op": "assert // check GlobalState exists",
       "stack_out": [
         "maybe_value%0#0"
       ]
     },
-    "101": {
-      "op": "intc_0 // 1",
+    "143": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1",
         "maybe_value%0#0"
@@ -443,44 +665,44 @@
         "1"
       ]
     },
-    "102": {
+    "144": {
       "op": "+",
       "defined_out": [
-        "tmp%1#1"
+        "tmp%2#0"
       ],
       "stack_out": [
-        "tmp%1#1"
+        "tmp%2#0"
       ]
     },
-    "103": {
-      "op": "bytec_0 // \"tp\"",
+    "145": {
+      "op": "bytec_1 // \"tp\"",
       "stack_out": [
-        "tmp%1#1",
+        "tmp%2#0",
         "\"tp\""
       ]
     },
-    "104": {
+    "146": {
       "op": "swap",
       "stack_out": [
         "\"tp\"",
-        "tmp%1#1"
+        "tmp%2#0"
       ]
     },
-    "105": {
+    "147": {
       "op": "app_global_put",
       "stack_out": []
     },
-    "106": {
-      "op": "intc_0 // 1",
+    "148": {
+      "op": "intc_1 // 1",
       "stack_out": [
         "1"
       ]
     },
-    "107": {
+    "149": {
       "op": "return",
       "stack_out": []
     },
-    "108": {
+    "150": {
       "subroutine": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getProof[routing]",
       "params": {},
       "block": "getProof",
@@ -493,7 +715,7 @@
         "account#0"
       ]
     },
-    "111": {
+    "153": {
       "op": "dup",
       "defined_out": [
         "account#0",
@@ -504,7 +726,7 @@
         "account#0 (copy)"
       ]
     },
-    "112": {
+    "154": {
       "op": "len",
       "defined_out": [
         "account#0",
@@ -515,7 +737,7 @@
         "len%0#0"
       ]
     },
-    "113": {
+    "155": {
       "op": "pushint 32",
       "defined_out": [
         "32",
@@ -528,7 +750,7 @@
         "32"
       ]
     },
-    "115": {
+    "157": {
       "op": "==",
       "defined_out": [
         "account#0",
@@ -539,79 +761,125 @@
         "eq%0#0"
       ]
     },
-    "116": {
+    "158": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "account#0"
       ]
     },
-    "117": {
-      "op": "bytec_1 // \"p\"",
+    "159": {
+      "op": "dup",
+      "stack_out": [
+        "account#0",
+        "account#0 (copy)"
+      ]
+    },
+    "160": {
+      "callsub": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getStealthKey",
+      "op": "callsub getStealthKey",
       "defined_out": [
-        "\"p\"",
-        "account#0"
+        "account#0",
+        "materialized_values%0#0"
       ],
       "stack_out": [
         "account#0",
+        "materialized_values%0#0"
+      ]
+    },
+    "163": {
+      "op": "bytec_0 // \"p\"",
+      "defined_out": [
+        "\"p\"",
+        "account#0",
+        "materialized_values%0#0"
+      ],
+      "stack_out": [
+        "account#0",
+        "materialized_values%0#0",
         "\"p\""
       ]
     },
-    "118": {
+    "164": {
       "op": "swap",
       "stack_out": [
+        "account#0",
         "\"p\"",
-        "account#0"
+        "materialized_values%0#0"
       ]
     },
-    "119": {
+    "165": {
       "op": "concat",
       "defined_out": [
+        "account#0",
         "box_prefixed_key%0#0"
       ],
       "stack_out": [
+        "account#0",
         "box_prefixed_key%0#0"
       ]
     },
-    "120": {
-      "op": "dup",
-      "defined_out": [
-        "box_prefixed_key%0#0",
-        "box_prefixed_key%0#0 (copy)"
-      ],
-      "stack_out": [
-        "box_prefixed_key%0#0",
-        "box_prefixed_key%0#0 (copy)"
-      ]
-    },
-    "121": {
+    "166": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
-        "box_prefixed_key%0#0",
+        "account#0",
         "maybe_exists%0#0"
       ],
       "stack_out": [
-        "box_prefixed_key%0#0",
+        "account#0",
         "_%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "122": {
+    "167": {
       "op": "bury 1",
       "stack_out": [
-        "box_prefixed_key%0#0",
+        "account#0",
         "maybe_exists%0#0"
       ]
     },
-    "124": {
+    "169": {
       "error": "No proof found for this account",
       "op": "assert // No proof found for this account",
       "stack_out": [
-        "box_prefixed_key%0#0"
+        "account#0"
       ]
     },
-    "125": {
+    "170": {
+      "callsub": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getStealthKey",
+      "op": "callsub getStealthKey",
+      "defined_out": [
+        "materialized_values%1#0"
+      ],
+      "stack_out": [
+        "materialized_values%1#0"
+      ]
+    },
+    "173": {
+      "op": "bytec_0 // \"p\"",
+      "stack_out": [
+        "materialized_values%1#0",
+        "\"p\""
+      ]
+    },
+    "174": {
+      "op": "swap",
+      "stack_out": [
+        "\"p\"",
+        "materialized_values%1#0"
+      ]
+    },
+    "175": {
+      "op": "concat",
+      "defined_out": [
+        "box_prefixed_key%1#0"
+      ],
+      "stack_out": [
+        "box_prefixed_key%1#0"
+      ]
+    },
+    "176": {
       "op": "box_get",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -622,13 +890,14 @@
         "aggregate%box_get%1#0"
       ]
     },
-    "126": {
-      "op": "pop",
+    "177": {
+      "error": "Box must have value",
+      "op": "assert // Box must have value",
       "stack_out": [
         "aggregate%box_get%0#0"
       ]
     },
-    "127": {
+    "178": {
       "op": "dup",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -639,7 +908,7 @@
         "aggregate%box_get%0#0 (copy)"
       ]
     },
-    "128": {
+    "179": {
       "op": "len",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -650,7 +919,7 @@
         "aggregate%length%0#0"
       ]
     },
-    "129": {
+    "180": {
       "op": "itob",
       "defined_out": [
         "aggregate%as_bytes%0#0",
@@ -661,7 +930,7 @@
         "aggregate%as_bytes%0#0"
       ]
     },
-    "130": {
+    "181": {
       "op": "extract 6 2",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -672,14 +941,14 @@
         "aggregate%length_uint16%0#0"
       ]
     },
-    "133": {
+    "184": {
       "op": "swap",
       "stack_out": [
         "aggregate%length_uint16%0#0",
         "aggregate%box_get%0#0"
       ]
     },
-    "134": {
+    "185": {
       "op": "concat",
       "defined_out": [
         "aggregate%encoded_value%0#0"
@@ -688,8 +957,8 @@
         "aggregate%encoded_value%0#0"
       ]
     },
-    "135": {
-      "op": "bytec_2 // 0x151f7c75",
+    "186": {
+      "op": "bytec_3 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
         "aggregate%encoded_value%0#0"
@@ -699,14 +968,14 @@
         "0x151f7c75"
       ]
     },
-    "136": {
+    "187": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%encoded_value%0#0"
       ]
     },
-    "137": {
+    "188": {
       "op": "concat",
       "defined_out": [
         "tmp%4#0"
@@ -715,12 +984,12 @@
         "tmp%4#0"
       ]
     },
-    "138": {
+    "189": {
       "op": "log",
       "stack_out": []
     },
-    "139": {
-      "op": "intc_0 // 1",
+    "190": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -728,16 +997,16 @@
         "1"
       ]
     },
-    "140": {
+    "191": {
       "op": "return",
       "stack_out": []
     },
-    "141": {
+    "192": {
       "subroutine": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getTotalProofs[routing]",
       "params": {},
       "block": "getTotalProofs",
       "stack_in": [],
-      "op": "intc_1 // 0",
+      "op": "intc_0 // 0",
       "defined_out": [
         "0"
       ],
@@ -745,8 +1014,8 @@
         "0"
       ]
     },
-    "142": {
-      "op": "bytec_0 // \"tp\"",
+    "193": {
+      "op": "bytec_1 // \"tp\"",
       "defined_out": [
         "\"tp\"",
         "0"
@@ -756,7 +1025,7 @@
         "\"tp\""
       ]
     },
-    "143": {
+    "194": {
       "op": "app_global_get_ex",
       "defined_out": [
         "maybe_exists%0#0",
@@ -767,14 +1036,14 @@
         "maybe_exists%0#0"
       ]
     },
-    "144": {
+    "195": {
       "error": "check GlobalState exists",
       "op": "assert // check GlobalState exists",
       "stack_out": [
         "maybe_value%0#0"
       ]
     },
-    "145": {
+    "196": {
       "op": "itob",
       "defined_out": [
         "aggregate%val_as_bytes%0#0"
@@ -783,8 +1052,8 @@
         "aggregate%val_as_bytes%0#0"
       ]
     },
-    "146": {
-      "op": "bytec_2 // 0x151f7c75",
+    "197": {
+      "op": "bytec_3 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
         "aggregate%val_as_bytes%0#0"
@@ -794,14 +1063,14 @@
         "0x151f7c75"
       ]
     },
-    "147": {
+    "198": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%val_as_bytes%0#0"
       ]
     },
-    "148": {
+    "199": {
       "op": "concat",
       "defined_out": [
         "tmp%2#0"
@@ -810,12 +1079,12 @@
         "tmp%2#0"
       ]
     },
-    "149": {
+    "200": {
       "op": "log",
       "stack_out": []
     },
-    "150": {
-      "op": "intc_0 // 1",
+    "201": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -823,9 +1092,96 @@
         "1"
       ]
     },
-    "151": {
+    "202": {
       "op": "return",
       "stack_out": []
+    },
+    "203": {
+      "subroutine": "smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getStealthKey",
+      "params": {
+        "wallet#0": "bytes"
+      },
+      "block": "getStealthKey",
+      "stack_in": [],
+      "op": "proto 1 1"
+    },
+    "206": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0"
+      ],
+      "stack_out": [
+        "0"
+      ]
+    },
+    "207": {
+      "op": "bytec_2 // \"sec\"",
+      "defined_out": [
+        "\"sec\"",
+        "0"
+      ],
+      "stack_out": [
+        "0",
+        "\"sec\""
+      ]
+    },
+    "208": {
+      "op": "app_global_get_ex",
+      "defined_out": [
+        "maybe_exists%0#0",
+        "maybe_value%0#0"
+      ],
+      "stack_out": [
+        "maybe_value%0#0",
+        "maybe_exists%0#0"
+      ]
+    },
+    "209": {
+      "error": "check GlobalState exists",
+      "op": "assert // check GlobalState exists",
+      "stack_out": [
+        "maybe_value%0#0"
+      ]
+    },
+    "210": {
+      "op": "frame_dig -1",
+      "defined_out": [
+        "maybe_value%0#0",
+        "wallet#0 (copy)"
+      ],
+      "stack_out": [
+        "maybe_value%0#0",
+        "wallet#0 (copy)"
+      ]
+    },
+    "212": {
+      "op": "swap",
+      "stack_out": [
+        "wallet#0 (copy)",
+        "maybe_value%0#0"
+      ]
+    },
+    "213": {
+      "op": "concat",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "214": {
+      "op": "sha256",
+      "defined_out": [
+        "tmp%1#0"
+      ],
+      "stack_out": [
+        "tmp%1#0"
+      ]
+    },
+    "215": {
+      "retsub": true,
+      "op": "retsub"
     }
   }
 }

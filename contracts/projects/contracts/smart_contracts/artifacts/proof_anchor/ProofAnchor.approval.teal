@@ -3,23 +3,23 @@
 
 // @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
 main:
-    intcblock 1 0
-    bytecblock "tp" "p" 0x151f7c75
+    intcblock 0 1 2
+    bytecblock "p" "tp" "sec" 0x151f7c75
     // smart_contracts/proof_anchor/contract.algo.ts:7
     // export class ProofAnchor extends Contract {
     txn NumAppArgs
-    bz main___algots__.defaultCreate@10
+    bz main___algots__.defaultCreate@11
     txn OnCompletion
     !
     assert
     txn ApplicationID
     assert
-    pushbytess 0xd52aefb3 0x08107459 0x1f6cf001 // method "submitProof(string)void", method "getProof(address)string", method "getTotalProofs()uint64"
+    pushbytess 0x3d91691f 0xd52aefb3 0x08107459 0x1f6cf001 // method "updateAppSecret(byte[])void", method "submitProof(string)void", method "getProof(address)string", method "getTotalProofs()uint64"
     txna ApplicationArgs 0
-    match submitProof getProof getTotalProofs
+    match updateAppSecret submitProof getProof getTotalProofs
     err
 
-main___algots__.defaultCreate@10:
+main___algots__.defaultCreate@11:
     // smart_contracts/proof_anchor/contract.algo.ts:7
     // export class ProofAnchor extends Contract {
     txn OnCompletion
@@ -30,71 +30,105 @@ main___algots__.defaultCreate@10:
     return
 
 
-// smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.submitProof[routing]() -> void:
-submitProof:
-    // smart_contracts/proof_anchor/contract.algo.ts:19
-    // public submitProof(proofHash: string): void {
+// smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.updateAppSecret[routing]() -> void:
+updateAppSecret:
+    // smart_contracts/proof_anchor/contract.algo.ts:28
+    // public updateAppSecret(newSecret: bytes): void {
     txna ApplicationArgs 1
     dup
-    intc_1 // 0
+    intc_0 // 0
     extract_uint16 // on error: invalid array length header
-    pushint 2
+    intc_2 // 2
     +
     dig 1
     len
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // smart_contracts/proof_anchor/contract.algo.ts:21
+    // smart_contracts/proof_anchor/contract.algo.ts:29
+    // assert(Txn.sender === Global.creatorAddress, 'Only creator can execute')
+    txn Sender
+    global CreatorAddress
+    ==
+    assert // Only creator can execute
+    // smart_contracts/proof_anchor/contract.algo.ts:12
+    // appSecret = GlobalState<bytes>({ key: 'sec' })
+    bytec_2 // "sec"
+    // smart_contracts/proof_anchor/contract.algo.ts:30
+    // this.appSecret.value = newSecret
+    swap
+    app_global_put
+    // smart_contracts/proof_anchor/contract.algo.ts:28
+    // public updateAppSecret(newSecret: bytes): void {
+    intc_1 // 1
+    return
+
+
+// smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.submitProof[routing]() -> void:
+submitProof:
+    // smart_contracts/proof_anchor/contract.algo.ts:38
+    // public submitProof(proofHash: string): void {
+    txna ApplicationArgs 1
+    dup
+    intc_0 // 0
+    extract_uint16 // on error: invalid array length header
+    intc_2 // 2
+    +
+    dig 1
+    len
+    ==
+    assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
+    extract 2 0
+    // smart_contracts/proof_anchor/contract.algo.ts:40
     // assert(proofHash !== '', 'Proof hash cannot be empty')
     dup
     pushbytes ""
     !=
     assert // Proof hash cannot be empty
-    // smart_contracts/proof_anchor/contract.algo.ts:12
-    // proofs = BoxMap<Account, string>({ keyPrefix: 'p' })
-    bytec_1 // "p"
-    // smart_contracts/proof_anchor/contract.algo.ts:25
-    // this.proofs(Txn.sender).value = proofHash
+    // smart_contracts/proof_anchor/contract.algo.ts:44
+    // this.proofs(this.getStealthKey(Txn.sender)).value = proofHash
     txn Sender
-    // smart_contracts/proof_anchor/contract.algo.ts:12
-    // proofs = BoxMap<Account, string>({ keyPrefix: 'p' })
+    callsub getStealthKey
+    // smart_contracts/proof_anchor/contract.algo.ts:15
+    // proofs = BoxMap<bytes, string>({ keyPrefix: 'p' })
+    bytec_0 // "p"
+    swap
     concat
-    // smart_contracts/proof_anchor/contract.algo.ts:25
-    // this.proofs(Txn.sender).value = proofHash
+    // smart_contracts/proof_anchor/contract.algo.ts:44
+    // this.proofs(this.getStealthKey(Txn.sender)).value = proofHash
     dup
     box_del
     pop
     swap
     box_put
-    // smart_contracts/proof_anchor/contract.algo.ts:28
+    // smart_contracts/proof_anchor/contract.algo.ts:47
     // this.totalProofs.value = this.totalProofs.value + Uint64(1)
-    intc_1 // 0
+    intc_0 // 0
     // smart_contracts/proof_anchor/contract.algo.ts:9
     // totalProofs = GlobalState<uint64>({ key: 'tp' })
-    bytec_0 // "tp"
-    // smart_contracts/proof_anchor/contract.algo.ts:28
+    bytec_1 // "tp"
+    // smart_contracts/proof_anchor/contract.algo.ts:47
     // this.totalProofs.value = this.totalProofs.value + Uint64(1)
     app_global_get_ex
     assert // check GlobalState exists
-    intc_0 // 1
+    intc_1 // 1
     +
     // smart_contracts/proof_anchor/contract.algo.ts:9
     // totalProofs = GlobalState<uint64>({ key: 'tp' })
-    bytec_0 // "tp"
-    // smart_contracts/proof_anchor/contract.algo.ts:28
+    bytec_1 // "tp"
+    // smart_contracts/proof_anchor/contract.algo.ts:47
     // this.totalProofs.value = this.totalProofs.value + Uint64(1)
     swap
     app_global_put
-    // smart_contracts/proof_anchor/contract.algo.ts:19
+    // smart_contracts/proof_anchor/contract.algo.ts:38
     // public submitProof(proofHash: string): void {
-    intc_0 // 1
+    intc_1 // 1
     return
 
 
 // smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getProof[routing]() -> void:
 getProof:
-    // smart_contracts/proof_anchor/contract.algo.ts:36
+    // smart_contracts/proof_anchor/contract.algo.ts:55
     // public getProof(account: Account): string {
     txna ApplicationArgs 1
     dup
@@ -102,22 +136,33 @@ getProof:
     pushint 32
     ==
     assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>
-    // smart_contracts/proof_anchor/contract.algo.ts:12
-    // proofs = BoxMap<Account, string>({ keyPrefix: 'p' })
-    bytec_1 // "p"
+    // smart_contracts/proof_anchor/contract.algo.ts:56
+    // assert(this.proofs(this.getStealthKey(account)).exists, 'No proof found for this account')
+    dup
+    callsub getStealthKey
+    // smart_contracts/proof_anchor/contract.algo.ts:15
+    // proofs = BoxMap<bytes, string>({ keyPrefix: 'p' })
+    bytec_0 // "p"
     swap
     concat
-    // smart_contracts/proof_anchor/contract.algo.ts:37
-    // assert(this.proofs(account).exists, 'No proof found for this account')
-    dup
+    // smart_contracts/proof_anchor/contract.algo.ts:56
+    // assert(this.proofs(this.getStealthKey(account)).exists, 'No proof found for this account')
     box_len
     bury 1
     assert // No proof found for this account
-    // smart_contracts/proof_anchor/contract.algo.ts:38
-    // return this.proofs(account).value
+    // smart_contracts/proof_anchor/contract.algo.ts:57
+    // return this.proofs(this.getStealthKey(account)).value
+    callsub getStealthKey
+    // smart_contracts/proof_anchor/contract.algo.ts:15
+    // proofs = BoxMap<bytes, string>({ keyPrefix: 'p' })
+    bytec_0 // "p"
+    swap
+    concat
+    // smart_contracts/proof_anchor/contract.algo.ts:57
+    // return this.proofs(this.getStealthKey(account)).value
     box_get
-    pop
-    // smart_contracts/proof_anchor/contract.algo.ts:36
+    assert // Box must have value
+    // smart_contracts/proof_anchor/contract.algo.ts:55
     // public getProof(account: Account): string {
     dup
     len
@@ -125,32 +170,54 @@ getProof:
     extract 6 2
     swap
     concat
-    bytec_2 // 0x151f7c75
+    bytec_3 // 0x151f7c75
     swap
     concat
     log
-    intc_0 // 1
+    intc_1 // 1
     return
 
 
 // smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getTotalProofs[routing]() -> void:
 getTotalProofs:
-    // smart_contracts/proof_anchor/contract.algo.ts:45
+    // smart_contracts/proof_anchor/contract.algo.ts:64
     // return this.totalProofs.value
-    intc_1 // 0
+    intc_0 // 0
     // smart_contracts/proof_anchor/contract.algo.ts:9
     // totalProofs = GlobalState<uint64>({ key: 'tp' })
-    bytec_0 // "tp"
-    // smart_contracts/proof_anchor/contract.algo.ts:45
+    bytec_1 // "tp"
+    // smart_contracts/proof_anchor/contract.algo.ts:64
     // return this.totalProofs.value
     app_global_get_ex
     assert // check GlobalState exists
-    // smart_contracts/proof_anchor/contract.algo.ts:44
+    // smart_contracts/proof_anchor/contract.algo.ts:63
     // public getTotalProofs(): uint64 {
     itob
-    bytec_2 // 0x151f7c75
+    bytec_3 // 0x151f7c75
     swap
     concat
     log
-    intc_0 // 1
+    intc_1 // 1
     return
+
+
+// smart_contracts/proof_anchor/contract.algo.ts::ProofAnchor.getStealthKey(wallet: bytes) -> bytes:
+getStealthKey:
+    // smart_contracts/proof_anchor/contract.algo.ts:20
+    // private getStealthKey(wallet: Account): bytes {
+    proto 1 1
+    // smart_contracts/proof_anchor/contract.algo.ts:21
+    // return op.sha256(wallet.bytes.concat(this.appSecret.value))
+    intc_0 // 0
+    // smart_contracts/proof_anchor/contract.algo.ts:12
+    // appSecret = GlobalState<bytes>({ key: 'sec' })
+    bytec_2 // "sec"
+    // smart_contracts/proof_anchor/contract.algo.ts:21
+    // return op.sha256(wallet.bytes.concat(this.appSecret.value))
+    app_global_get_ex
+    assert // check GlobalState exists
+    frame_dig -1
+    swap
+    concat
+    sha256
+    retsub

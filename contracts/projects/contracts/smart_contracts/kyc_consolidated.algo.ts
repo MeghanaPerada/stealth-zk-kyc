@@ -1,4 +1,4 @@
-import { Contract, Account, assert, log, BoxMap, Global, uint64, Txn, op, Bytes, bytes } from '@algorandfoundation/algorand-typescript';
+import { Contract, Account, assert, log, BoxMap, Global, GlobalState, Uint64, uint64, Txn, op, Bytes, bytes } from '@algorandfoundation/algorand-typescript';
 
 /**
  * KYC Anchor Smart Contract
@@ -12,19 +12,48 @@ export class KycAnchor extends Contract {
   consentFields = BoxMap<Account, string>({ keyPrefix: 'fields' });
   proofHashBoxes = BoxMap<Account, bytes>({ keyPrefix: 'proof' });
 
-  // Oracle public key for signature verification
-  // Stored as bytes for direct use in ed25519verify
-  oraclePubKeyRecord = BoxMap<string, bytes>({ keyPrefix: 'config' });
+  // --- M-of-N Oracle Consensus State ---
+  /**
+   * Minimum number of oracle signatures required (M).
+   */
+  minOracleConsensus = GlobalState<uint64>({ initialValue: 1 });
 
   /**
-   * 1. setupOracle
-   * Sets the authorized Oracle public key.
+   * Set of authorized oracle public keys (N).
+   */
+  authorizedOracles = BoxMap<bytes, boolean>({ keyPrefix: 'ao' });
+
+  /**
+   * 1. addOracle
+   * Adds an authorized Oracle public key.
    * @param pubKey The 32-byte public key of the Oracle
    */
-  setupOracle(pubKey: bytes): void {
+  addOracle(pubKey: bytes): void {
     // In a production app, add creator-only check
-    this.oraclePubKeyRecord('opk').value = pubKey;
-    log('ORACLE_SETUP');
+    this.authorizedOracles(pubKey).value = true;
+    log('ORACLE_ADDED');
+  }
+
+  /**
+   * 1b. removeOracle
+   * Revokes an authorized Oracle.
+   */
+  removeOracle(pubKey: bytes): void {
+    // In a production app, add creator-only check
+    if (this.authorizedOracles(pubKey).exists) {
+      this.authorizedOracles(pubKey).delete();
+      log('ORACLE_REMOVED');
+    }
+  }
+
+  /**
+   * 1c. setMinConsensus
+   * Sets the M value.
+   */
+  setMinConsensus(m: uint64): void {
+    // In a production app, add creator-only check
+    this.minOracleConsensus.value = m;
+    log('MIN_CONSENSUS_UPDATED');
   }
 
   /**
@@ -68,22 +97,44 @@ export class KycAnchor extends Contract {
   /**
    * 4. storeProof
    * Anchors the calculated ZK proof hash into the Box storage.
-   * Requires a valid Oracle Signature (Layer 2 Enforcement).
+   * Requires M valid Oracle Signatures (Multi-Oracle Consensus).
    */
-  storeProof(wallet: Account, proofHash: bytes, oracleSignature: bytes): void {
+  storeProof(
+    wallet: Account,
+    proofHash: bytes,
+    oraclePubKeysInputs: bytes[],
+    oracleSignaturesInputs: bytes[]
+  ): void {
     assert(this.hasValidConsent(wallet), 'Active consent is required to store proof');
     assert(proofHash.length > 0, 'Proof hash cannot be empty');
     
-    // 🔥 Protocol Level Enforcement: Verify Oracle Signature
-    const opk = this.oraclePubKeyRecord('opk').value;
-    assert(opk.length > 0, 'Oracle public key not configured');
+    // 🔥 Multi-Oracle Consensus: M-of-N Signature Verification
+    const m = this.minOracleConsensus.value;
+    assert(oraclePubKeysInputs.length >= m, 'Not enough signatures provided');
+    assert(oraclePubKeysInputs.length === oracleSignaturesInputs.length, 'Public key and signature arrays must match in length');
 
-    const isSignatureValid = op.ed25519verifyBare(
-      proofHash, 
-      oracleSignature, 
-      opk
-    );
-    assert(isSignatureValid, 'Invalid Oracle signature: Proof tampering detected');
+    let validSignatureCount = Uint64(0);
+
+    for (let i = Uint64(0); i < oraclePubKeysInputs.length; i++) {
+        const pubKey = oraclePubKeysInputs[i];
+        const sig = oracleSignaturesInputs[i];
+
+        // Ensure uniqueness of public keys to prevent duplicate counting
+        for (let j = Uint64(0); j < i; j++) {
+            assert(pubKey !== oraclePubKeysInputs[j], 'Oracle public keys must be unique');
+        }
+
+        // Verify the Oracle is authorized
+        assert(this.authorizedOracles(pubKey).exists && this.authorizedOracles(pubKey).value === true, 'Unauthorized Oracle');
+
+        // Verify Signature
+        const isSignatureValid = op.ed25519verifyBare(proofHash, sig, pubKey);
+        assert(isSignatureValid, 'Invalid Oracle signature: Proof tampering detected');
+
+        validSignatureCount++;
+    }
+
+    assert(validSignatureCount >= m, 'M-of-N Oracle threshold not met');
 
     // Store the verified proof hash in the Box
     this.proofHashBoxes(wallet).value = proofHash;

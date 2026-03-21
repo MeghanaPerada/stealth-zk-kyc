@@ -36,13 +36,14 @@ export async function POST(req: NextRequest) {
     const sp = await algodClient.getTransactionParams().do();
     
     // Construct Application Call Transaction for 'storeProof' ABI method
-    // ABI: storeProof(address,byte[],byte[])void
+    // ABI: storeProof(address,byte[],byte[][],byte[][])void
     const method = new algosdk.ABIMethod({
       name: "storeProof",
       args: [
         { type: "address", name: "wallet" },
         { type: "byte[]", name: "proofHash" },
-        { type: "byte[]", name: "oracleSignature" }
+        { type: "byte[][]", name: "oraclePubKeysInputs" },
+        { type: "byte[][]", name: "oracleSignaturesInputs" }
       ],
       returns: { type: "void" }
     });
@@ -56,8 +57,9 @@ export async function POST(req: NextRequest) {
     // 2. Expiry Box (for hasValidConsent check): prefix "expiry" + wallet
     const expiryBox = new Uint8Array([..."expiry".split("").map(c => c.charCodeAt(0)), ...accountBytes]);
     
-    // 3. Oracle PK Box (for signature check): prefix "config" + "opk"
-    const opkBox = new Uint8Array([..."config".split("").map(c => c.charCodeAt(0)), ..."opk".split("").map(c => c.charCodeAt(0))]);
+    // 3. Oracle Authorized Box (for signature check in M-of-N): prefix "ao" + pubKey
+    const oraclePubKeyBytes = oracleAccount.sk.slice(32, 64);
+    const aoBox = new Uint8Array([..."ao".split("").map(c => c.charCodeAt(0)), ...oraclePubKeyBytes]);
 
     // Prepare Arguments as Uint8Arrays
     const proofHashBytes = Buffer.from(BigInt(proofHash).toString(16).padStart(64, "0"), "hex");
@@ -69,14 +71,19 @@ export async function POST(req: NextRequest) {
     atc.addMethodCall({
       appID: appId,
       method: method,
-      methodArgs: [walletAddress, proofHashBytes, oracleSignatureBytes],
+      methodArgs: [
+        walletAddress, 
+        proofHashBytes, 
+        [oraclePubKeyBytes],      // Array of Pks
+        [oracleSignatureBytes]    // Array of Signatures
+      ],
       sender: oracleAccount.addr,
       signer: signer,
       suggestedParams: sp,
       boxes: [
         { appIndex: appId, name: proofBox },
         { appIndex: appId, name: expiryBox },
-        { appIndex: appId, name: opkBox }
+        { appIndex: appId, name: aoBox }
       ]
     });
 
@@ -84,7 +91,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      message: "Proof stored successfully on-chain (Verified by contract)",
+      message: "Proof stored successfully on-chain (Verified by M-of-N consensus)",
       txId: result.txIDs[0]
     });
 
