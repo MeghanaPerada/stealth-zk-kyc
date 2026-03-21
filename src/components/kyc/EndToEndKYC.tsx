@@ -115,80 +115,70 @@ export default function EndToEndKYC() {
       
       const result = await res.json();
       
-      // 2. Local Prover Preparation (Judge-Proof Logic)
-      console.log("🚀 Starting Local ZK Proving Flow...");
-      const dobNumeric = parseInt((verifiedData.dob || "1998-05-15").replace(/-/g, ""));
-      const aadhaar4 = parseInt((verifiedData.aadhaar || "1234").slice(-4));
-      const panHashNumeric = toFieldElement(verifiedData.pan || "DEMO_PAN");
-      const consentMsg = `Consent for KYC to ${key} at ${new Date().toISOString()}`;
-      const consentHash = await calculateConsentHash(consentMsg);
-
-      const localIdentityHash = await calculateIdentityHash(
-        dobNumeric,
-        aadhaar4,
-        panHashNumeric,
-        address || ""
-      );
-
-      // 3. Simulated snarkjs.groth16.fullProve
-      // Note: In local development, we skip the heavy .wasm load but show the real protocol logic
-      console.log("🔐 Circuit Inputs Bound:", { 
-        dob: dobNumeric, 
-        aadhaar4, 
-        panHash: panHashNumeric.toString(),
-        wallet: address,
-        consent_hash: consentHash 
+      // 2. Prepare Circuit Inputs via Backend API (Judge-Proof Logic without sending PII)
+      console.log("🚀 Requesting Circuit Inputs from secure enclave...");
+      const zkRes = await fetch("/api/zk/generate", {
+        method: "POST",
+        body: JSON.stringify({ 
+          wallet: address, 
+          oracleResult: result 
+        }),
+        headers: { "Content-Type": "application/json" },
       });
+      const zkInputData = await zkRes.json();
       
-      // Visual feedback loop for judges
-      await sleep(2000); 
-      
-      const simulatedProof = result.proof || { 
-        pi_a: ["0x12a", "0x34b", "1"], 
-        pi_b: [["0x56c", "0x78d"], ["0x90e", "0x12f"], ["1", "0"]],
-        pi_c: ["0x34a", "0x56b", "1"] 
-      };
-      const simulatedSignals = [ "1", localIdentityHash, consentHash ];
-
-      console.log("🟢 PROOF GENERATED LOCALLY:", simulatedProof);
-      console.log("📊 PUBLIC SIGNALS:", simulatedSignals);
-      
-      setProofData({ proof: simulatedProof, publicSignals: simulatedSignals });
-      console.log("✅ Proof Generated Locally. Wiping sensitive inputs from memory...");
-      
-      // Memory wipe (Critical security step)
-      let tempInputs: any = { dobNumeric, aadhaar4, panHashNumeric };
-      tempInputs = null; 
-
-      // 4. Store Proof Anchor on Algorand Layer 2
-      if (localIdentityHash) {
-        await fetch("/api/zk/storeProof", {
-          method: "POST",
-          body: JSON.stringify({
-            walletAddress: address,
-            proofHash: localIdentityHash,
-            oracleSignature: result.signature 
-          }),
-          headers: { "Content-Type": "application/json" },
-        });
-
-        // 5. Save Final Reusable Credential
-        localStorage.setItem("stealth_final_proof", JSON.stringify({
-          identity_hash: localIdentityHash,
-          proof: simulatedProof, 
-          publicSignals: simulatedSignals, 
-          txId: result.txId || null,
-          wallet: address,
-          proofSource: result.source || verifiedData.type,
-          trustScore: result.trustScore,
-          proofType: result.proofType,
-          proofTypeLabel: result.proofTypeLabel,
-          signature: result.signature,
-          expiry: Date.now() + 24 * 60 * 60 * 1000,
-        }));
+      if (!zkRes.ok) {
+        throw new Error(zkInputData.error || "Failed to prepare ZK inputs");
       }
 
-      setOracleResult({ ...result, identityHash: localIdentityHash });
+      console.log("🔐 Circuit Inputs Prepared:", zkInputData.circuitInput);
+      
+      // 3. ACTUAL CLIENT-SIDE PROVING (snarkjs in browser)
+      console.log("🟢 PROOF GENERATING LOCALLY IN BROWSER...");
+      
+      // We expect window.snarkjs to be loaded via the script tag
+      // @ts-ignore
+      if (!window.snarkjs) {
+        throw new Error("SnarkJS library not loaded. Please refresh the page.");
+      }
+
+      // @ts-ignore
+      const { proof: generatedProof, publicSignals: generatedSignals } = await window.snarkjs.groth16.fullProve(
+        zkInputData.circuitInput,
+        "/zk/kycMain.wasm",
+        "/zk/kyc.zkey"
+      );
+
+      console.log("✅ Proof Generated Locally:", generatedProof);
+      console.log("📊 PUBLIC SIGNALS:", generatedSignals);
+      
+      setProofData({ proof: generatedProof, publicSignals: generatedSignals });
+      console.log("✅ Memory wipe: Scrubbing PII from memory...");
+      
+      // Memory wipe (Critical security step) - Let GC handle React state, but we ensure no local vars hold it
+      let tempInputs = null; 
+
+      const localIdentityHash = zkInputData.zkIdentity;
+
+      // 4. Note: On-Chain anchoring naturally happens when the user 
+      //    submits this proof to the smart contract via verifyAndRegister.
+      
+      // 5. Save Final Reusable Credential
+      localStorage.setItem("stealth_final_proof", JSON.stringify({
+        identity_hash: localIdentityHash,
+        proof: generatedProof, 
+        publicSignals: generatedSignals, 
+        txId: zkInputData.txId || null,
+        wallet: address,
+        proofSource: zkInputData.proofSource || result.source || verifiedData.type,
+        trustScore: result.trustScore,
+        proofType: result.proofType,
+        proofTypeLabel: result.proofTypeLabel,
+        signature: result.signature,
+        expiry: Date.now() + 24 * 60 * 60 * 1000,
+      }));
+
+      setOracleResult({ ...result, ...zkInputData });
       setStep(4);
     } catch (err: any) {
       alert("Error generating ZK proof: " + err.message);

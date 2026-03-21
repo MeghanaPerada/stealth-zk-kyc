@@ -7,7 +7,6 @@ import algosdk from 'algosdk';
 import { generateProofIdentifier, hashData } from '@/lib/helpers';
 import { merkleService } from '@/lib/merkleService';
 
-const snarkjs = require('snarkjs');
 const { buildPoseidon } = require('circomlibjs');
 
 // Initialize the Merkle Service if not already initialized
@@ -144,83 +143,28 @@ export async function POST(request: Request) {
       merkle_path_elements: merkleData.pathElements,
       merkle_path_indices: merkleData.pathIndices
     };
-
     // --- STEP 6: Generate Proof ---
-    const zkPath = path.join(process.cwd(), 'public', 'zk');
-    const wasmPath = path.join(zkPath, 'kycMain.wasm');
-    const zkeyPath = path.join(zkPath, 'kyc.zkey');
-
-    if (!fs.existsSync(wasmPath) || !fs.existsSync(zkeyPath)) {
-      // Demo Mock fallback if binaries don't exist
-      return NextResponse.json({
-        mock: true,
-        message: "ZK Artifacts (WASM/ZKEY) missing. Displaying simulated proof for demo.",
-        zkIdentity: identityHash,
-        nullifier,
-        proofSource,
-        proofIdentifier,
-        status,
-        timestamp,
-        proof: { pi_a: ["0", "0", "0"], pi_b: [["0", "0"], ["0", "0"]], pi_c: ["0", "0", "0"] },
-        // Circuit Output order: [isVerified, nullifier, merkle_root]
-        publicSignals: ["1", nullifier, identityHash, proofIdentifier, timestamp.toString(), merkleData.root],
-        txId: "MOCK_TX_" + Math.random().toString(36).substring(7).toUpperCase()
-      });
-    }
-
-    const { proof, publicSignals } = await snarkjs.groth16.fullProve(
-      circuitInput,
-      wasmPath,
-      zkeyPath
-    );
-
-    // --- STEP 6: Anchor Proof on Algorand (Transaction Note) ---
-    let txId = "local_only";
-    const ALGORAND_MNEMONIC = process.env.ALGORAND_MNEMONIC;
-    
-    if (ALGORAND_MNEMONIC && ALGORAND_MNEMONIC !== "YOUR_TESTNET_MNEMONIC_HERE") {
-      try {
-        const backendAccount = algosdk.mnemonicToSecretKey(ALGORAND_MNEMONIC);
-        const params = await algodClient.getTransactionParams().do();
-        
-        // We anchor the proof by sending a 0-ALGO txn to the user with the proof hash in the note
-        const proofHash = crypto.createHash('sha256').update(JSON.stringify(proof)).digest('hex');
-        const note = new TextEncoder().encode(`stealth_zk_proof:${proofHash}`);
-        
-        const txn = algosdk.makePaymentTxnWithSuggestedParamsFromObject({
-          sender: backendAccount.addr,
-          receiver: wallet, // Bind to user wallet
-          amount: 0,
-          note: note,
-          suggestedParams: params
-        });
-
-        const signedTxn = txn.signTxn(backendAccount.sk);
-        const response = await algodClient.sendRawTransaction(signedTxn).do();
-        txId = response.txid || "submitted";
-        console.log("[ZK] Proof anchored on Algorand. TxID:", txId);
-      } catch (anchorErr) {
-        console.error("[ZK] Anchoring failed (continuing without anchor):", anchorErr);
-      }
-    }
+    // In Client-Side Proving mode, the backend PREPARES the inputs but the BROWSER generates the proof.
+    console.log("[ZK] Sending Circuit Inputs to Browser for Client-Side Proving.");
 
     return NextResponse.json({
-      proof,
-      publicSignals,
-      zkIdentity: identityHash,
+      circuitInput,           // The inputs for the WASM
+      zkIdentity: identityHash, // The public anchor
+      nullifier,              // The public nullifier
+      merkleRoot: merkleData.root, // The public merkle root
       proofSource,
       proofIdentifier,
       status,
       timestamp,
-      txId: txId,
       metadata: {
         timestamp: new Date().toISOString(),
-        anchored: txId !== "local_only"
+        clientSideProvingReady: true
       }
     });
 
   } catch (err: any) {
-    console.error("[ZK] Generation Error:", err);
-    return NextResponse.json({ error: "Failed to generate ZK proof.", details: err.message }, { status: 500 });
+    console.error("[ZK] Input Generation Error:", err);
+    return NextResponse.json({ error: "Failed to generate ZK circuit inputs.", details: err.message }, { status: 500 });
   }
 }
+

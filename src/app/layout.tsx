@@ -39,6 +39,7 @@ export default function RootLayout({
           </main>
           <Footer />
         </WalletProvider>
+        <script src="https://cdn.jsdelivr.net/npm/snarkjs@0.7.0/build/snarkjs.min.js" defer></script>
       </body>
     </html>
   );
