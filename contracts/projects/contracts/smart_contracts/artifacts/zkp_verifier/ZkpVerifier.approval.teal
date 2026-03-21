@@ -3,7 +3,7 @@
 
 // @algorandfoundation/algorand-typescript/arc4/index.d.ts::Contract.approvalProgram() -> uint64:
 main:
-    intcblock 0 2 1 32 192 256
+    intcblock 0 2 1 32 256
     bytecblock "ao" "moc" "rai" "mr"
     // smart_contracts/zkp_verifier/contract.algo.ts:9
     // export class ZkpVerifier extends Contract {
@@ -570,10 +570,10 @@ verifyAndRegister_after_while@20:
     substring3
     // smart_contracts/zkp_verifier/contract.algo.ts:157
     // const b = proof.slice(64, 192)
-    intc 4 // 192
+    pushint 192
     dig 3
     >=
-    intc 4 // 192
+    pushint 192
     dig 4
     uncover 2
     select
@@ -583,10 +583,10 @@ verifyAndRegister_after_while@20:
     substring3
     // smart_contracts/zkp_verifier/contract.algo.ts:158
     // const c = proof.slice(192, 256)
-    intc 5 // 256
+    intc 4 // 256
     dig 4
     >=
-    intc 5 // 256
+    intc 4 // 256
     dig 5
     uncover 2
     select
@@ -594,7 +594,7 @@ verifyAndRegister_after_while@20:
     uncover 3
     uncover 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:183
+    // smart_contracts/zkp_verifier/contract.algo.ts:184
     // const x = g1.slice(0, 32)
     dig 2
     len
@@ -616,7 +616,7 @@ verifyAndRegister_after_while@20:
     uncover 2
     dig 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:184
+    // smart_contracts/zkp_verifier/contract.algo.ts:185
     // const y = g1.slice(32, 64)
     pushint 64
     dig 3
@@ -629,12 +629,12 @@ verifyAndRegister_after_while@20:
     uncover 3
     uncover 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:187
+    // smart_contracts/zkp_verifier/contract.algo.ts:188
     // const negY = BigUint(MODULUS - yBig)
     pushbytes 0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47
     swap
     b-
-    // smart_contracts/zkp_verifier/contract.algo.ts:188
+    // smart_contracts/zkp_verifier/contract.algo.ts:189
     // return x.concat(new arc4.Uint256(negY).bytes)
     dup
     len
@@ -645,32 +645,32 @@ verifyAndRegister_after_while@20:
     bzero
     b|
     concat
-    // smart_contracts/zkp_verifier/contract.algo.ts:176
+    // smart_contracts/zkp_verifier/contract.algo.ts:177
     // const g1Points = aNeg.concat(alpha1).concat(vkX).concat(c)
-    pushbytes 0x0000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    pushbytes 0x2d4d9aa7e302d9df41749d5507949d05dbea33fbb16c643b22f599a2be6df2e214bedd503c37ceb061d8ec60209fe345ce89830a19230301f076caff004d19261442a0f2ae59c8f86b563efce57d6b8ca73fe8ab2bf778408e646cc2b1f93aea048ba3f8fcf48494d3113de444b5f3b9e06354056c8a54af8295529e86a7361e
     concat
     swap
     concat
-    // smart_contracts/zkp_verifier/contract.algo.ts:177
+    // smart_contracts/zkp_verifier/contract.algo.ts:178
     // const g2Points = b.concat(beta2).concat(gamma2).concat(delta2)
     swap
-    pushbytes 0x000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000
+    pushbytes 0x0e187847ad4c798374d0d6732bf501847dd68bc0e071241e0213bc7fc13db7ab0967032fcbf776d1afc985f88877f182d38480a653f2decaa9794cbc3bf3060c1739c1b1a457a8c7313123d24d2f9192f896b7c63eea05a9d57f06547ad0cec8304cfbd1e08a704a99f5e847d93f8c3caafddec46b7a0d379da69a4d112346a71800deef121f1e76426a00665e5c4479674322d4f75edadd46debd5cd992f6ed198e9393920d483a7260bfb731fb5d25f1aa493335a9e71297e485b7aef312c212c85ea5db8c6deb4aab71808dcb408fe3d1e7690c43d37b4ce6cc0166fa7daa090689d0585ff075ec9e99ad690c3395bc4b313370b38ef355acdadcd122975b15ab2cb5bacce049f4ef0a21a81e82fe10322189eb13db6160c34b5048d7b4551b73fead3b8c946b55f8e1280251a1a55a38a1ce2ec53496301e0a44748f20e21b8eae50de598ff6ba19d3fb3ab935eb9000b8a04c5d357b5d1bae5c70eb24b716938331acc5eefedc142671282eeef6cfeadc0c5a4419f14a2c728bce7968b1
     concat
-    // smart_contracts/zkp_verifier/contract.algo.ts:179
+    // smart_contracts/zkp_verifier/contract.algo.ts:180
     // return op.EllipticCurve.pairingCheck(Ec.BN254g1, g1Points, g2Points)
     ec_pairing_check BN254g1
     // smart_contracts/zkp_verifier/contract.algo.ts:103
     // assert(isZkValid, 'ZK Proof verification failed')
     assert // ZK Proof verification failed
     // smart_contracts/zkp_verifier/contract.algo.ts:107
-    // assert(publicInputs.length === Uint64(192), 'Invalid public inputs length (expected 6 signals)')
+    // assert(publicInputs.length === Uint64(96), 'Invalid public inputs length (expected 3 signals)')
     dig 7
     dup
     len
     dup
-    intc 4 // 192
+    pushint 96
     ==
-    assert // Invalid public inputs length (expected 6 signals)
+    assert // Invalid public inputs length (expected 3 signals)
     // smart_contracts/zkp_verifier/contract.algo.ts:110
     // const isVerified = publicInputs.slice(0, 32)
     intc_0 // 0
@@ -706,7 +706,8 @@ verifyAndRegister_after_while@20:
     uncover 2
     select
     dig 3
-    cover 2
+    uncover 2
+    dig 2
     substring3
     // smart_contracts/zkp_verifier/contract.algo.ts:11
     // usedNullifiers = BoxMap<bytes, boolean>({ keyPrefix: 'n' })
@@ -721,23 +722,17 @@ verifyAndRegister_after_while@20:
     !
     assert // This identity has already registered a wallet
     // smart_contracts/zkp_verifier/contract.algo.ts:118
-    // const proofRoot = publicInputs.slice(160, 192)
-    pushint 160
-    dig 2
-    >=
-    pushint 160
-    dig 3
-    uncover 2
-    select
-    intc 4 // 192
+    // const proofRoot = publicInputs.slice(64, 96)
+    pushint 96
     dig 3
     >=
-    intc 4 // 192
+    pushint 96
     uncover 4
     uncover 2
     select
     uncover 3
-    cover 2
+    uncover 3
+    uncover 2
     substring3
     // smart_contracts/zkp_verifier/contract.algo.ts:119
     // assert(proofRoot === this.merkleRoot.value, 'Identity Merkle Root mismatch')
@@ -758,7 +753,7 @@ verifyAndRegister_after_while@20:
     box_put
     // smart_contracts/zkp_verifier/contract.algo.ts:127
     // assert(proof.length === Uint64(256), 'Invalid ZK proof length')
-    intc 5 // 256
+    intc 4 // 256
     ==
     assert // Invalid ZK proof length
     // smart_contracts/zkp_verifier/contract.algo.ts:132-137

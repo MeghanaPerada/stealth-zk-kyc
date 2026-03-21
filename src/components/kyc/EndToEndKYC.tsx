@@ -2,11 +2,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import KYCFlow from "./KYCFlow";
-import { calculateIdentityHash, calculateConsentHash, toFieldElement } from "@/lib/circuitHelpers";
-import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2, Info, Check, Lock, ExternalLink, Terminal } from "lucide-react";
+import { calculateIdentityHash, calculateConsentHash, toFieldElement, packProofBytes, packPublicSignals } from "@/lib/circuitHelpers";
+import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2, Info, Check, Lock, ExternalLink, Terminal, Cpu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { ZkpVerifierClient } from "@/contracts/zkp_verifier/ZkpVerifierClient";
+import * as algosdk from "algosdk";
+import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 
 export default function EndToEndKYC() {
   const { address, isConnected, connectWallet, signMessage } = useWallet();
@@ -17,6 +20,8 @@ export default function EndToEndKYC() {
   const [step, setStep] = useState(1); // 1: Connect, 2: OTP/KYC, 3: Consent, 4: Result
   const [isReusing, setIsReusing] = useState(false);
   const [zkLogs, setZkLogs] = useState<string[]>([]);
+  const [isVerifyingOnChain, setIsVerifyingOnChain] = useState(false);
+  const [onChainTxId, setOnChainTxId] = useState<string | null>(null);
   const zkLogRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -51,6 +56,8 @@ export default function EndToEndKYC() {
     };
     frame();
   };
+
+  const [proofData, setProofData] = useState<any>(null);
 
   const handleWalletAuth = async () => {
     if (!isConnected) {
@@ -243,9 +250,72 @@ export default function EndToEndKYC() {
     }
   };
 
-  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
-  const [proofData, setProofData] = useState<any>(null);
+  const handleVerifyOnChain = async () => {
+    if (!address || !proofData || !oracleResult) {
+      toast.error("Proof data missing");
+      return;
+    }
 
+    setIsVerifyingOnChain(true);
+    const appId = BigInt(process.env.NEXT_PUBLIC_ZK_VERIFIER_APP_ID || 1); // Use BigInt for appId
+
+    try {
+      addZkLog(`> Initializing ZkpVerifier Client (AppID: ${appId})...`);
+      
+      const { algodClient, signTransactions } = useWallet(); // Get fresh clients
+
+      // Initialize the ZkpVerifierClient using the Algokit-preferred AlgorandClient
+      const client = new ZkpVerifierClient({
+        appId: appId,
+        algorand: AlgorandClient.fromClients({ algod: algodClient }),
+      });
+
+      addZkLog("> Packing ZK Proof (πA, πB, πC) into AVM-compatible bytes...");
+      const packedProof = packProofBytes(proofData.proof);
+      
+      addZkLog("> Packing Public Signals (Verified, Nullifier, MerkleRoot)...");
+      const packedSignals = packPublicSignals(proofData.publicSignals);
+
+      // Oracle Data should be the data signed by the oracle
+      // In our case, the oracle signed the `oracleResult.identityHash` or similar
+      const oracleData = new TextEncoder().encode(JSON.stringify({
+        id: oracleResult.id || oracleResult.wallet,
+        score: oracleResult.trustScore
+      }));
+
+      const oracleSignature = Buffer.from(oracleResult.signature || "", 'base64');
+      const oraclePubKey = Buffer.from(process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "GNRUTG7X4K...EXAMPLE", 'base64'); // Placeholder
+      const proofId = `STEALTH-${Date.now().toString().slice(-6)}`;
+
+      addZkLog("> Requesting transaction signature for verifyAndRegister()...");
+      
+      // Call the smart contract with M-of-N support (using 1 oracle for this demo)
+      const result = await client.send.verifyAndRegister({
+        args: {
+            proof: packedProof,
+            publicInputs: packedSignals,
+            oracleData: oracleData,
+            oraclePubKeys: [oraclePubKey],
+            oracleSignatures: [oracleSignature],
+            proofId: proofId
+        },
+        sender: address,
+      });
+
+      addZkLog(`> ✅ On-Chain Verification Success! TxID: ${result.transaction.txID().substring(0, 8)}...`);
+      setOnChainTxId(result.transaction.txID());
+      toast.success("Identity Verified & Registered On-Chain! 🚀");
+      triggerConfetti();
+    } catch (err: any) {
+      console.error("On-Chain Error:", err);
+      toast.error("On-Chain Verification Failed: " + (err.message || "Unknown error"));
+      addZkLog(`> ❌ Error: ${err.message?.substring(0, 50)}...`);
+    } finally {
+      setIsVerifyingOnChain(false);
+    }
+  };
+
+  const sleep = (ms: number) => new Promise((r) => setTimeout(r, ms));
 
   return (
     <div className="max-w-4xl mx-auto space-y-8 py-10">
