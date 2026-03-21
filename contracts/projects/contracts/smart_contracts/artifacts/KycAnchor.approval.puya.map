@@ -3,7 +3,7 @@
   "sources": [
     "../kyc_consolidated.algo.ts"
   ],
-  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAQA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAUE;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AACS;;AAAA;;AAAA;AAAP;AACO;AAAS;;AAAT;AAAP;AAVc;AAAA;;AAAA;AAYd;AAAA;AAAA;AAXc;AAAA;;AAAA;AAYd;AAAA;;AAAA;AAAA;AAEI;;;;;;;;;;;;;;;;;AAAJ;AAPF;AAAA;;AAcA;;;AAAA;;AAAA;AAAA;AAAA;AAAA;AACS;;AAAA;;AAAA;AAAP;AAvBc;AAAA;AAAA;AAAA;AAyBV;AAAA;;AAAJ;;;AACE;AAAA;;AAzBY;AAAA;;AAAA;AAAA;AAAA;;AA2BV;AAAA;;AAAJ;;;AACE;;AAAA;;AAGE;;;;;;;;;;;;;;;;;AAAJ;AAVF;AAAA;AAgBA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AASA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACS;;AAAA;;;AAAP;AACO;AAAc;;AAAd;AAAP;AA/Ce;;AAAA;;AAAA;AAiDf;AAAA;;AAAA;AAAA;AAEI;;;;;;;;;;;;;;AAAJ;AANF;AAAA;AAaA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AA1DiB;;AAAA;;AAAA;AA2DR;AAAA;AAAA;;AAAP;AACO;AAAA;AAAA;AAFT;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAtBA;;;AAtCgB;AAAA;;AAAA;AAAA;AAuCP;AAAA;;AAAA;;;AAAqC;;AAAyB;;AAAA;AAAA;AAAA;AAAzB;AAArC;;;;AAAP;AAAA;;",
+  "mappings": ";;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAQA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAeE;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAPqB;AASnB;;AATmB;AASnB;AAAA;AACI;;;;;;;;;;;;;;AAAJ;AAHF;AAAA;AAUA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AACS;;AAAA;;AAAA;AAAP;AACO;AAAS;;AAAT;AAAP;AAzBc;AAAA;;AAAA;AA2Bd;AAAA;AAAA;AA1Bc;AAAA;;AAAA;AA2Bd;AAAA;;AAAA;AAAA;AAEI;;;;;;;;;;;;;;;;;AAAJ;AAPF;AAAA;;AAcA;;;AAAA;;AAAA;AAAA;AAAA;AAAA;AACS;;AAAA;;AAAA;AAAP;AAtCc;AAAA;AAAA;AAAA;AAwCV;AAAA;;AAAJ;;;AACE;AAAA;;AAxCY;AAAA;;AAAA;AAAA;AAAA;;AA0CV;AAAA;;AAAJ;;;AACE;;AAAA;;AAGE;;;;;;;;;;;;;;;;;AAAJ;AAVF;AAAA;AAgBA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AASA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACS;;AAAA;;;AAAP;AACO;;AAAA;AAAP;AA1DmB;AA6DP;AAAA;AA7DO;AA6DP;AAAA;AACZ;AAEyB;;AAAA;;AAAA;AAKzB;AAzEe;;AAAA;;AAAA;AA4Ef;AAAA;;AAAA;AAAA;AACI;;;;;;;;;;;;;;;;;;;;;;;AAAJ;AAjBF;AAAA;AAwBA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AApFiB;;AAAA;;AAAA;AAqFR;AAAA;AAAA;;AAAP;AACO;AAAA;AAAA;AAFT;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAjCA;;;AArDgB;AAAA;;AAAA;AAAA;AAsDP;AAAA;;AAAA;;;AAAqC;;AAAyB;;AAAA;AAAA;AAAA;AAAzB;AAArC;;;;AAAP;AAAA;;",
   "op_pc_offset": 0,
   "pc_events": {
     "1": {
@@ -11,12 +11,12 @@
       "params": {},
       "block": "main",
       "stack_in": [],
-      "op": "intcblock 1 0 32 2"
+      "op": "intcblock 0 1 2 32"
     },
     "7": {
-      "op": "bytecblock \"expiry\" \"fields\" 0x00 0x151f7c75 \"proof\""
+      "op": "bytecblock \"configopk\" \"expiry\" \"fields\" 0x00 0x151f7c75 \"proof\""
     },
-    "36": {
+    "46": {
       "op": "txn NumAppArgs",
       "defined_out": [
         "tmp%0#1"
@@ -25,11 +25,11 @@
         "tmp%0#1"
       ]
     },
-    "38": {
-      "op": "bz main___algots__.defaultCreate@12",
+    "48": {
+      "op": "bz main___algots__.defaultCreate@13",
       "stack_out": []
     },
-    "41": {
+    "51": {
       "op": "txn OnCompletion",
       "defined_out": [
         "tmp%2#0"
@@ -38,7 +38,7 @@
         "tmp%2#0"
       ]
     },
-    "43": {
+    "53": {
       "op": "!",
       "defined_out": [
         "tmp%3#0"
@@ -47,12 +47,11 @@
         "tmp%3#0"
       ]
     },
-    "44": {
-      "error": "OnCompletion must be NoOp",
-      "op": "assert // OnCompletion must be NoOp",
+    "54": {
+      "op": "assert",
       "stack_out": []
     },
-    "45": {
+    "55": {
       "op": "txn ApplicationID",
       "defined_out": [
         "tmp%4#0"
@@ -61,55 +60,59 @@
         "tmp%4#0"
       ]
     },
-    "47": {
+    "57": {
       "op": "assert",
       "stack_out": []
     },
-    "48": {
-      "op": "pushbytess 0x6948557b 0xbb87b4c0 0x87aa53c3 0xf646e7ae 0x77534f48 // method \"grantConsent(address,string,uint64)void\", method \"revokeConsent(address)void\", method \"hasValidConsent(address)bool\", method \"storeProof(address,string)void\", method \"verifyProof(address,string)bool\"",
+    "58": {
+      "op": "pushbytess 0x1160e932 0x6948557b 0xbb87b4c0 0x87aa53c3 0xdf7521f3 0xa2bfe548 // method \"setupOracle(byte[])void\", method \"grantConsent(address,string,uint64)void\", method \"revokeConsent(address)void\", method \"hasValidConsent(address)bool\", method \"storeProof(address,byte[],byte[])void\", method \"verifyOnChain(address,byte[])bool\"",
       "defined_out": [
         "Method(grantConsent(address,string,uint64)void)",
         "Method(hasValidConsent(address)bool)",
         "Method(revokeConsent(address)void)",
-        "Method(storeProof(address,string)void)",
-        "Method(verifyProof(address,string)bool)"
+        "Method(setupOracle(byte[])void)",
+        "Method(storeProof(address,byte[],byte[])void)",
+        "Method(verifyOnChain(address,byte[])bool)"
       ],
       "stack_out": [
+        "Method(setupOracle(byte[])void)",
         "Method(grantConsent(address,string,uint64)void)",
         "Method(revokeConsent(address)void)",
         "Method(hasValidConsent(address)bool)",
-        "Method(storeProof(address,string)void)",
-        "Method(verifyProof(address,string)bool)"
+        "Method(storeProof(address,byte[],byte[])void)",
+        "Method(verifyOnChain(address,byte[])bool)"
       ]
     },
-    "75": {
+    "90": {
       "op": "txna ApplicationArgs 0",
       "defined_out": [
         "Method(grantConsent(address,string,uint64)void)",
         "Method(hasValidConsent(address)bool)",
         "Method(revokeConsent(address)void)",
-        "Method(storeProof(address,string)void)",
-        "Method(verifyProof(address,string)bool)",
+        "Method(setupOracle(byte[])void)",
+        "Method(storeProof(address,byte[],byte[])void)",
+        "Method(verifyOnChain(address,byte[])bool)",
         "tmp%6#0"
       ],
       "stack_out": [
+        "Method(setupOracle(byte[])void)",
         "Method(grantConsent(address,string,uint64)void)",
         "Method(revokeConsent(address)void)",
         "Method(hasValidConsent(address)bool)",
-        "Method(storeProof(address,string)void)",
-        "Method(verifyProof(address,string)bool)",
+        "Method(storeProof(address,byte[],byte[])void)",
+        "Method(verifyOnChain(address,byte[])bool)",
         "tmp%6#0"
       ]
     },
-    "78": {
-      "op": "match grantConsent revokeConsent hasValidConsent storeProof verifyProof",
+    "93": {
+      "op": "match setupOracle grantConsent revokeConsent hasValidConsent storeProof verifyOnChain",
       "stack_out": []
     },
-    "90": {
+    "107": {
       "op": "err"
     },
-    "91": {
-      "block": "main___algots__.defaultCreate@12",
+    "108": {
+      "block": "main___algots__.defaultCreate@13",
       "stack_in": [],
       "op": "txn OnCompletion",
       "defined_out": [
@@ -119,7 +122,7 @@
         "tmp%7#0"
       ]
     },
-    "93": {
+    "110": {
       "op": "!",
       "defined_out": [
         "tmp%8#0"
@@ -128,7 +131,7 @@
         "tmp%8#0"
       ]
     },
-    "94": {
+    "111": {
       "op": "txn ApplicationID",
       "defined_out": [
         "tmp%8#0",
@@ -139,7 +142,7 @@
         "tmp%9#0"
       ]
     },
-    "96": {
+    "113": {
       "op": "!",
       "defined_out": [
         "tmp%10#0",
@@ -150,7 +153,7 @@
         "tmp%10#0"
       ]
     },
-    "97": {
+    "114": {
       "op": "&&",
       "defined_out": [
         "tmp%11#0"
@@ -159,13 +162,193 @@
         "tmp%11#0"
       ]
     },
-    "98": {
-      "error": "OnCompletion must be NoOp && can only call when creating",
-      "op": "assert // OnCompletion must be NoOp && can only call when creating",
+    "115": {
+      "op": "return",
+      "defined_out": [],
       "stack_out": []
     },
-    "99": {
-      "op": "intc_0 // 1",
+    "116": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.setupOracle[routing]",
+      "params": {},
+      "block": "setupOracle",
+      "stack_in": [],
+      "op": "txna ApplicationArgs 1",
+      "defined_out": [
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "119": {
+      "op": "dup",
+      "defined_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "120": {
+      "op": "intc_0 // 0",
+      "defined_out": [
+        "0",
+        "tmp%0#0",
+        "tmp%0#0 (copy)"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "tmp%0#0 (copy)",
+        "0"
+      ]
+    },
+    "121": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0"
+      ]
+    },
+    "122": {
+      "op": "intc_2 // 2",
+      "defined_out": [
+        "2",
+        "aggregate%array_length%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "aggregate%array_length%0#0",
+        "2"
+      ]
+    },
+    "123": {
+      "op": "+",
+      "defined_out": [
+        "add%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0"
+      ]
+    },
+    "124": {
+      "op": "dig 1",
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "tmp%0#0 (copy)"
+      ]
+    },
+    "126": {
+      "op": "len",
+      "defined_out": [
+        "add%0#0",
+        "len%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "add%0#0",
+        "len%0#0"
+      ]
+    },
+    "127": {
+      "op": "==",
+      "defined_out": [
+        "eq%0#0",
+        "tmp%0#0"
+      ],
+      "stack_out": [
+        "tmp%0#0",
+        "eq%0#0"
+      ]
+    },
+    "128": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "tmp%0#0"
+      ]
+    },
+    "129": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "pubKey#0"
+      ],
+      "stack_out": [
+        "pubKey#0"
+      ]
+    },
+    "132": {
+      "op": "bytec_0 // \"configopk\"",
+      "defined_out": [
+        "\"configopk\"",
+        "pubKey#0"
+      ],
+      "stack_out": [
+        "pubKey#0",
+        "\"configopk\""
+      ]
+    },
+    "133": {
+      "op": "box_del",
+      "defined_out": [
+        "pubKey#0",
+        "{box_del}"
+      ],
+      "stack_out": [
+        "pubKey#0",
+        "{box_del}"
+      ]
+    },
+    "134": {
+      "op": "pop",
+      "stack_out": [
+        "pubKey#0"
+      ]
+    },
+    "135": {
+      "op": "bytec_0 // \"configopk\"",
+      "stack_out": [
+        "pubKey#0",
+        "\"configopk\""
+      ]
+    },
+    "136": {
+      "op": "swap",
+      "stack_out": [
+        "\"configopk\"",
+        "pubKey#0"
+      ]
+    },
+    "137": {
+      "op": "box_put",
+      "stack_out": []
+    },
+    "138": {
+      "op": "pushbytes \"ORACLE_SETUP\"",
+      "defined_out": [
+        "\"ORACLE_SETUP\""
+      ],
+      "stack_out": [
+        "\"ORACLE_SETUP\""
+      ]
+    },
+    "152": {
+      "op": "log",
+      "stack_out": []
+    },
+    "153": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -173,11 +356,11 @@
         "1"
       ]
     },
-    "100": {
+    "154": {
       "op": "return",
       "stack_out": []
     },
-    "101": {
+    "155": {
       "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.grantConsent[routing]",
       "params": {},
       "block": "grantConsent",
@@ -190,7 +373,7 @@
         "wallet#0"
       ]
     },
-    "104": {
+    "158": {
       "op": "dup",
       "defined_out": [
         "wallet#0",
@@ -201,7 +384,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "105": {
+    "159": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -212,8 +395,8 @@
         "len%0#0"
       ]
     },
-    "106": {
-      "op": "intc_2 // 32",
+    "160": {
+      "op": "intc_3 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -225,7 +408,7 @@
         "32"
       ]
     },
-    "107": {
+    "161": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -236,14 +419,14 @@
         "eq%0#0"
       ]
     },
-    "108": {
+    "162": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "wallet#0"
       ]
     },
-    "109": {
+    "163": {
       "op": "txna ApplicationArgs 2",
       "defined_out": [
         "tmp%2#0",
@@ -254,7 +437,7 @@
         "tmp%2#0"
       ]
     },
-    "112": {
+    "166": {
       "op": "dup",
       "defined_out": [
         "tmp%2#0",
@@ -267,8 +450,8 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "113": {
-      "op": "intc_1 // 0",
+    "167": {
+      "op": "intc_0 // 0",
       "defined_out": [
         "0",
         "tmp%2#0",
@@ -282,7 +465,7 @@
         "0"
       ]
     },
-    "114": {
+    "168": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -296,8 +479,8 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "115": {
-      "op": "intc_3 // 2",
+    "169": {
+      "op": "intc_2 // 2",
       "defined_out": [
         "2",
         "aggregate%array_length%0#0",
@@ -311,7 +494,7 @@
         "2"
       ]
     },
-    "116": {
+    "170": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -324,7 +507,7 @@
         "add%0#0"
       ]
     },
-    "117": {
+    "171": {
       "op": "dig 1",
       "stack_out": [
         "wallet#0",
@@ -333,7 +516,7 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "119": {
+    "173": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -348,7 +531,7 @@
         "len%1#0"
       ]
     },
-    "120": {
+    "174": {
       "op": "==",
       "defined_out": [
         "eq%1#0",
@@ -361,7 +544,7 @@
         "eq%1#0"
       ]
     },
-    "121": {
+    "175": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
@@ -369,7 +552,7 @@
         "tmp%2#0"
       ]
     },
-    "122": {
+    "176": {
       "op": "extract 2 0",
       "defined_out": [
         "allowed_fields#0",
@@ -380,7 +563,7 @@
         "allowed_fields#0"
       ]
     },
-    "125": {
+    "179": {
       "op": "txna ApplicationArgs 3",
       "defined_out": [
         "allowed_fields#0",
@@ -393,7 +576,7 @@
         "tmp%4#0"
       ]
     },
-    "128": {
+    "182": {
       "op": "dup",
       "defined_out": [
         "allowed_fields#0",
@@ -408,7 +591,7 @@
         "tmp%4#0 (copy)"
       ]
     },
-    "129": {
+    "183": {
       "op": "len",
       "defined_out": [
         "allowed_fields#0",
@@ -423,8 +606,8 @@
         "len%2#0"
       ]
     },
-    "130": {
-      "op": "pushint 8 // 8",
+    "184": {
+      "op": "pushint 8",
       "defined_out": [
         "8",
         "allowed_fields#0",
@@ -440,7 +623,7 @@
         "8"
       ]
     },
-    "132": {
+    "186": {
       "op": "==",
       "defined_out": [
         "allowed_fields#0",
@@ -455,7 +638,7 @@
         "eq%2#0"
       ]
     },
-    "133": {
+    "187": {
       "error": "invalid number of bytes for arc4.uint64",
       "op": "assert // invalid number of bytes for arc4.uint64",
       "stack_out": [
@@ -464,7 +647,7 @@
         "tmp%4#0"
       ]
     },
-    "134": {
+    "188": {
       "op": "btoi",
       "defined_out": [
         "allowed_fields#0",
@@ -477,7 +660,7 @@
         "expiry#0"
       ]
     },
-    "135": {
+    "189": {
       "op": "txn Sender",
       "defined_out": [
         "allowed_fields#0",
@@ -492,7 +675,7 @@
         "tmp%0#1"
       ]
     },
-    "137": {
+    "191": {
       "op": "dig 3",
       "stack_out": [
         "wallet#0",
@@ -502,7 +685,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "139": {
+    "193": {
       "op": "==",
       "defined_out": [
         "allowed_fields#0",
@@ -517,7 +700,7 @@
         "tmp%1#1"
       ]
     },
-    "140": {
+    "194": {
       "error": "Only the wallet owner can grant consent",
       "op": "assert // Only the wallet owner can grant consent",
       "stack_out": [
@@ -526,10 +709,10 @@
         "expiry#0"
       ]
     },
-    "141": {
+    "195": {
       "op": "dup"
     },
-    "142": {
+    "196": {
       "op": "global LatestTimestamp",
       "defined_out": [
         "allowed_fields#0",
@@ -546,7 +729,7 @@
         "tmp%2#1"
       ]
     },
-    "144": {
+    "198": {
       "op": ">",
       "defined_out": [
         "allowed_fields#0",
@@ -561,7 +744,7 @@
         "tmp%3#1"
       ]
     },
-    "145": {
+    "199": {
       "error": "Expiry must be in the future",
       "op": "assert // Expiry must be in the future",
       "stack_out": [
@@ -570,8 +753,8 @@
         "expiry#0"
       ]
     },
-    "146": {
-      "op": "bytec_0 // \"expiry\"",
+    "200": {
+      "op": "bytec_1 // \"expiry\"",
       "defined_out": [
         "\"expiry\"",
         "allowed_fields#0",
@@ -585,7 +768,7 @@
         "\"expiry\""
       ]
     },
-    "147": {
+    "201": {
       "op": "dig 3",
       "stack_out": [
         "wallet#0",
@@ -595,7 +778,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "149": {
+    "203": {
       "op": "concat",
       "defined_out": [
         "allowed_fields#0",
@@ -610,7 +793,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "150": {
+    "204": {
       "op": "swap",
       "stack_out": [
         "wallet#0",
@@ -619,7 +802,7 @@
         "expiry#0"
       ]
     },
-    "151": {
+    "205": {
       "op": "itob",
       "defined_out": [
         "allowed_fields#0",
@@ -634,15 +817,15 @@
         "encoded_value%0#0"
       ]
     },
-    "152": {
+    "206": {
       "op": "box_put",
       "stack_out": [
         "wallet#0",
         "allowed_fields#0"
       ]
     },
-    "153": {
-      "op": "bytec_1 // \"fields\"",
+    "207": {
+      "op": "bytec_2 // \"fields\"",
       "defined_out": [
         "\"fields\"",
         "allowed_fields#0",
@@ -654,7 +837,7 @@
         "\"fields\""
       ]
     },
-    "154": {
+    "208": {
       "op": "uncover 2",
       "stack_out": [
         "allowed_fields#0",
@@ -662,7 +845,7 @@
         "wallet#0"
       ]
     },
-    "156": {
+    "210": {
       "op": "concat",
       "defined_out": [
         "allowed_fields#0",
@@ -673,7 +856,7 @@
         "box_prefixed_key%1#0"
       ]
     },
-    "157": {
+    "211": {
       "op": "dup",
       "defined_out": [
         "allowed_fields#0",
@@ -686,7 +869,7 @@
         "box_prefixed_key%1#0 (copy)"
       ]
     },
-    "158": {
+    "212": {
       "op": "box_del",
       "defined_out": [
         "allowed_fields#0",
@@ -699,25 +882,25 @@
         "{box_del}"
       ]
     },
-    "159": {
+    "213": {
       "op": "pop",
       "stack_out": [
         "allowed_fields#0",
         "box_prefixed_key%1#0"
       ]
     },
-    "160": {
+    "214": {
       "op": "swap",
       "stack_out": [
         "box_prefixed_key%1#0",
         "allowed_fields#0"
       ]
     },
-    "161": {
+    "215": {
       "op": "box_put",
       "stack_out": []
     },
-    "162": {
+    "216": {
       "op": "pushbytes \"CONSENT_GRANTED\"",
       "defined_out": [
         "\"CONSENT_GRANTED\""
@@ -726,12 +909,12 @@
         "\"CONSENT_GRANTED\""
       ]
     },
-    "179": {
+    "233": {
       "op": "log",
       "stack_out": []
     },
-    "180": {
-      "op": "intc_0 // 1",
+    "234": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -739,24 +922,24 @@
         "1"
       ]
     },
-    "181": {
+    "235": {
       "op": "return",
       "stack_out": []
     },
-    "182": {
+    "236": {
       "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.revokeConsent[routing]",
       "params": {},
       "block": "revokeConsent",
       "stack_in": [],
-      "op": "intc_1 // 0",
+      "op": "intc_0 // 0",
       "stack_out": [
         "box_prefixed_key%2#0"
       ]
     },
-    "183": {
+    "237": {
       "op": "txna ApplicationArgs 1"
     },
-    "186": {
+    "240": {
       "op": "dupn 2",
       "defined_out": [
         "wallet#0",
@@ -769,7 +952,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "188": {
+    "242": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -782,8 +965,8 @@
         "len%0#0"
       ]
     },
-    "189": {
-      "op": "intc_2 // 32",
+    "243": {
+      "op": "intc_3 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -797,7 +980,7 @@
         "32"
       ]
     },
-    "190": {
+    "244": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -810,7 +993,7 @@
         "eq%0#0"
       ]
     },
-    "191": {
+    "245": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
@@ -819,7 +1002,7 @@
         "wallet#0"
       ]
     },
-    "192": {
+    "246": {
       "op": "txn Sender",
       "defined_out": [
         "tmp%0#1",
@@ -832,7 +1015,7 @@
         "tmp%0#1"
       ]
     },
-    "194": {
+    "248": {
       "op": "dig 1",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -842,7 +1025,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "196": {
+    "250": {
       "op": "==",
       "defined_out": [
         "tmp%1#1",
@@ -855,7 +1038,7 @@
         "tmp%1#1"
       ]
     },
-    "197": {
+    "251": {
       "error": "Only the wallet owner can revoke consent",
       "op": "assert // Only the wallet owner can revoke consent",
       "stack_out": [
@@ -864,8 +1047,8 @@
         "wallet#0"
       ]
     },
-    "198": {
-      "op": "bytec_0 // \"expiry\"",
+    "252": {
+      "op": "bytec_1 // \"expiry\"",
       "defined_out": [
         "\"expiry\"",
         "wallet#0"
@@ -877,7 +1060,7 @@
         "\"expiry\""
       ]
     },
-    "199": {
+    "253": {
       "op": "swap",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -886,7 +1069,7 @@
         "wallet#0"
       ]
     },
-    "200": {
+    "254": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -898,7 +1081,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "201": {
+    "255": {
       "op": "dup",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -911,7 +1094,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "202": {
+    "256": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
@@ -927,7 +1110,7 @@
         "maybe_exists%0#0"
       ]
     },
-    "203": {
+    "257": {
       "op": "bury 1",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -936,7 +1119,7 @@
         "maybe_exists%0#0"
       ]
     },
-    "205": {
+    "259": {
       "op": "bz revokeConsent_after_if_else@3",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -944,7 +1127,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "208": {
+    "262": {
       "op": "dup",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -953,7 +1136,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "209": {
+    "263": {
       "op": "box_del",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -967,7 +1150,7 @@
         "{box_del}"
       ]
     },
-    "210": {
+    "264": {
       "op": "pop",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -975,14 +1158,14 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "211": {
+    "265": {
       "block": "revokeConsent_after_if_else@3",
       "stack_in": [
         "box_prefixed_key%2#0",
         "wallet#0",
         "box_prefixed_key%0#0"
       ],
-      "op": "bytec_1 // \"fields\"",
+      "op": "bytec_2 // \"fields\"",
       "defined_out": [
         "\"fields\""
       ],
@@ -993,7 +1176,7 @@
         "\"fields\""
       ]
     },
-    "212": {
+    "266": {
       "op": "dig 2",
       "defined_out": [
         "\"fields\"",
@@ -1007,7 +1190,7 @@
         "wallet#0"
       ]
     },
-    "214": {
+    "268": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%2#0",
@@ -1020,7 +1203,7 @@
         "box_prefixed_key%2#0"
       ]
     },
-    "215": {
+    "269": {
       "op": "dup",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -1030,7 +1213,7 @@
         "box_prefixed_key%2#0"
       ]
     },
-    "216": {
+    "270": {
       "op": "bury 4",
       "defined_out": [
         "box_prefixed_key%2#0",
@@ -1043,7 +1226,7 @@
         "box_prefixed_key%2#0"
       ]
     },
-    "218": {
+    "272": {
       "op": "box_len",
       "defined_out": [
         "_%1#0",
@@ -1059,7 +1242,7 @@
         "maybe_exists%1#0"
       ]
     },
-    "219": {
+    "273": {
       "op": "bury 1",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -1068,7 +1251,7 @@
         "maybe_exists%1#0"
       ]
     },
-    "221": {
+    "275": {
       "op": "bz revokeConsent_after_if_else@5",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -1076,7 +1259,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "224": {
+    "278": {
       "op": "dig 2",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -1085,7 +1268,7 @@
         "box_prefixed_key%2#0"
       ]
     },
-    "226": {
+    "280": {
       "op": "box_del",
       "defined_out": [
         "box_prefixed_key%2#0",
@@ -1099,7 +1282,7 @@
         "{box_del}"
       ]
     },
-    "227": {
+    "281": {
       "op": "pop",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -1107,7 +1290,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "228": {
+    "282": {
       "block": "revokeConsent_after_if_else@5",
       "stack_in": [
         "box_prefixed_key%2#0",
@@ -1125,7 +1308,7 @@
         "\"CONSENT_REVOKED\""
       ]
     },
-    "245": {
+    "299": {
       "op": "log",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -1133,8 +1316,8 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "246": {
-      "op": "intc_0 // 1",
+    "300": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -1145,7 +1328,7 @@
         "1"
       ]
     },
-    "247": {
+    "301": {
       "op": "return",
       "stack_out": [
         "box_prefixed_key%2#0",
@@ -1153,7 +1336,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "248": {
+    "302": {
       "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent[routing]",
       "params": {},
       "block": "hasValidConsent",
@@ -1166,7 +1349,7 @@
         "tmp%0#0"
       ]
     },
-    "251": {
+    "305": {
       "op": "dup",
       "defined_out": [
         "tmp%0#0",
@@ -1177,7 +1360,7 @@
         "tmp%0#0 (copy)"
       ]
     },
-    "252": {
+    "306": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -1188,8 +1371,8 @@
         "len%0#0"
       ]
     },
-    "253": {
-      "op": "intc_2 // 32",
+    "307": {
+      "op": "intc_3 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -1201,7 +1384,7 @@
         "32"
       ]
     },
-    "254": {
+    "308": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -1212,14 +1395,14 @@
         "eq%0#0"
       ]
     },
-    "255": {
+    "309": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "tmp%0#0"
       ]
     },
-    "256": {
+    "310": {
       "callsub": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
       "op": "callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
       "defined_out": [
@@ -1229,8 +1412,8 @@
         "tmp%2#0"
       ]
     },
-    "259": {
-      "op": "bytec_2 // 0x00",
+    "313": {
+      "op": "bytec_3 // 0x00",
       "defined_out": [
         "0x00",
         "tmp%2#0"
@@ -1240,8 +1423,8 @@
         "0x00"
       ]
     },
-    "260": {
-      "op": "intc_1 // 0",
+    "314": {
+      "op": "intc_0 // 0",
       "defined_out": [
         "0",
         "0x00",
@@ -1253,7 +1436,7 @@
         "0"
       ]
     },
-    "261": {
+    "315": {
       "op": "uncover 2",
       "stack_out": [
         "0x00",
@@ -1261,7 +1444,7 @@
         "tmp%2#0"
       ]
     },
-    "263": {
+    "317": {
       "op": "setbit",
       "defined_out": [
         "aggregate%encoded_bool%0#0"
@@ -1270,8 +1453,8 @@
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "264": {
-      "op": "bytec_3 // 0x151f7c75",
+    "318": {
+      "op": "bytec 4 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
         "aggregate%encoded_bool%0#0"
@@ -1281,14 +1464,14 @@
         "0x151f7c75"
       ]
     },
-    "265": {
+    "320": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "266": {
+    "321": {
       "op": "concat",
       "defined_out": [
         "tmp%4#0"
@@ -1297,12 +1480,12 @@
         "tmp%4#0"
       ]
     },
-    "267": {
+    "322": {
       "op": "log",
       "stack_out": []
     },
-    "268": {
-      "op": "intc_0 // 1",
+    "323": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -1310,11 +1493,11 @@
         "1"
       ]
     },
-    "269": {
+    "324": {
       "op": "return",
       "stack_out": []
     },
-    "270": {
+    "325": {
       "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.storeProof[routing]",
       "params": {},
       "block": "storeProof",
@@ -1327,7 +1510,7 @@
         "wallet#0"
       ]
     },
-    "273": {
+    "328": {
       "op": "dup",
       "defined_out": [
         "wallet#0",
@@ -1338,7 +1521,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "274": {
+    "329": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -1349,8 +1532,8 @@
         "len%0#0"
       ]
     },
-    "275": {
-      "op": "intc_2 // 32",
+    "330": {
+      "op": "intc_3 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -1362,7 +1545,7 @@
         "32"
       ]
     },
-    "276": {
+    "331": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -1373,14 +1556,14 @@
         "eq%0#0"
       ]
     },
-    "277": {
+    "332": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "wallet#0"
       ]
     },
-    "278": {
+    "333": {
       "op": "txna ApplicationArgs 2",
       "defined_out": [
         "tmp%2#0",
@@ -1391,7 +1574,7 @@
         "tmp%2#0"
       ]
     },
-    "281": {
+    "336": {
       "op": "dup",
       "defined_out": [
         "tmp%2#0",
@@ -1404,8 +1587,8 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "282": {
-      "op": "intc_1 // 0",
+    "337": {
+      "op": "intc_0 // 0",
       "defined_out": [
         "0",
         "tmp%2#0",
@@ -1419,7 +1602,7 @@
         "0"
       ]
     },
-    "283": {
+    "338": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -1433,8 +1616,8 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "284": {
-      "op": "intc_3 // 2",
+    "339": {
+      "op": "intc_2 // 2",
       "defined_out": [
         "2",
         "aggregate%array_length%0#0",
@@ -1448,7 +1631,7 @@
         "2"
       ]
     },
-    "285": {
+    "340": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -1461,7 +1644,7 @@
         "add%0#0"
       ]
     },
-    "286": {
+    "341": {
       "op": "dig 1",
       "stack_out": [
         "wallet#0",
@@ -1470,7 +1653,7 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "288": {
+    "343": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -1485,7 +1668,7 @@
         "len%1#0"
       ]
     },
-    "289": {
+    "344": {
       "op": "==",
       "defined_out": [
         "eq%1#0",
@@ -1498,7 +1681,7 @@
         "eq%1#0"
       ]
     },
-    "290": {
+    "345": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
@@ -1506,7 +1689,7 @@
         "tmp%2#0"
       ]
     },
-    "291": {
+    "346": {
       "op": "extract 2 0",
       "defined_out": [
         "proofHash#0",
@@ -1517,18 +1700,163 @@
         "proofHash#0"
       ]
     },
-    "294": {
+    "349": {
+      "op": "txna ApplicationArgs 3",
+      "defined_out": [
+        "proofHash#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0"
+      ]
+    },
+    "352": {
+      "op": "dup",
+      "defined_out": [
+        "proofHash#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "353": {
+      "op": "intc_0 // 0",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "tmp%4#0 (copy)",
+        "0"
+      ]
+    },
+    "354": {
+      "error": "invalid array length header",
+      "op": "extract_uint16 // on error: invalid array length header",
+      "defined_out": [
+        "aggregate%array_length%1#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "aggregate%array_length%1#0"
+      ]
+    },
+    "355": {
+      "op": "intc_2 // 2",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "aggregate%array_length%1#0",
+        "2"
+      ]
+    },
+    "356": {
+      "op": "+",
+      "defined_out": [
+        "add%1#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "add%1#0"
+      ]
+    },
+    "357": {
       "op": "dig 1",
       "stack_out": [
         "wallet#0",
         "proofHash#0",
+        "tmp%4#0",
+        "add%1#0",
+        "tmp%4#0 (copy)"
+      ]
+    },
+    "359": {
+      "op": "len",
+      "defined_out": [
+        "add%1#0",
+        "len%2#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "add%1#0",
+        "len%2#0"
+      ]
+    },
+    "360": {
+      "op": "==",
+      "defined_out": [
+        "eq%2#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0",
+        "eq%2#0"
+      ]
+    },
+    "361": {
+      "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "tmp%4#0"
+      ]
+    },
+    "362": {
+      "op": "extract 2 0",
+      "defined_out": [
+        "oracleSignature#0",
+        "proofHash#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0"
+      ]
+    },
+    "365": {
+      "op": "dig 2",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
         "wallet#0 (copy)"
       ]
     },
-    "296": {
+    "367": {
       "callsub": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
       "op": "callsub smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
       "defined_out": [
+        "oracleSignature#0",
         "proofHash#0",
         "tmp%0#1",
         "wallet#0"
@@ -1536,20 +1864,23 @@
       "stack_out": [
         "wallet#0",
         "proofHash#0",
+        "oracleSignature#0",
         "tmp%0#1"
       ]
     },
-    "299": {
+    "370": {
       "error": "Active consent is required to store proof",
       "op": "assert // Active consent is required to store proof",
       "stack_out": [
         "wallet#0",
-        "proofHash#0"
+        "proofHash#0",
+        "oracleSignature#0"
       ]
     },
-    "300": {
-      "op": "dup",
+    "371": {
+      "op": "dig 1",
       "defined_out": [
+        "oracleSignature#0",
         "proofHash#0",
         "proofHash#0 (copy)",
         "wallet#0"
@@ -1557,27 +1888,14 @@
       "stack_out": [
         "wallet#0",
         "proofHash#0",
+        "oracleSignature#0",
         "proofHash#0 (copy)"
       ]
     },
-    "301": {
-      "op": "pushbytes \"\"",
+    "373": {
+      "op": "len",
       "defined_out": [
-        "\"\"",
-        "proofHash#0",
-        "proofHash#0 (copy)",
-        "wallet#0"
-      ],
-      "stack_out": [
-        "wallet#0",
-        "proofHash#0",
-        "proofHash#0 (copy)",
-        "\"\""
-      ]
-    },
-    "303": {
-      "op": "!=",
-      "defined_out": [
+        "oracleSignature#0",
         "proofHash#0",
         "tmp%1#1",
         "wallet#0"
@@ -1585,19 +1903,153 @@
       "stack_out": [
         "wallet#0",
         "proofHash#0",
+        "oracleSignature#0",
         "tmp%1#1"
       ]
     },
-    "304": {
+    "374": {
       "error": "Proof hash cannot be empty",
       "op": "assert // Proof hash cannot be empty",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0"
+      ]
+    },
+    "375": {
+      "op": "bytec_0 // \"configopk\"",
+      "defined_out": [
+        "\"configopk\"",
+        "oracleSignature#0",
+        "proofHash#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "\"configopk\""
+      ]
+    },
+    "376": {
+      "op": "box_get",
+      "defined_out": [
+        "aggregate%box_get%1#0",
+        "opk#0",
+        "oracleSignature#0",
+        "proofHash#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "opk#0",
+        "aggregate%box_get%1#0"
+      ]
+    },
+    "377": {
+      "error": "Box must have value",
+      "op": "assert // Box must have value",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "opk#0"
+      ]
+    },
+    "378": {
+      "op": "bytec_0 // \"configopk\"",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "opk#0",
+        "\"configopk\""
+      ]
+    },
+    "379": {
+      "op": "box_len",
+      "defined_out": [
+        "box%_%0#0",
+        "box%box_len%0#0",
+        "opk#0",
+        "oracleSignature#0",
+        "proofHash#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "opk#0",
+        "box%box_len%0#0",
+        "box%_%0#0"
+      ]
+    },
+    "380": {
+      "op": "pop",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "opk#0",
+        "box%box_len%0#0"
+      ]
+    },
+    "381": {
+      "error": "Oracle public key not configured",
+      "op": "assert // Oracle public key not configured",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "opk#0"
+      ]
+    },
+    "382": {
+      "op": "dig 2",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "oracleSignature#0",
+        "opk#0",
+        "proofHash#0 (copy)"
+      ]
+    },
+    "384": {
+      "op": "cover 2",
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "proofHash#0 (copy)",
+        "oracleSignature#0",
+        "opk#0"
+      ]
+    },
+    "386": {
+      "op": "ed25519verify_bare",
+      "defined_out": [
+        "isSignatureValid#0",
+        "proofHash#0",
+        "wallet#0"
+      ],
+      "stack_out": [
+        "wallet#0",
+        "proofHash#0",
+        "isSignatureValid#0"
+      ]
+    },
+    "387": {
+      "error": "Invalid Oracle signature: Proof tampering detected",
+      "op": "assert // Invalid Oracle signature: Proof tampering detected",
       "stack_out": [
         "wallet#0",
         "proofHash#0"
       ]
     },
-    "305": {
-      "op": "bytec 4 // \"proof\"",
+    "388": {
+      "op": "bytec 5 // \"proof\"",
       "defined_out": [
         "\"proof\"",
         "proofHash#0",
@@ -1609,7 +2061,7 @@
         "\"proof\""
       ]
     },
-    "307": {
+    "390": {
       "op": "uncover 2",
       "stack_out": [
         "proofHash#0",
@@ -1617,76 +2069,76 @@
         "wallet#0"
       ]
     },
-    "309": {
+    "392": {
       "op": "concat",
       "defined_out": [
-        "box_prefixed_key%0#0",
+        "box_prefixed_key%1#0",
         "proofHash#0"
       ],
       "stack_out": [
         "proofHash#0",
-        "box_prefixed_key%0#0"
+        "box_prefixed_key%1#0"
       ]
     },
-    "310": {
+    "393": {
       "op": "dup",
       "defined_out": [
-        "box_prefixed_key%0#0",
-        "box_prefixed_key%0#0 (copy)",
+        "box_prefixed_key%1#0",
+        "box_prefixed_key%1#0 (copy)",
         "proofHash#0"
       ],
       "stack_out": [
         "proofHash#0",
-        "box_prefixed_key%0#0",
-        "box_prefixed_key%0#0 (copy)"
+        "box_prefixed_key%1#0",
+        "box_prefixed_key%1#0 (copy)"
       ]
     },
-    "311": {
+    "394": {
       "op": "box_del",
       "defined_out": [
-        "box_prefixed_key%0#0",
+        "box_prefixed_key%1#0",
         "proofHash#0",
         "{box_del}"
       ],
       "stack_out": [
         "proofHash#0",
-        "box_prefixed_key%0#0",
+        "box_prefixed_key%1#0",
         "{box_del}"
       ]
     },
-    "312": {
+    "395": {
       "op": "pop",
       "stack_out": [
         "proofHash#0",
-        "box_prefixed_key%0#0"
+        "box_prefixed_key%1#0"
       ]
     },
-    "313": {
+    "396": {
       "op": "swap",
       "stack_out": [
-        "box_prefixed_key%0#0",
+        "box_prefixed_key%1#0",
         "proofHash#0"
       ]
     },
-    "314": {
+    "397": {
       "op": "box_put",
       "stack_out": []
     },
-    "315": {
-      "op": "pushbytes \"PROOF_STORED\"",
+    "398": {
+      "op": "pushbytes \"PROOF_STORED_ON_CHAIN\"",
       "defined_out": [
-        "\"PROOF_STORED\""
+        "\"PROOF_STORED_ON_CHAIN\""
       ],
       "stack_out": [
-        "\"PROOF_STORED\""
+        "\"PROOF_STORED_ON_CHAIN\""
       ]
     },
-    "329": {
+    "421": {
       "op": "log",
       "stack_out": []
     },
-    "330": {
-      "op": "intc_0 // 1",
+    "422": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -1694,14 +2146,14 @@
         "1"
       ]
     },
-    "331": {
+    "423": {
       "op": "return",
       "stack_out": []
     },
-    "332": {
-      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.verifyProof[routing]",
+    "424": {
+      "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.verifyOnChain[routing]",
       "params": {},
-      "block": "verifyProof",
+      "block": "verifyOnChain",
       "stack_in": [],
       "op": "txna ApplicationArgs 1",
       "defined_out": [
@@ -1711,7 +2163,7 @@
         "wallet#0"
       ]
     },
-    "335": {
+    "427": {
       "op": "dup",
       "defined_out": [
         "wallet#0",
@@ -1722,7 +2174,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "336": {
+    "428": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -1733,8 +2185,8 @@
         "len%0#0"
       ]
     },
-    "337": {
-      "op": "intc_2 // 32",
+    "429": {
+      "op": "intc_3 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -1746,7 +2198,7 @@
         "32"
       ]
     },
-    "338": {
+    "430": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -1757,14 +2209,14 @@
         "eq%0#0"
       ]
     },
-    "339": {
+    "431": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "wallet#0"
       ]
     },
-    "340": {
+    "432": {
       "op": "txna ApplicationArgs 2",
       "defined_out": [
         "tmp%2#0",
@@ -1775,7 +2227,7 @@
         "tmp%2#0"
       ]
     },
-    "343": {
+    "435": {
       "op": "dup",
       "defined_out": [
         "tmp%2#0",
@@ -1788,8 +2240,8 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "344": {
-      "op": "intc_1 // 0",
+    "436": {
+      "op": "intc_0 // 0",
       "defined_out": [
         "0",
         "tmp%2#0",
@@ -1803,7 +2255,7 @@
         "0"
       ]
     },
-    "345": {
+    "437": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -1817,8 +2269,8 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "346": {
-      "op": "intc_3 // 2",
+    "438": {
+      "op": "intc_2 // 2",
       "defined_out": [
         "2",
         "aggregate%array_length%0#0",
@@ -1832,7 +2284,7 @@
         "2"
       ]
     },
-    "347": {
+    "439": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -1845,7 +2297,7 @@
         "add%0#0"
       ]
     },
-    "348": {
+    "440": {
       "op": "dig 1",
       "stack_out": [
         "wallet#0",
@@ -1854,7 +2306,7 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "350": {
+    "442": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -1869,7 +2321,7 @@
         "len%1#0"
       ]
     },
-    "351": {
+    "443": {
       "op": "==",
       "defined_out": [
         "eq%1#0",
@@ -1882,7 +2334,7 @@
         "eq%1#0"
       ]
     },
-    "352": {
+    "444": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
@@ -1890,7 +2342,7 @@
         "tmp%2#0"
       ]
     },
-    "353": {
+    "445": {
       "op": "extract 2 0",
       "defined_out": [
         "hashToVerify#0",
@@ -1901,8 +2353,8 @@
         "hashToVerify#0"
       ]
     },
-    "356": {
-      "op": "bytec 4 // \"proof\"",
+    "448": {
+      "op": "bytec 5 // \"proof\"",
       "defined_out": [
         "\"proof\"",
         "hashToVerify#0",
@@ -1914,7 +2366,7 @@
         "\"proof\""
       ]
     },
-    "358": {
+    "450": {
       "op": "uncover 2",
       "stack_out": [
         "hashToVerify#0",
@@ -1922,7 +2374,7 @@
         "wallet#0"
       ]
     },
-    "360": {
+    "452": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -1933,7 +2385,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "361": {
+    "453": {
       "op": "dup",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -1946,7 +2398,7 @@
         "box_prefixed_key%0#0 (copy)"
       ]
     },
-    "362": {
+    "454": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
@@ -1961,7 +2413,7 @@
         "maybe_exists%0#0"
       ]
     },
-    "363": {
+    "455": {
       "op": "bury 1",
       "stack_out": [
         "hashToVerify#0",
@@ -1969,7 +2421,7 @@
         "maybe_exists%0#0"
       ]
     },
-    "365": {
+    "457": {
       "error": "No proof exists for this wallet",
       "op": "assert // No proof exists for this wallet",
       "stack_out": [
@@ -1977,7 +2429,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "366": {
+    "458": {
       "op": "box_get",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -1990,14 +2442,14 @@
         "aggregate%box_get%1#0"
       ]
     },
-    "367": {
+    "459": {
       "op": "pop",
       "stack_out": [
         "hashToVerify#0",
         "aggregate%box_get%0#0"
       ]
     },
-    "368": {
+    "460": {
       "op": "==",
       "defined_out": [
         "tmp%0#1"
@@ -2006,8 +2458,8 @@
         "tmp%0#1"
       ]
     },
-    "369": {
-      "op": "bytec_2 // 0x00",
+    "461": {
+      "op": "bytec_3 // 0x00",
       "defined_out": [
         "0x00",
         "tmp%0#1"
@@ -2017,15 +2469,15 @@
         "0x00"
       ]
     },
-    "370": {
-      "op": "intc_1 // 0",
+    "462": {
+      "op": "intc_0 // 0",
       "stack_out": [
         "tmp%0#1",
         "0x00",
         "0"
       ]
     },
-    "371": {
+    "463": {
       "op": "uncover 2",
       "stack_out": [
         "0x00",
@@ -2033,7 +2485,7 @@
         "tmp%0#1"
       ]
     },
-    "373": {
+    "465": {
       "op": "setbit",
       "defined_out": [
         "aggregate%encoded_bool%0#0"
@@ -2042,8 +2494,8 @@
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "374": {
-      "op": "bytec_3 // 0x151f7c75",
+    "466": {
+      "op": "bytec 4 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
         "aggregate%encoded_bool%0#0"
@@ -2053,14 +2505,14 @@
         "0x151f7c75"
       ]
     },
-    "375": {
+    "468": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "376": {
+    "469": {
       "op": "concat",
       "defined_out": [
         "tmp%6#0"
@@ -2069,12 +2521,12 @@
         "tmp%6#0"
       ]
     },
-    "377": {
+    "470": {
       "op": "log",
       "stack_out": []
     },
-    "378": {
-      "op": "intc_0 // 1",
+    "471": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -2082,11 +2534,11 @@
         "1"
       ]
     },
-    "379": {
+    "472": {
       "op": "return",
       "stack_out": []
     },
-    "380": {
+    "473": {
       "subroutine": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent",
       "params": {
         "wallet#0": "bytes"
@@ -2095,8 +2547,8 @@
       "stack_in": [],
       "op": "proto 1 1"
     },
-    "383": {
-      "op": "bytec_0 // \"expiry\"",
+    "476": {
+      "op": "bytec_1 // \"expiry\"",
       "defined_out": [
         "\"expiry\""
       ],
@@ -2104,7 +2556,7 @@
         "\"expiry\""
       ]
     },
-    "384": {
+    "477": {
       "op": "frame_dig -1",
       "defined_out": [
         "\"expiry\"",
@@ -2115,7 +2567,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "386": {
+    "479": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%0#0"
@@ -2124,7 +2576,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "387": {
+    "480": {
       "op": "dup",
       "defined_out": [
         "box_prefixed_key%0#0"
@@ -2134,7 +2586,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "388": {
+    "481": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
@@ -2147,20 +2599,20 @@
         "maybe_exists%0#0"
       ]
     },
-    "389": {
+    "482": {
       "op": "bury 1",
       "stack_out": [
         "box_prefixed_key%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "391": {
+    "484": {
       "op": "bz smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3",
       "stack_out": [
         "box_prefixed_key%0#0"
       ]
     },
-    "394": {
+    "487": {
       "op": "global LatestTimestamp",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -2171,7 +2623,7 @@
         "tmp%0#0"
       ]
     },
-    "396": {
+    "489": {
       "op": "frame_dig 0",
       "stack_out": [
         "box_prefixed_key%0#0",
@@ -2179,7 +2631,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "398": {
+    "491": {
       "op": "box_get",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -2194,7 +2646,7 @@
         "aggregate%box_get%1#0"
       ]
     },
-    "399": {
+    "492": {
       "error": "Box must have value",
       "op": "assert // Box must have value",
       "stack_out": [
@@ -2203,7 +2655,7 @@
         "aggregate%box_get%0#0"
       ]
     },
-    "400": {
+    "493": {
       "op": "btoi",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -2216,7 +2668,7 @@
         "maybe_value_converted%0#0"
       ]
     },
-    "401": {
+    "494": {
       "op": "<",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -2227,14 +2679,14 @@
         "tmp%1#0"
       ]
     },
-    "402": {
+    "495": {
       "op": "bz smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3",
       "stack_out": [
         "box_prefixed_key%0#0"
       ]
     },
-    "405": {
-      "op": "intc_0 // 1",
+    "498": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "and_result%0#0",
         "box_prefixed_key%0#0"
@@ -2244,7 +2696,7 @@
         "and_result%0#0"
       ]
     },
-    "406": {
+    "499": {
       "block": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_merge@4",
       "stack_in": [
         "box_prefixed_key%0#0",
@@ -2255,16 +2707,16 @@
         "and_result%0#0"
       ]
     },
-    "407": {
+    "500": {
       "retsub": true,
       "op": "retsub"
     },
-    "408": {
+    "501": {
       "block": "smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_false@3",
       "stack_in": [
         "box_prefixed_key%0#0"
       ],
-      "op": "intc_1 // 0",
+      "op": "intc_0 // 0",
       "defined_out": [
         "and_result%0#0"
       ],
@@ -2273,7 +2725,7 @@
         "and_result%0#0"
       ]
     },
-    "409": {
+    "502": {
       "op": "b smart_contracts/kyc_consolidated.algo.ts::KycAnchor.hasValidConsent_bool_merge@4"
     }
   }

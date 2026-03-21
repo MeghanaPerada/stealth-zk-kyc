@@ -3,7 +3,7 @@
   "sources": [
     "../../identity_registry/contract.algo.ts"
   ],
-  "mappings": ";;;;;;;;;;;;;;;AAOA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AASE;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACS;AAAY;;AAAZ;AAAP;AARgB;AAAA;;AAAA;AAWhB;AAAA;;AAAA;AAAA;AAJF;AAAA;AAYA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAnBkB;AAAA;AAAA;AAoBT;AAAA;;AADT;;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AASA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AA5BkB;AAAA;AAAA;AA6BT;AAAA;AAAA;;AAAP;AACO;AAAA;AAFT;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA",
+  "mappings": ";;;;;;;;;;;;;;;AAOA;;AAAA;;;AAAA;;AAAA;AAAA;AAAA;;AAAA;AAAA;;;;;;;;;;;;;;;;;AAAA;;;AAAA;;;;;;;;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AASE;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;;;AACS;AAAY;;AAAZ;AAAP;AARgB;AAAA;;AAAA;AAWhB;AAAA;;AAAA;AAAA;AAJF;AAAA;AAYA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAnBkB;AAAA;AAAA;AAoBT;AAAA;;AADT;;;AAAA;AAAA;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AASA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AA5BkB;AAAA;AAAA;AA6BT;AAAA;AAAA;;AAAP;AACO;AAAA;AAFT;AAAA;AAAA;AAAA;;;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA;AAAA",
   "op_pc_offset": 0,
   "pc_events": {
     "1": {
@@ -11,7 +11,7 @@
       "params": {},
       "block": "main",
       "stack_in": [],
-      "op": "intcblock 1 32 0"
+      "op": "intcblock 32 1 0"
     },
     "6": {
       "op": "bytecblock \"v\" 0x151f7c75"
@@ -48,8 +48,7 @@
       ]
     },
     "23": {
-      "error": "OnCompletion must be NoOp",
-      "op": "assert // OnCompletion must be NoOp",
+      "op": "assert",
       "stack_out": []
     },
     "24": {
@@ -152,24 +151,11 @@
       ]
     },
     "63": {
-      "error": "OnCompletion must be NoOp && can only call when creating",
-      "op": "assert // OnCompletion must be NoOp && can only call when creating",
+      "op": "return",
+      "defined_out": [],
       "stack_out": []
     },
     "64": {
-      "op": "intc_0 // 1",
-      "defined_out": [
-        "1"
-      ],
-      "stack_out": [
-        "1"
-      ]
-    },
-    "65": {
-      "op": "return",
-      "stack_out": []
-    },
-    "66": {
       "subroutine": "smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.registerVerification[routing]",
       "params": {},
       "block": "registerVerification",
@@ -182,7 +168,7 @@
         "wallet#0"
       ]
     },
-    "69": {
+    "67": {
       "op": "dup",
       "defined_out": [
         "wallet#0",
@@ -193,7 +179,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "70": {
+    "68": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -204,8 +190,8 @@
         "len%0#0"
       ]
     },
-    "71": {
-      "op": "intc_1 // 32",
+    "69": {
+      "op": "intc_0 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -217,7 +203,7 @@
         "32"
       ]
     },
-    "72": {
+    "70": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -228,14 +214,14 @@
         "eq%0#0"
       ]
     },
-    "73": {
+    "71": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "wallet#0"
       ]
     },
-    "74": {
+    "72": {
       "op": "txna ApplicationArgs 2",
       "defined_out": [
         "tmp%2#0",
@@ -246,7 +232,7 @@
         "tmp%2#0"
       ]
     },
-    "77": {
+    "75": {
       "op": "dup",
       "defined_out": [
         "tmp%2#0",
@@ -259,7 +245,7 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "78": {
+    "76": {
       "op": "intc_2 // 0",
       "defined_out": [
         "0",
@@ -274,7 +260,7 @@
         "0"
       ]
     },
-    "79": {
+    "77": {
       "error": "invalid array length header",
       "op": "extract_uint16 // on error: invalid array length header",
       "defined_out": [
@@ -288,8 +274,8 @@
         "aggregate%array_length%0#0"
       ]
     },
-    "80": {
-      "op": "pushint 2 // 2",
+    "78": {
+      "op": "pushint 2",
       "defined_out": [
         "2",
         "aggregate%array_length%0#0",
@@ -303,7 +289,7 @@
         "2"
       ]
     },
-    "82": {
+    "80": {
       "op": "+",
       "defined_out": [
         "add%0#0",
@@ -316,7 +302,7 @@
         "add%0#0"
       ]
     },
-    "83": {
+    "81": {
       "op": "dig 1",
       "stack_out": [
         "wallet#0",
@@ -325,7 +311,7 @@
         "tmp%2#0 (copy)"
       ]
     },
-    "85": {
+    "83": {
       "op": "len",
       "defined_out": [
         "add%0#0",
@@ -340,7 +326,7 @@
         "len%1#0"
       ]
     },
-    "86": {
+    "84": {
       "op": "==",
       "defined_out": [
         "eq%1#0",
@@ -353,7 +339,7 @@
         "eq%1#0"
       ]
     },
-    "87": {
+    "85": {
       "error": "invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "op": "assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>",
       "stack_out": [
@@ -361,7 +347,7 @@
         "tmp%2#0"
       ]
     },
-    "88": {
+    "86": {
       "op": "extract 2 0",
       "defined_out": [
         "proofId#0",
@@ -372,7 +358,7 @@
         "proofId#0"
       ]
     },
-    "91": {
+    "89": {
       "op": "dup",
       "defined_out": [
         "proofId#0",
@@ -385,7 +371,7 @@
         "proofId#0 (copy)"
       ]
     },
-    "92": {
+    "90": {
       "op": "pushbytes \"\"",
       "defined_out": [
         "\"\"",
@@ -400,7 +386,7 @@
         "\"\""
       ]
     },
-    "94": {
+    "92": {
       "op": "!=",
       "defined_out": [
         "proofId#0",
@@ -413,7 +399,7 @@
         "tmp%0#1"
       ]
     },
-    "95": {
+    "93": {
       "error": "Proof ID cannot be empty",
       "op": "assert // Proof ID cannot be empty",
       "stack_out": [
@@ -421,7 +407,7 @@
         "proofId#0"
       ]
     },
-    "96": {
+    "94": {
       "op": "bytec_0 // \"v\"",
       "defined_out": [
         "\"v\"",
@@ -434,7 +420,7 @@
         "\"v\""
       ]
     },
-    "97": {
+    "95": {
       "op": "uncover 2",
       "stack_out": [
         "proofId#0",
@@ -442,7 +428,7 @@
         "wallet#0"
       ]
     },
-    "99": {
+    "97": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -453,7 +439,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "100": {
+    "98": {
       "op": "dup",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -466,7 +452,7 @@
         "box_prefixed_key%0#0 (copy)"
       ]
     },
-    "101": {
+    "99": {
       "op": "box_del",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -479,26 +465,26 @@
         "{box_del}"
       ]
     },
-    "102": {
+    "100": {
       "op": "pop",
       "stack_out": [
         "proofId#0",
         "box_prefixed_key%0#0"
       ]
     },
-    "103": {
+    "101": {
       "op": "swap",
       "stack_out": [
         "box_prefixed_key%0#0",
         "proofId#0"
       ]
     },
-    "104": {
+    "102": {
       "op": "box_put",
       "stack_out": []
     },
-    "105": {
-      "op": "intc_0 // 1",
+    "103": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -506,11 +492,11 @@
         "1"
       ]
     },
-    "106": {
+    "104": {
       "op": "return",
       "stack_out": []
     },
-    "107": {
+    "105": {
       "subroutine": "smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.isVerified[routing]",
       "params": {},
       "block": "isVerified",
@@ -523,7 +509,7 @@
         "wallet#0"
       ]
     },
-    "110": {
+    "108": {
       "op": "dup",
       "defined_out": [
         "wallet#0",
@@ -534,7 +520,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "111": {
+    "109": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -545,8 +531,8 @@
         "len%0#0"
       ]
     },
-    "112": {
-      "op": "intc_1 // 32",
+    "110": {
+      "op": "intc_0 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -558,7 +544,7 @@
         "32"
       ]
     },
-    "113": {
+    "111": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -569,14 +555,14 @@
         "eq%0#0"
       ]
     },
-    "114": {
+    "112": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "wallet#0"
       ]
     },
-    "115": {
+    "113": {
       "op": "bytec_0 // \"v\"",
       "defined_out": [
         "\"v\"",
@@ -587,14 +573,14 @@
         "\"v\""
       ]
     },
-    "116": {
+    "114": {
       "op": "swap",
       "stack_out": [
         "\"v\"",
         "wallet#0"
       ]
     },
-    "117": {
+    "115": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%0#0"
@@ -603,7 +589,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "118": {
+    "116": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
@@ -614,13 +600,13 @@
         "maybe_exists%0#0"
       ]
     },
-    "119": {
+    "117": {
       "op": "bury 1",
       "stack_out": [
         "maybe_exists%0#0"
       ]
     },
-    "121": {
+    "119": {
       "op": "pushbytes 0x00",
       "defined_out": [
         "0x00",
@@ -631,7 +617,7 @@
         "0x00"
       ]
     },
-    "124": {
+    "122": {
       "op": "intc_2 // 0",
       "defined_out": [
         "0",
@@ -644,7 +630,7 @@
         "0"
       ]
     },
-    "125": {
+    "123": {
       "op": "uncover 2",
       "stack_out": [
         "0x00",
@@ -652,7 +638,7 @@
         "maybe_exists%0#0"
       ]
     },
-    "127": {
+    "125": {
       "op": "setbit",
       "defined_out": [
         "aggregate%encoded_bool%0#0"
@@ -661,7 +647,7 @@
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "128": {
+    "126": {
       "op": "bytec_1 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
@@ -672,14 +658,14 @@
         "0x151f7c75"
       ]
     },
-    "129": {
+    "127": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%encoded_bool%0#0"
       ]
     },
-    "130": {
+    "128": {
       "op": "concat",
       "defined_out": [
         "tmp%4#0"
@@ -688,12 +674,12 @@
         "tmp%4#0"
       ]
     },
-    "131": {
+    "129": {
       "op": "log",
       "stack_out": []
     },
-    "132": {
-      "op": "intc_0 // 1",
+    "130": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -701,11 +687,11 @@
         "1"
       ]
     },
-    "133": {
+    "131": {
       "op": "return",
       "stack_out": []
     },
-    "134": {
+    "132": {
       "subroutine": "smart_contracts/identity_registry/contract.algo.ts::IdentityRegistry.getProofId[routing]",
       "params": {},
       "block": "getProofId",
@@ -718,7 +704,7 @@
         "wallet#0"
       ]
     },
-    "137": {
+    "135": {
       "op": "dup",
       "defined_out": [
         "wallet#0",
@@ -729,7 +715,7 @@
         "wallet#0 (copy)"
       ]
     },
-    "138": {
+    "136": {
       "op": "len",
       "defined_out": [
         "len%0#0",
@@ -740,8 +726,8 @@
         "len%0#0"
       ]
     },
-    "139": {
-      "op": "intc_1 // 32",
+    "137": {
+      "op": "intc_0 // 32",
       "defined_out": [
         "32",
         "len%0#0",
@@ -753,7 +739,7 @@
         "32"
       ]
     },
-    "140": {
+    "138": {
       "op": "==",
       "defined_out": [
         "eq%0#0",
@@ -764,14 +750,14 @@
         "eq%0#0"
       ]
     },
-    "141": {
+    "139": {
       "error": "invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "op": "assert // invalid number of bytes for arc4.static_array<arc4.uint8, 32>",
       "stack_out": [
         "wallet#0"
       ]
     },
-    "142": {
+    "140": {
       "op": "bytec_0 // \"v\"",
       "defined_out": [
         "\"v\"",
@@ -782,14 +768,14 @@
         "\"v\""
       ]
     },
-    "143": {
+    "141": {
       "op": "swap",
       "stack_out": [
         "\"v\"",
         "wallet#0"
       ]
     },
-    "144": {
+    "142": {
       "op": "concat",
       "defined_out": [
         "box_prefixed_key%0#0"
@@ -798,7 +784,7 @@
         "box_prefixed_key%0#0"
       ]
     },
-    "145": {
+    "143": {
       "op": "dup",
       "defined_out": [
         "box_prefixed_key%0#0",
@@ -809,7 +795,7 @@
         "box_prefixed_key%0#0 (copy)"
       ]
     },
-    "146": {
+    "144": {
       "op": "box_len",
       "defined_out": [
         "_%0#0",
@@ -822,21 +808,21 @@
         "maybe_exists%0#0"
       ]
     },
-    "147": {
+    "145": {
       "op": "bury 1",
       "stack_out": [
         "box_prefixed_key%0#0",
         "maybe_exists%0#0"
       ]
     },
-    "149": {
+    "147": {
       "error": "Wallet not found in verified registry",
       "op": "assert // Wallet not found in verified registry",
       "stack_out": [
         "box_prefixed_key%0#0"
       ]
     },
-    "150": {
+    "148": {
       "op": "box_get",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -847,13 +833,13 @@
         "aggregate%box_get%1#0"
       ]
     },
-    "151": {
+    "149": {
       "op": "pop",
       "stack_out": [
         "aggregate%box_get%0#0"
       ]
     },
-    "152": {
+    "150": {
       "op": "dup",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -864,7 +850,7 @@
         "aggregate%box_get%0#0 (copy)"
       ]
     },
-    "153": {
+    "151": {
       "op": "len",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -875,7 +861,7 @@
         "aggregate%length%0#0"
       ]
     },
-    "154": {
+    "152": {
       "op": "itob",
       "defined_out": [
         "aggregate%as_bytes%0#0",
@@ -886,7 +872,7 @@
         "aggregate%as_bytes%0#0"
       ]
     },
-    "155": {
+    "153": {
       "op": "extract 6 2",
       "defined_out": [
         "aggregate%box_get%0#0",
@@ -897,14 +883,14 @@
         "aggregate%length_uint16%0#0"
       ]
     },
-    "158": {
+    "156": {
       "op": "swap",
       "stack_out": [
         "aggregate%length_uint16%0#0",
         "aggregate%box_get%0#0"
       ]
     },
-    "159": {
+    "157": {
       "op": "concat",
       "defined_out": [
         "aggregate%encoded_value%0#0"
@@ -913,7 +899,7 @@
         "aggregate%encoded_value%0#0"
       ]
     },
-    "160": {
+    "158": {
       "op": "bytec_1 // 0x151f7c75",
       "defined_out": [
         "0x151f7c75",
@@ -924,14 +910,14 @@
         "0x151f7c75"
       ]
     },
-    "161": {
+    "159": {
       "op": "swap",
       "stack_out": [
         "0x151f7c75",
         "aggregate%encoded_value%0#0"
       ]
     },
-    "162": {
+    "160": {
       "op": "concat",
       "defined_out": [
         "tmp%4#0"
@@ -940,12 +926,12 @@
         "tmp%4#0"
       ]
     },
-    "163": {
+    "161": {
       "op": "log",
       "stack_out": []
     },
-    "164": {
-      "op": "intc_0 // 1",
+    "162": {
+      "op": "intc_1 // 1",
       "defined_out": [
         "1"
       ],
@@ -953,7 +939,7 @@
         "1"
       ]
     },
-    "165": {
+    "163": {
       "op": "return",
       "stack_out": []
     }
