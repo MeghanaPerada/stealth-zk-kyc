@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyWalletSignature } from "@/lib/verifyWallet";
+import { consumeNonce } from "@/lib/nonceCache";
 
 export async function POST(req: NextRequest) {
   try {
@@ -9,7 +10,16 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: "Missing parameters" }, { status: 400 });
     }
 
-    // signature is expected as base64 or array
+    // 1. Validate and consume the nonce (challenge message)
+    const isNonceValid = consumeNonce(message, address);
+    if (!isNonceValid) {
+      return NextResponse.json({ 
+        verified: false, 
+        error: "Invalid or expired challenge. Replay attack detected or session expired." 
+      }, { status: 401 });
+    }
+
+    // 2. signature is expected as base64 or array
     const sigStr = Array.isArray(signature) 
       ? Buffer.from(signature).toString("base64")
       : signature;
