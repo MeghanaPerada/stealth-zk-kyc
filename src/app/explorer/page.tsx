@@ -2,20 +2,16 @@
 
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
-import Link from "next/link";
 import { motion, AnimatePresence } from "framer-motion";
 import { 
   Copy, 
+  Check,
   Layers, 
-  Clock, 
   ShieldCheck, 
-  Cpu, 
   ArrowDown, 
   Search, 
-  Filter, 
   X, 
   ExternalLink, 
-  FileJson, 
   Info,
   CheckCircle2,
   Clock3
@@ -96,6 +92,7 @@ function ExplorerContent() {
   const [isMounted, setIsMounted] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [isRevoking, setIsRevoking] = useState(false);
+  const [copiedHash, setCopiedHash] = useState(false);
 
   useEffect(() => {
     setIsMounted(true);
@@ -149,7 +146,22 @@ function ExplorerContent() {
   };
 
   const copyToClipboard = (text: string) => {
-    navigator.clipboard.writeText(text);
+    navigator.clipboard.writeText(text).then(() => {
+      setCopiedHash(true);
+      setTimeout(() => setCopiedHash(false), 2000);
+    });
+  };
+
+  // Build a valid Algorand Testnet explorer URL for a transaction
+  const getAlgorandExplorerUrl = (txId: string) => {
+    // Strip any "TX_" prefix and spaces that come from mock data
+    const cleanTx = txId.replace(/^TX_/i, "").trim();
+    // If it looks like a real base32 Algorand TxID (52 chars, alphanumeric)
+    if (/^[A-Z0-9]{52}$/i.test(cleanTx)) {
+      return `https://testnet.explorer.perawallet.com/tx/${cleanTx}`;
+    }
+    // Fallback: open the general testnet explorer for browsing
+    return `https://testnet.explorer.perawallet.com`;
   };
 
   const handleRevoke = async (walletAddress: string) => {
@@ -341,121 +353,163 @@ function ExplorerContent() {
       {/* Detail Modal */}
       <AnimatePresence>
         {selectedProof && (
-          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4">
+          <div className="fixed inset-0 z-[100] flex items-center justify-center p-4 md:p-6">
+            {/* Backdrop */}
             <motion.div 
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setSelectedProof(null)}
-              className="absolute inset-0 bg-black/90 backdrop-blur-md"
+              className="absolute inset-0 bg-black/85 backdrop-blur-lg"
             />
+
+            {/* Modal Card */}
             <motion.div 
-              initial={{ opacity: 0, scale: 0.98, y: 20 }}
+              initial={{ opacity: 0, scale: 0.95, y: 24 }}
               animate={{ opacity: 1, scale: 1, y: 0 }}
-              exit={{ opacity: 0, scale: 0.98, y: 20 }}
-              className="relative w-full max-w-2xl"
+              exit={{ opacity: 0, scale: 0.95, y: 24 }}
+              transition={{ type: "spring", damping: 28, stiffness: 300 }}
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
+              style={{ scrollbarWidth: "none" }}
             >
-              <GlowingCard glowColor="primary" className="p-1 shadow-3xl">
-                <div className="bg-zinc-950 rounded-2xl p-8 md:p-12 relative overflow-hidden border-t border-white/5">
-                  <button 
-                    onClick={() => setSelectedProof(null)}
-                    className="absolute top-8 right-8 p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5"
-                  >
-                    <X className="h-5 w-5 text-zinc-500" />
-                  </button>
+              <GlowingCard glowColor="primary" className="p-[1px] shadow-[0_0_80px_rgba(52,211,153,0.15)]"
+              >
+                <div className="bg-zinc-950 rounded-3xl relative overflow-hidden">
+                  {/* Top accent line */}
+                  <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
 
-                  <div className="flex flex-col items-center text-center mb-12">
-                    <div className="w-24 h-24 rounded-[2.5rem] bg-primary/10 flex items-center justify-center text-primary mb-8 border border-primary/20 shadow-[0_0_40px_rgba(52,211,153,0.2)]">
-                      <CheckCircle2 className="h-10 w-10" />
-                    </div>
-                    <h2 className="text-3xl font-black tracking-tight mb-3 uppercase tracking-tighter">Registry Audit Log</h2>
-                    <div className="flex items-center gap-3 bg-white/5 px-5 py-2 rounded-2xl border border-white/5">
-                      <div className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-                      <p className="font-mono text-[10px] font-black uppercase tracking-widest text-primary/80">{selectedProof.id}</p>
-                    </div>
-                  </div>
+                  <div className="p-6 md:p-10">
+                    {/* Close button */}
+                    <button 
+                      onClick={() => setSelectedProof(null)}
+                      className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5 z-10"
+                    >
+                      <X className="h-4 w-4 text-zinc-400" />
+                    </button>
 
-                  <div className="space-y-8">
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-                      <div className="space-y-2.5">
-                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-600">User Identity Anchor</p>
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/5 shadow-sm">
+                    {/* Header */}
+                    <div className="flex flex-col items-center text-center mb-8">
+                      <div className="w-20 h-20 rounded-[1.75rem] bg-primary/10 flex items-center justify-center text-primary mb-5 border border-primary/20 shadow-[0_0_40px_rgba(52,211,153,0.2)]">
+                        <CheckCircle2 className="h-9 w-9" />
+                      </div>
+                      <h2 className="text-2xl font-black tracking-tighter uppercase mb-2">Registry Audit Log</h2>
+                      <div className="flex items-center gap-2 bg-white/5 px-4 py-1.5 rounded-full border border-white/5">
+                        <div className="w-1.5 h-1.5 rounded-full bg-primary animate-pulse" />
+                        <p className="font-mono text-[10px] font-black uppercase tracking-widest text-primary/80">{selectedProof.id}</p>
+                      </div>
+                    </div>
+
+                    {/* Identity + TX */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                      <div className="space-y-2">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600 pl-1">User Identity Anchor</p>
+                        <div className="bg-white/[0.04] p-3.5 rounded-2xl border border-white/5">
                           <p className="font-mono text-[10px] text-zinc-300 break-all leading-relaxed uppercase">{selectedProof.fullWallet}</p>
                         </div>
                       </div>
-                      <div className="space-y-2.5">
-                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-600">Algorand Transaction</p>
-                        <div className="bg-white/5 p-4 rounded-xl border border-white/5 shadow-sm">
+                      <div className="space-y-2">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600 pl-1">Algorand Transaction</p>
+                        <div className="bg-white/[0.04] p-3.5 rounded-2xl border border-white/5">
                           <p className="font-mono text-[10px] text-primary break-all leading-relaxed uppercase">{selectedProof.algorandTx}</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 pt-8 border-t border-white/5">
-                      <div className="space-y-2">
+                    {/* Meta row */}
+                    <div className="grid grid-cols-3 gap-4 py-5 border-y border-white/5 mb-6">
+                      <div className="space-y-1.5 text-center">
                         <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Verification</p>
-                        <p className="text-lg font-black text-emerald-400 uppercase tracking-tighter">{selectedProof.attribute}</p>
+                        <p className="text-sm font-black text-emerald-400 uppercase tracking-tight">{selectedProof.attribute}</p>
                       </div>
-                      <div className="space-y-2">
+                      <div className="space-y-1.5 text-center">
                         <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Audit Date</p>
-                        <p className="text-xs font-black text-zinc-300 uppercase leading-relaxed">
+                        <p className="text-[10px] font-black text-zinc-300 uppercase leading-relaxed">
                           {new Date(selectedProof.timestamp).toLocaleDateString()}<br/>
                           {new Date(selectedProof.timestamp).toLocaleTimeString()}
                         </p>
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Secure Protocol</p>
-                        <Badge className="bg-primary/20 text-primary border-primary/20 font-black px-3 py-1 mt-1 text-[9px] tracking-widest uppercase">Stealth v1.0</Badge>
+                      <div className="space-y-1.5 text-center">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Protocol</p>
+                        <Badge className="bg-primary/20 text-primary border-primary/20 font-black px-2 py-0.5 text-[9px] tracking-widest uppercase">Stealth v1.0</Badge>
                       </div>
                     </div>
 
-                      <div className="space-y-6 pt-8 border-t border-white/5">
-                        <div className="flex items-center justify-between">
-                          <p className="text-[10px] uppercase tracking-widest font-black text-zinc-600">PLONK Cryptographic Artifacts</p>
-                          <Badge variant="outline" className="text-[8px] border-primary/20 text-primary uppercase font-black px-2 py-0.5">zk-SNARK (PLONK)</Badge>
-                        </div>
-                        
-                        <div className="bg-black/60 rounded-2xl border border-white/5 p-6 font-mono text-[10px] text-zinc-400 max-h-48 overflow-y-auto shadow-inner custom-scrollbar">
-                           <pre className="whitespace-pre-wrap">
-                             {JSON.stringify(selectedProof.fullProof || { 
-                               message: "Proof payload anchored on-chain. Signature: " + selectedProof.hash.slice(0, 32) + "..." 
-                             }, null, 2)}
-                           </pre>
-                        </div>
+                    {/* ZK Artifacts */}
+                    <div className="space-y-3 mb-6">
+                      <div className="flex items-center justify-between">
+                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">PLONK Cryptographic Artifacts</p>
+                        <Badge variant="outline" className="text-[8px] border-primary/20 text-primary uppercase font-black px-2 py-0.5">zk-SNARK (PLONK)</Badge>
                       </div>
+                      <div className="bg-black/70 rounded-2xl border border-white/5 p-4 font-mono text-[10px] text-zinc-400 max-h-36 overflow-y-auto">
+                        <pre className="whitespace-pre-wrap">
+                          {JSON.stringify(selectedProof.fullProof || { 
+                            message: "Proof payload anchored on-chain. Signature: " + selectedProof.hash.slice(0, 32) + "..." 
+                          }, null, 2)}
+                        </pre>
+                      </div>
+                    </div>
 
-                      <div className="mt-12 p-8 bg-primary/5 rounded-[2rem] border border-primary/20 relative overflow-hidden group">
-                         <div className="absolute top-0 right-0 p-6 opacity-5 group-hover:opacity-10 transition-opacity">
-                           <ShieldCheck className="h-24 w-24" />
-                         </div>
-                         <h4 className="text-primary font-black uppercase tracking-widest text-[10px] mb-4 flex items-center gap-3">
-                           <CheckCircle2 className="h-4 w-4" /> Validated PLONK Integrity
-                         </h4>
-                         <p className="text-zinc-300 text-base font-bold leading-relaxed mb-6 uppercase tracking-tighter text-left">
-                           This record was verified using a PLONK ZK-SNARK circuit. Mathematical confirmation of 18+ age status is anchored to Algorand Testnet.
-                         </p>
-                         <div className="flex flex-wrap gap-4">
-                           <Button onClick={() => copyToClipboard(selectedProof.hash)} variant="outline" size="sm" className="bg-black/60 border-primary/20 hover:bg-primary hover:text-black transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl">
-                             <Copy className="h-4 w-4" /> Copy Proof Hash
-                           </Button>
-                           <Link href={`https://testnet.algoexplorer.io/tx/${selectedProof.algorandTx}`} target="_blank">
-                             <Button variant="outline" size="sm" className="bg-black/60 border-white/10 hover:bg-white/10 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl">
-                               <ExternalLink className="h-4 w-4" /> View On Algorand
-                             </Button>
-                           </Link>
-                           {selectedProof.status !== "Revoked" && (
-                             <Button 
-                               onClick={() => handleRevoke(selectedProof.fullWallet)} 
-                               disabled={isRevoking}
-                               variant="outline" 
-                               size="sm" 
-                               className="bg-red-500/10 border-red-500/50 hover:bg-red-500 text-red-500 hover:text-white transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl ms-auto"
-                             >
-                               {isRevoking ? <div className="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full" /> : <X className="h-4 w-4" />} Revoke Consent
-                             </Button>
-                           )}
-                         </div>
+                    {/* Validated integrity card */}
+                    <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20 relative overflow-hidden group">
+                      <div className="absolute -top-4 -right-4 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity">
+                        <ShieldCheck className="h-28 w-28" />
                       </div>
+                      <h4 className="text-primary font-black uppercase tracking-widest text-[10px] mb-2 flex items-center gap-2">
+                        <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" /> Validated PLONK Integrity
+                      </h4>
+                      <p className="text-zinc-400 text-xs leading-relaxed mb-5 uppercase tracking-tight">
+                        This record was verified using a PLONK ZK-SNARK circuit. Mathematical confirmation of 18+ age status is anchored to Algorand Testnet.
+                      </p>
+
+                      {/* Action Buttons */}
+                      <div className="flex flex-wrap items-center gap-3">
+                        {/* Copy Proof Hash */}
+                        <Button 
+                          onClick={() => copyToClipboard(selectedProof.hash)} 
+                          variant="outline" 
+                          size="sm" 
+                          className={`border-primary/30 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl ${
+                            copiedHash 
+                              ? "bg-primary text-black border-primary" 
+                              : "bg-black/60 hover:bg-primary hover:text-black"
+                          }`}
+                        >
+                          {copiedHash 
+                            ? <><Check className="h-3.5 w-3.5" /> Copied!</> 
+                            : <><Copy className="h-3.5 w-3.5" /> Copy Proof Hash</>}
+                        </Button>
+
+                        {/* View on Algorand */}
+                        <a 
+                          href={getAlgorandExplorerUrl(selectedProof.algorandTx)} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          <Button 
+                            variant="outline" 
+                            size="sm" 
+                            className="bg-black/60 border-white/10 hover:bg-zinc-800 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl"
+                          >
+                            <ExternalLink className="h-3.5 w-3.5" /> View on Algorand
+                          </Button>
+                        </a>
+
+                        {/* Revoke — pushed right */}
+                        {selectedProof.status !== "Revoked" && (
+                          <Button 
+                            onClick={() => handleRevoke(selectedProof.fullWallet)} 
+                            disabled={isRevoking}
+                            variant="outline" 
+                            size="sm" 
+                            className="ml-auto bg-red-500/10 border-red-500/40 hover:bg-red-500 text-red-400 hover:text-white transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl"
+                          >
+                            {isRevoking 
+                              ? <div className="animate-spin h-3.5 w-3.5 border-2 border-white border-t-transparent rounded-full" /> 
+                              : <X className="h-3.5 w-3.5" />} Revoke Consent
+                          </Button>
+                        )}
+                      </div>
+                    </div>
                   </div>
                 </div>
               </GlowingCard>
