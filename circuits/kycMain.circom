@@ -17,6 +17,7 @@ template KYCMain() {
     signal input public_identity_hash;
     signal input proofIdentifier; // Bound to wallet/type/status
     signal input timestamp;       // Freshness
+    signal input userSecret;      // Private secret for nullifier
 
     // 2. Components
     component ageCheck = AgeProof();
@@ -33,6 +34,11 @@ template KYCMain() {
     component panCheck = PANValidation();
     panCheck.pan <== pan;
 
+    // Nullifier generation (Poseidon(UserSecret, IdentityAnchor))
+    component nullifierHasher = Poseidon(2);
+    nullifierHasher.inputs[0] <== userSecret;
+    nullifierHasher.inputs[1] <== public_identity_hash;
+
     // 3. Assertions
     // Identity hash must match public identity hash (anchor)
     identity.hash === public_identity_hash;
@@ -43,6 +49,9 @@ template KYCMain() {
     // 4. Output (Public Signals)
     signal output isVerified;
     isVerified <== ageCheck.isAdult;
+
+    signal output nullifier;
+    nullifier <== nullifierHasher.out;
 }
 
 component main = KYCMain();

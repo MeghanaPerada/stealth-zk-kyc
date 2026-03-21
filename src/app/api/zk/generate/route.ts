@@ -100,7 +100,18 @@ export async function POST(request: Request) {
       timestamp
     );
 
-    // --- STEP 5: Prepare Circuit Input ---
+    // --- STEP 5: Nullifier Generation (Poseidon(UserSecret, IdentityAnchor)) ---
+    // Deterministic secret for the user (can be random, but deterministic per identity is better for consistency)
+    const userSecret = crypto.createHmac('sha256', ORACLE_SECRET)
+      .update(identityHash)
+      .digest('hex')
+      .slice(0, 32); // Use first 32 hex chars as a pseudo-random seed
+    const userSecretNum = BigInt('0x' + userSecret).toString();
+
+    const nullifier = poseidon.F.toObject(poseidon([userSecretNum, identityHash])).toString();
+    console.log("[ZK] Generated Nullifier:", nullifier);
+
+    // --- STEP 6: Prepare Circuit Input ---
     const birthYear = parseInt(pii.dob.split('-')[0]);
     const circuitInput = {
       dob: dobNum,
@@ -112,7 +123,8 @@ export async function POST(request: Request) {
       issuer: issuerNum,
       public_identity_hash: identityHash,
       proofIdentifier: proofIdentifier,
-      timestamp: timestamp
+      timestamp: timestamp,
+      userSecret: userSecretNum
     };
 
     // --- STEP 6: Generate Proof ---
@@ -126,12 +138,13 @@ export async function POST(request: Request) {
         mock: true,
         message: "ZK Artifacts (WASM/ZKEY) missing. Displaying simulated proof for demo.",
         zkIdentity: identityHash,
+        nullifier,
         proofSource,
         proofIdentifier,
         status,
         timestamp,
         proof: { pi_a: ["0", "0", "0"], pi_b: [["0", "0"], ["0", "0"]], pi_c: ["0", "0", "0"] },
-        publicSignals: [identityHash, "1", proofIdentifier, timestamp.toString()],
+        publicSignals: ["1", nullifier, identityHash, proofIdentifier, timestamp.toString()],
         txId: "MOCK_TX_" + Math.random().toString(36).substring(7).toUpperCase()
       });
     }

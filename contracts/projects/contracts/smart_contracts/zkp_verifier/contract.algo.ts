@@ -1,4 +1,4 @@
-import { Contract, GlobalState, Account, Txn, Uint64, uint64, assert, op, bytes, itxn, Application, Bytes, BigUint, biguint, Ec, arc4 } from '@algorandfoundation/algorand-typescript'
+import { Contract, GlobalState, Account, Txn, Uint64, uint64, assert, op, bytes, itxn, Application, Bytes, BigUint, biguint, Ec, arc4, BoxMap } from '@algorandfoundation/algorand-typescript'
 import { methodSelector } from '@algorandfoundation/algorand-typescript/arc4'
 
 /**
@@ -7,6 +7,9 @@ import { methodSelector } from '@algorandfoundation/algorand-typescript/arc4'
  * Automatically updates the IdentityRegistry upon successful validation.
  */
 export class ZkpVerifier extends Contract {
+  /** Storage for used nullifiers to prevent double-claiming (Identity Sybil protection) */
+  usedNullifiers = BoxMap<bytes, boolean>({ keyPrefix: 'n' })
+
   /** The public key of the trusted Identity Oracle */
   oraclePubKey = GlobalState<bytes>({ key: 'opk' })
 
@@ -54,13 +57,21 @@ export class ZkpVerifier extends Contract {
     assert(isZkValid, 'ZK Proof verification failed')
 
     // 3. Logic Checks on Public Signals
-    assert(publicInputs.length === Uint64(128), 'Invalid public inputs length')
+    // signals order (Circom standard): [isVerified, nullifier, identityHash, proofId, timestamp]
+    assert(publicInputs.length === Uint64(160), 'Invalid public inputs length (expected 5 signals)')
     
-    // Check isVerified signal (assuming it's at index 1 based on mock generator)
-    const isVerified = publicInputs.slice(32, 64)
+    // Check isVerified signal (index 0)
+    const isVerified = publicInputs.slice(0, 32)
     assert(isVerified === Bytes.fromHex('0000000000000000000000000000000000000000000000000000000000000001'), 'User not verified by ZK circuit')
 
-    // 4. Proof-to-Sender Binding Check
+    // 4. Anonymous Nullifier Check (Identity Sybil Protection)
+    const nullifier = publicInputs.slice(32, 64)
+    assert(!this.usedNullifiers(nullifier).exists, 'This identity has already registered a wallet')
+    
+    // Store the nullifier to prevent reuse
+    this.usedNullifiers(nullifier).value = true
+
+    // 5. Proof-to-Sender Binding Check
     // We bind the proof to the sender's address (often part of the identityHash or a separate input)
     // For now, we continue the previous check if identityHash contains binding, or simply validate proof presence.
     assert(proof.length === Uint64(256), 'Invalid ZK proof length')
