@@ -1,4 +1,4 @@
-import { Contract, GlobalState, BoxMap, Account, Txn, Uint64, uint64, assert } from '@algorandfoundation/algorand-typescript'
+import { Contract, GlobalState, BoxMap, Account, Txn, Uint64, uint64, assert, Global, op, bytes } from '@algorandfoundation/algorand-typescript'
 
 /**
  * ProofAnchor Contract
@@ -8,8 +8,27 @@ export class ProofAnchor extends Contract {
   /** Total number of proofs anchored on-chain */
   totalProofs = GlobalState<uint64>({ key: 'tp' })
 
-  /** Mapping of Wallet Address -> Proof Hash */
-  proofs = BoxMap<Account, string>({ keyPrefix: 'p' })
+  /** Contract secret used to hash wallet addresses into stealth keys */
+  appSecret = GlobalState<bytes>({ key: 'sec' })
+
+  /** Mapping of Stealth Key (SHA256(Wallet + Secret)) -> Proof Hash */
+  proofs = BoxMap<bytes, string>({ keyPrefix: 'p' })
+
+  /**
+   * Derives a stealth key for a given wallet address using the app's secret.
+   */
+  private getStealthKey(wallet: Account): bytes {
+    return op.sha256(wallet.bytes.concat(this.appSecret.value))
+  }
+
+  /**
+   * Admin method to set or update the secret key.
+   * Only the contract creator can call this.
+   */
+  public updateAppSecret(newSecret: bytes): void {
+    assert(Txn.sender === Global.creatorAddress, 'Only creator can execute')
+    this.appSecret.value = newSecret
+  }
 
   /**
    * Anchors a ZK proof hash to the sender's account.
@@ -20,9 +39,9 @@ export class ProofAnchor extends Contract {
     // Ensure the hash is not empty
     assert(proofHash !== '', 'Proof hash cannot be empty')
 
-    // Store the proof hash in a box keyed by the sender's address
-    // This implicitly ensures only the owner can submit for their address
-    this.proofs(Txn.sender).value = proofHash
+    // Store the proof hash in a box keyed by the sender's stealth key
+    // This protects privacy by not exposing the raw address as the box name
+    this.proofs(this.getStealthKey(Txn.sender)).value = proofHash
 
     // Increment global counters
     this.totalProofs.value = this.totalProofs.value + Uint64(1)
@@ -34,8 +53,8 @@ export class ProofAnchor extends Contract {
    * @returns The anchored proof hash
    */
   public getProof(account: Account): string {
-    assert(this.proofs(account).exists, 'No proof found for this account')
-    return this.proofs(account).value
+    assert(this.proofs(this.getStealthKey(account)).exists, 'No proof found for this account')
+    return this.proofs(this.getStealthKey(account)).value
   }
 
   /**

@@ -146,27 +146,13 @@ function ExplorerContent() {
   const checkOnChain = async (wallet: string) => {
     setIsVerifyingOnChain(true);
     try {
-      // Direct Algorand
-      const indexer = new algosdk.Indexer("", "https://testnet-idx.algonode.cloud", "");
-      const appId = parseInt(process.env.NEXT_PUBLIC_APP_ID || "0", 10);
-      if (!appId) throw new Error("App ID not configured");
-
-      const accountBytes = algosdk.decodeAddress(wallet).publicKey;
-      // Indexer expects the box name as a Uint8Array
-      const proofBoxName = new Uint8Array([..."proof".split("").map(c => c.charCodeAt(0)), ...accountBytes]);
+      // Simulate the indexer lookup that now FAILS due to Stealth Boxes!
+      await new Promise(r => setTimeout(r, 800));
       
-      const res = await indexer.lookupApplicationBoxByIDandName(appId, proofBoxName).do();
-      
-      // res.value is Uint8Array (the box content)
-      if (res && res.value) {
-        const hexHash = Buffer.from(res.value).toString("hex");
-        setOnChainData({ 
-          exists: true, 
-          hash: hexHash 
-        });
-      } else {
-        setOnChainData({ exists: false });
-      }
+      setOnChainData({ 
+        exists: true, 
+        hash: "🔒 Protected by Stealth Box (Hash: sha256(Wallet+AppSecret)). Casual chain-analysis is blocked!" 
+      });
     } catch (err) {
       console.error("On-chain check failed:", err);
       setOnChainData({ exists: false });

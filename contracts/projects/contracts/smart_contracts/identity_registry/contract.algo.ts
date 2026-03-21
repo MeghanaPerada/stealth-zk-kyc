@@ -1,4 +1,4 @@
-import { Contract, BoxMap, Account, assert } from '@algorandfoundation/algorand-typescript'
+import { Contract, BoxMap, Account, assert, Global, op, bytes, Txn, GlobalState } from '@algorandfoundation/algorand-typescript'
 
 /**
  * IdentityRegistry Contract
@@ -6,8 +6,28 @@ import { Contract, BoxMap, Account, assert } from '@algorandfoundation/algorand-
  * Allows organizations to query if a user has completed ZK-KYC.
  */
 export class IdentityRegistry extends Contract {
-  /** Mapping of Wallet Address -> Proof ID */
-  verifiedWallets = BoxMap<Account, string>({ keyPrefix: 'v' })
+  /** Contract secret used to hash wallet addresses into stealth keys */
+  appSecret = GlobalState<bytes>({ key: 'sec' })
+
+  /** Mapping of Stealth Key (SHA256(Wallet + Secret)) -> Proof ID */
+  verifiedWallets = BoxMap<bytes, string>({ keyPrefix: 'v' })
+
+  /**
+   * Derives a stealth key for a given wallet address using the app's secret.
+   * This prevents on-chain observers from linking wallets to KYC status.
+   */
+  private getStealthKey(wallet: Account): bytes {
+    return op.sha256(wallet.bytes.concat(this.appSecret.value))
+  }
+
+  /**
+   * Admin method to set or update the secret key.
+   * Only the contract creator can call this.
+   */
+  public updateAppSecret(newSecret: bytes): void {
+    assert(Txn.sender === Global.creatorAddress, 'Only creator can execute')
+    this.appSecret.value = newSecret
+  }
 
   /**
    * Registers a wallet as verified.
@@ -17,8 +37,8 @@ export class IdentityRegistry extends Contract {
   public registerVerification(wallet: Account, proofId: string): void {
     assert(proofId !== '', 'Proof ID cannot be empty')
     
-    // Store the verification record
-    this.verifiedWallets(wallet).value = proofId
+    // Store the verification record using the stealth key
+    this.verifiedWallets(this.getStealthKey(wallet)).value = proofId
   }
 
   /**
@@ -27,7 +47,7 @@ export class IdentityRegistry extends Contract {
    * @returns True if the wallet is in the registry
    */
   public isVerified(wallet: Account): boolean {
-    return this.verifiedWallets(wallet).exists
+    return this.verifiedWallets(this.getStealthKey(wallet)).exists
   }
 
   /**
@@ -36,7 +56,7 @@ export class IdentityRegistry extends Contract {
    * @returns The associated proof ID
    */
   public getProofId(wallet: Account): string {
-    assert(this.verifiedWallets(wallet).exists, 'Wallet not found in verified registry')
-    return this.verifiedWallets(wallet).value
+    assert(this.verifiedWallets(this.getStealthKey(wallet)).exists, 'Wallet not found in verified registry')
+    return this.verifiedWallets(this.getStealthKey(wallet)).value
   }
 }
