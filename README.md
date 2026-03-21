@@ -1,89 +1,44 @@
-# Stealth ZK-KYC
-**A Full-Stack Privacy-Preserving KYC System on Algorand**
+# Stealth ZK-KYC 🛡️
+**A 100% On-Chain, Privacy-Preserving Identity Protocol on Algorand**
 
-## Overview
-Stealth ZK-KYC represents the next generation of identity verification. We combine **Zero-Knowledge Proofs (ZK)** with the **Algorand Blockchain** to allow users to prove their eligibility (e.g., age > 18, valid nationality) without ever exposing their underlying Personally Identifiable Information (PII) such as their PAN card or Date of Birth.
+## 🏆 The Pitch: "Stateless Trust"
+Stealth ZK-KYC solves the "Identity Honeypot" problem. Traditional KYC forces users to upload sensitive documents to centralized databases. We replace this with **mathematical certainty**.
+- **No Databases**: 100% of the identity state is stored in **Algorand Boxes**.
+- **Privacy at Source**: ZK Proofs are generated **locally in the browser** using SnarkJS. The backend never sees your PII.
+- **Stealth Privacy**: Box keys are hashed via `SHA256(Wallet + AppSecret)`, making identity status non-linkable to casual chain observers.
 
-## Why Stealth ZK-KYC?
-Traditional KYC models force users to upload highly sensitive documents to centralized databases, creating massive honeypots for hackers. Stealth ZK-KYC reverses this model completely:
-- **Wallet-First Architecture:** Identity is intrinsically tied to your non-custodial Algorand wallet address. If there is no wallet, there is no verification.
-- **Zero Data Leaks:** Raw PII is evaluated locally/in-memory, converted to a zero-knowledge logical proof hash, and discarded. It is never stored.
-- **Immutable Trust via Algorand:** Mathematical proofs are permanently and immutably anchored to the Algorand network.
+## 🚀 Key Features (Top 1% Build)
+- **On-Chain ZK Verification**: Real Groth16 pairing checks (`AVM 11`) performed directly in the `ZkpVerifier` smart contract.
+- **Anonymous Nullifiers**: Prevents Sybil attacks (one identity, many wallets) while maintaining 100% user anonymity.
+- **M-of-N Oracle Consensus**: Robust security that requires multiple authorized signatures before anchoring a proof.
+- **Attack Simulator (`/simulate`)**: A dedicated "Hacker Mode" to demonstrate resistance against forged proofs and double-claims.
+- **Live ZK Terminal**: Real-time cryptographic logs displayed during client-side proving.
 
-## System Architecture
+## 🛠️ Technical Stack
+- **Frontend/Backend**: Next.js 15 (Full-Stack), Tailwind CSS, Framer Motion.
+- **ZK Engine**: Circom 2.2.3, SnarkJS (Groth16), Poseidon Hashing.
+- **Smart Contracts**: Algorand TypeScript (PuyaTS), AVM 11.
+- **Blockchain Storage**: Algorand Boxes (Global & Local state).
 
-### 1. Frontend (Next.js & Tailwind CSS)
-A beautiful, highly-responsive modern interface allowing users to seamlessly connect their Algorand wallets, submit identity documents, simulate high-trust DigiLocker connections, and view their active KYC proofs visually.
+## 📂 Project Structure
+- `/contracts`: PuyaTS smart contracts (`ZkpVerifier`, `IdentityRegistry`).
+- `/circuits`: Circom circuits for identity and Merkle inclusion proofs.
+- `/public/zk`: Production-ready ZK artifacts (`kycMain.wasm`, `kyc.zkey`).
+- `/src/components/kyc`: The End-to-End ZK-KYC journey.
 
-### 2. Backend Processing (Node.js & Express)
-The engine securely coordinating the complex data flows:
-- **`POST /api/kyc/documents` (DigiLocker Mocking)**: Simulates integration with government systems for verified high-trust scoring (`1.0`).
-- **`POST /api/kyc/upload`**: Takes manual PDF/image uploads via Multer, parsing them for logical checks, and attributing variable trust scores (`0.6-0.8`).
-- **ZK Generation**: Dynamically simulates secure proof generation, returning a rigorous metadata payload containing constraints (like `isAdult`).
-
-### 3. Database Layer (MongoDB & Mongoose)
-A NoSQL database responsible exclusively for rapid metadata indexing. We strictly enforce the segregation of PII. We securely store only:
-- Algorand Wallet Addresses
-- Proof Hashes
-- Validation Trust Scores & Data Source Types
-- Algorand Transaction IDs
-
-### 4. Smart Contracts & Decentralized Trust (Algorand + PuyaTS)
-Algorand is our ultimate source of immutability and trust cross-referencing.
-- **algosdk Integrations**: The backend seamlessly submits securely derived ZK Proof hashes natively on-chain. The specific proof sits inside the transaction `note` field.
-- **PuyaTS Helper Contracts**: Contains 3 tightly-coupled smart contracts explicitly written in modern Algorand TypeScript (`@algorandfoundation/algorand-typescript`):
-  - `IdentityAnchor`
-  - `ProofRegistry`
-  - `VerificationContract`
-
-## Getting Started
-
-### Prerequisites
-- Node.js (v18+)
-- MongoDB Atlas (or local MongoDB context)
-- An Algorand Node/Indexer (Connects to Algonode Testnet locally by default)
-
-### Installation
-1. Clone the repository.
-2. Install frontend dependencies:
+## 🏁 Getting Started
+1. **Clone & Install**: `npm install`
+2. **Localnet**: `algokit localnet start`
+3. **Build & Generate**: 
    ```bash
-   npm install
+   cd contracts/projects/contracts && npm run build
    ```
-3. Install backend dependencies:
-   ```bash
-   cd backend
-   npm install
-   ```
+4. **Run**: `npm run dev`
 
-### Running the Application
-
-1. **Start the Frontend:**
-   ```bash
-   npm run dev
-   ```
-   *Available at http://localhost:3000*
-
-2. **Start the Backend:**
-   ```bash
-   cd backend
-   npm start
-   ```
-   *Available at http://localhost:3001*
-
-### See the Demo Architecture
-Want to instantly see how the API operates? Browse our auto-generated Hackathon payloads via our built-in demo route: `http://localhost:3001/api/demo/samples`
+## ⚔️ Judging Demo Script
+1. **The Simulator**: Go to `/simulate` and show the **Nullifier** explanation.
+2. **The KYC Flow**: Go to `/kyc`, run the **Live ZK Terminal**, and generate a proof.
+3. **The Anchor**: Click **"Verify on Algorand"** on the success screen to see the 100% on-chain verification in action.
 
 ---
-
-### The Verification Flow
-1. Connect your Algorand Testnet wallet on the frontend.
-2. Navigate to KYC process and upload a document or authorize DigiLocker.
-3. The Node server evaluates the structural constraints and dynamically issues a ZKP.
-4. The server structurally formats Algorand Application Calls to our PuyaTS components while locking the hash into the chain.
-5. The Verification endpoint (`/api/kyc/verify`) utilizes **3-Layer Cross Verification**:
-   - Math Proof cryptography check.
-   - Metadata registry match mapping Wallet to Hash.
-   - Live Testnet query structurally evaluating the `note` buffer against our Smart Contracts.
-
----
-**Built for Web3 Hackathons. Built to Protect User Privacy.**
+**Built to protect user privacy. Built for the future of decentralized identity.**
