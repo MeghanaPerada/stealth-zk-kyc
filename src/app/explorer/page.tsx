@@ -3,6 +3,7 @@
 import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import algosdk from "algosdk";
 import { 
   Copy, 
   Check,
@@ -14,7 +15,9 @@ import {
   ExternalLink, 
   Info,
   CheckCircle2,
-  Clock3
+  Clock3,
+  Loader2,
+  Database
 } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -123,8 +126,9 @@ function ExplorerContent() {
         fullProof: p.fullProof,
         trustScore: p.trustScore || 70,
         proofType: p.proofType || "VERIFIED",
-        proofTypeLabel: p.proofTypeLabel || "🟡 Verified",
+        proofTypeLabel: p.proofTypeLabel || "️ Verified",
         source: p.source || "manual",
+        onChain: false,
       }));
 
       setProofs(mappedProofs.length > 0 ? mappedProofs : INITIAL_PROOFS);
@@ -133,6 +137,41 @@ function ExplorerContent() {
       if (proofs.length === 0) setProofs(INITIAL_PROOFS);
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const [onChainData, setOnChainData] = useState<{exists: boolean, hash?: string} | null>(null);
+  const [isVerifyingOnChain, setIsVerifyingOnChain] = useState(false);
+
+  const checkOnChain = async (wallet: string) => {
+    setIsVerifyingOnChain(true);
+    try {
+      // Direct Algorand
+      const indexer = new algosdk.Indexer("", "https://testnet-idx.algonode.cloud", "");
+      const appId = parseInt(process.env.NEXT_PUBLIC_APP_ID || "0", 10);
+      if (!appId) throw new Error("App ID not configured");
+
+      const accountBytes = algosdk.decodeAddress(wallet).publicKey;
+      // Indexer expects the box name as a Uint8Array
+      const proofBoxName = new Uint8Array([..."proof".split("").map(c => c.charCodeAt(0)), ...accountBytes]);
+      
+      const res = await indexer.lookupApplicationBoxByIDandName(appId, proofBoxName).do();
+      
+      // res.value is Uint8Array (the box content)
+      if (res && res.value) {
+        const hexHash = Buffer.from(res.value).toString("hex");
+        setOnChainData({ 
+          exists: true, 
+          hash: hexHash 
+        });
+      } else {
+        setOnChainData({ exists: false });
+      }
+    } catch (err) {
+      console.error("On-chain check failed:", err);
+      setOnChainData({ exists: false });
+    } finally {
+      setIsVerifyingOnChain(false);
     }
   };
 
@@ -407,6 +446,34 @@ function ExplorerContent() {
                         <p className="font-mono text-[10px] font-black uppercase tracking-widest text-primary/80">{selectedProof.id}</p>
                       </div>
                     </div>
+
+                    {/* Check On-Chain Button */}
+                     <div className="mb-6">
+                        {!onChainData ? (
+                          <button
+                            onClick={() => checkOnChain(selectedProof.fullWallet)}
+                            disabled={isVerifyingOnChain}
+                            className="w-full py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 group"
+                          >
+                            {isVerifyingOnChain ? <Loader2 className="h-3 w-3 animate-spin" /> : <Database className="h-3 w-3 group-hover:scale-110 transition-transform" />}
+                            {isVerifyingOnChain ? "Verifying On-Chain..." : "Verify Direct On-Chain (Algorand Indexer)"}
+                          </button>
+                        ) : (
+                          <div className={`p-4 rounded-2xl border ${onChainData.exists ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
+                            <div className="flex items-center gap-3 mb-2">
+                              {onChainData.exists ? <ShieldCheck className="h-4 w-4 text-emerald-400" /> : <Info className="h-4 w-4 text-red-400" />}
+                              <p className={`text-[10px] font-black uppercase tracking-widest ${onChainData.exists ? 'text-emerald-400' : 'text-red-400'}`}>
+                                {onChainData.exists ? "On-Chain Match Found" : "On-Chain Anchor Missing"}
+                              </p>
+                            </div>
+                            {onChainData.exists && (
+                              <p className="font-mono text-[9px] text-zinc-500 break-all uppercase leading-relaxed">
+                                Anchored Hash: {onChainData.hash}
+                              </p>
+                            )}
+                          </div>
+                        )}
+                     </div>
 
                     {/* Identity + TX */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">

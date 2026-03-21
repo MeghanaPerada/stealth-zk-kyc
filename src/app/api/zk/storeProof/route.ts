@@ -11,10 +11,10 @@ function getAlgodClient() {
 
 export async function POST(req: NextRequest) {
   try {
-    const { walletAddress, proofHash } = await req.json();
+    const { walletAddress, proofHash, oracleSignature } = await req.json();
     
-    if (!walletAddress || !proofHash) {
-      return NextResponse.json({ error: "walletAddress and proofHash are required" }, { status: 400 });
+    if (!walletAddress || !proofHash || !oracleSignature) {
+      return NextResponse.json({ error: "walletAddress, proofHash, and oracleSignature are required" }, { status: 400 });
     }
 
     const appId = parseInt(process.env.NEXT_PUBLIC_APP_ID || "0", 10);
@@ -26,8 +26,6 @@ export async function POST(req: NextRequest) {
     const algodClient = getAlgodClient();
     
     // In a real app, the backend needs a funded account to pay fees 
-    // or the transaction should be signed by the user on the frontend.
-    // For this backend relayer, we assume ORACLE_MNEMONIC is provided.
     const oracleMnemonic = process.env.ORACLE_MNEMONIC;
     if (!oracleMnemonic) {
       console.warn("ORACLE_MNEMONIC not set, cannot sign transaction. Simulating success.");
@@ -38,22 +36,32 @@ export async function POST(req: NextRequest) {
     const sp = await algodClient.getTransactionParams().do();
     
     // Construct Application Call Transaction for 'storeProof' ABI method
-    // ABI: storeProof(address,string)void
+    // ABI: storeProof(address,byte[],byte[])void
     const method = new algosdk.ABIMethod({
       name: "storeProof",
       args: [
         { type: "address", name: "wallet" },
-        { type: "string", name: "proofHash" }
+        { type: "byte[]", name: "proofHash" },
+        { type: "byte[]", name: "oracleSignature" }
       ],
       returns: { type: "void" }
     });
 
-    // Box to be accessed
-    const prefix = new Uint8Array(Buffer.from("proof"));
+    // Boxes to be accessed (Required for AVM 8+)
     const accountBytes = algosdk.decodeAddress(walletAddress).publicKey;
-    const boxName = new Uint8Array(prefix.length + accountBytes.length);
-    boxName.set(prefix);
-    boxName.set(accountBytes, prefix.length);
+    
+    // 1. Proof Box: prefix "proof" + wallet
+    const proofBox = new Uint8Array([..."proof".split("").map(c => c.charCodeAt(0)), ...accountBytes]);
+    
+    // 2. Expiry Box (for hasValidConsent check): prefix "expiry" + wallet
+    const expiryBox = new Uint8Array([..."expiry".split("").map(c => c.charCodeAt(0)), ...accountBytes]);
+    
+    // 3. Oracle PK Box (for signature check): prefix "config" + "opk"
+    const opkBox = new Uint8Array([..."config".split("").map(c => c.charCodeAt(0)), ..."opk".split("").map(c => c.charCodeAt(0))]);
+
+    // Prepare Arguments as Uint8Arrays
+    const proofHashBytes = Buffer.from(BigInt(proofHash).toString(16).padStart(64, "0"), "hex");
+    const oracleSignatureBytes = Buffer.from(oracleSignature, "hex");
 
     const atc = new algosdk.AtomicTransactionComposer();
     const signer = algosdk.makeBasicAccountTransactionSigner(oracleAccount);
@@ -61,12 +69,14 @@ export async function POST(req: NextRequest) {
     atc.addMethodCall({
       appID: appId,
       method: method,
-      methodArgs: [walletAddress, proofHash],
+      methodArgs: [walletAddress, proofHashBytes, oracleSignatureBytes],
       sender: oracleAccount.addr,
       signer: signer,
       suggestedParams: sp,
       boxes: [
-        { appIndex: appId, name: boxName }
+        { appIndex: appId, name: proofBox },
+        { appIndex: appId, name: expiryBox },
+        { appIndex: appId, name: opkBox }
       ]
     });
 
@@ -74,7 +84,7 @@ export async function POST(req: NextRequest) {
     
     return NextResponse.json({
       success: true,
-      message: "Proof stored successfully on-chain",
+      message: "Proof stored successfully on-chain (Verified by contract)",
       txId: result.txIDs[0]
     });
 

@@ -1,11 +1,27 @@
 import { NextRequest, NextResponse } from "next/server";
 import { connectToDB } from "@/lib/mongodb";
 import crypto from "crypto";
+import algosdk from "algosdk";
 import { buildTrustProfile } from "@/lib/trustScore";
 import { isValidPAN, isValidAadhaar } from "@/lib/manualValidation";
+import { buildPoseidon } from "circomlibjs";
 
-// Simulate secret key for oracle signing
-const ORACLE_SECRET = process.env.ORACLE_SECRET || "demo_oracle_secret";
+// Real Oracle Account for signing (provided via env)
+const ORACLE_MNEMONIC = process.env.ORACLE_MNEMONIC || "";
+
+// Helper for Poseidon
+let poseidon: any = null;
+async function getPoseidon() {
+  if (!poseidon) poseidon = await buildPoseidon();
+  return poseidon;
+}
+
+function toFieldElement(input: string | number): bigint {
+  const hex = typeof input === "number" 
+    ? input.toString(16) 
+    : Buffer.from(input.toString()).toString("hex");
+  return BigInt("0x" + hex.slice(0, 60)) % BigInt("21888242871839275222246405745257275088548364400416034343698204186575808495617");
+}
 
 export async function POST(req: NextRequest) {
   try {
@@ -16,30 +32,35 @@ export async function POST(req: NextRequest) {
     }
 
     const { db } = await connectToDB();
+    const p = await getPoseidon();
 
-    // 1️⃣ Determine source and validate manual data
+    // 1️⃣ Determine source and trust
     const source: "digilocker" | "manual" = data.type === "digilocker" ? "digilocker" : "manual";
-
     let validationsPassed = 0;
     if (source === "manual") {
       if (data.pan && isValidPAN(data.pan)) validationsPassed++;
       if (data.aadhaar && isValidAadhaar(data.aadhaar)) validationsPassed++;
     }
-
-    // 2️⃣ Compute Trust Profile
     const trust = buildTrustProfile(source, validationsPassed);
 
-    // 3️⃣ Create identity hash (Simulated Poseidon for Hackathon)
-    const panHash = crypto.createHash("sha256").update(data.pan || "DEMO_PAN").digest("hex").substring(0, 16);
-    const identityHash = crypto.createHash("sha256")
-      .update(`${data.dob || "1998-05-15"}-${(data.aadhaar || "123412341234").slice(-4)}-${panHash}-${wallet}`)
-      .digest("hex");
+    // 2️⃣ Create TRUE Protocol Identity Hash (Poseidon)
+    const dobNumeric = parseInt((data.dob || "1998-05-15").replace(/-/g, ""));
+    const aadhaar4 = parseInt((data.aadhaar || "1234").slice(-4));
+    const panHashNumeric = toFieldElement(data.pan || "DEMO_PAN");
+    const walletNumeric = toFieldElement(wallet);
 
-    // 4️⃣ Sign hash (Simulated Oracle Signature — HMAC of identityHash)
-    const oracleSignature = crypto
-      .createHmac("sha256", ORACLE_SECRET)
-      .update(identityHash)
-      .digest("hex");
+    const hash = p([BigInt(dobNumeric), BigInt(aadhaar4), panHashNumeric, walletNumeric]);
+    const identityHash = p.F.toString(hash);
+
+    // 3️⃣ Real Ed25519 Signature (Oracle Authentication)
+    let oracleSignature = "0".repeat(128); 
+    if (ORACLE_MNEMONIC) {
+      const oracleAccount = algosdk.mnemonicToSecretKey(ORACLE_MNEMONIC);
+      // We sign the 32-byte representation of the Poseidon hash
+      const dataToSign = Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex");
+      const sig = algosdk.signBytes(dataToSign, oracleAccount.sk);
+      oracleSignature = Buffer.from(sig).toString("hex");
+    }
 
     // 5️⃣ Generate simulated Groth16 ZK proof
     const proof = {

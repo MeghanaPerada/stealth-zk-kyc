@@ -1,4 +1,4 @@
-import { Contract, Account, assert, log, BoxMap, Global, uint64, Txn } from '@algorandfoundation/algorand-typescript';
+import { Contract, Account, assert, log, BoxMap, Global, uint64, Txn, op, Bytes, bytes } from '@algorandfoundation/algorand-typescript';
 
 /**
  * KYC Anchor Smart Contract
@@ -10,10 +10,25 @@ export class KycAnchor extends Contract {
   // Box storage per wallet address
   consentExpiry = BoxMap<Account, uint64>({ keyPrefix: 'expiry' });
   consentFields = BoxMap<Account, string>({ keyPrefix: 'fields' });
-  proofHashBoxes = BoxMap<Account, string>({ keyPrefix: 'proof' });
+  proofHashBoxes = BoxMap<Account, bytes>({ keyPrefix: 'proof' });
+
+  // Oracle public key for signature verification
+  // Stored as bytes for direct use in ed25519verify
+  oraclePubKeyRecord = BoxMap<string, bytes>({ keyPrefix: 'config' });
 
   /**
-   * 1. grantConsent
+   * 1. setupOracle
+   * Sets the authorized Oracle public key.
+   * @param pubKey The 32-byte public key of the Oracle
+   */
+  setupOracle(pubKey: bytes): void {
+    // In a production app, add creator-only check
+    this.oraclePubKeyRecord('opk').value = pubKey;
+    log('ORACLE_SETUP');
+  }
+
+  /**
+   * 2. grantConsent
    * Wallet owners explicitly opt-in and define what data the oracle is allowed to fetch.
    */
   grantConsent(wallet: Account, allowed_fields: string, expiry: uint64): void {
@@ -27,7 +42,7 @@ export class KycAnchor extends Contract {
   }
 
   /**
-   * 2. revokeConsent
+   * 3. revokeConsent
    * Wallet owners can immediately revoke access.
    */
   revokeConsent(wallet: Account): void {
@@ -51,24 +66,35 @@ export class KycAnchor extends Contract {
   }
 
   /**
-   * 3. storeProof
+   * 4. storeProof
    * Anchors the calculated ZK proof hash into the Box storage.
-   * Can be executed by the authorized backend/oracle layer or the user.
+   * Requires a valid Oracle Signature (Layer 2 Enforcement).
    */
-  storeProof(wallet: Account, proofHash: string): void {
+  storeProof(wallet: Account, proofHash: bytes, oracleSignature: bytes): void {
     assert(this.hasValidConsent(wallet), 'Active consent is required to store proof');
-    assert(proofHash !== '', 'Proof hash cannot be empty');
+    assert(proofHash.length > 0, 'Proof hash cannot be empty');
     
+    // 🔥 Protocol Level Enforcement: Verify Oracle Signature
+    const opk = this.oraclePubKeyRecord('opk').value;
+    assert(opk.length > 0, 'Oracle public key not configured');
+
+    const isSignatureValid = op.ed25519verifyBare(
+      proofHash, 
+      oracleSignature, 
+      opk
+    );
+    assert(isSignatureValid, 'Invalid Oracle signature: Proof tampering detected');
+
+    // Store the verified proof hash in the Box
     this.proofHashBoxes(wallet).value = proofHash;
-    
-    log('PROOF_STORED');
+    log('PROOF_STORED_ON_CHAIN');
   }
 
   /**
-   * 4. verifyProof
+   * 5. verifyOnChain
    * Publicly callable verifying endpoint ensuring a proof matches the anchored hash.
    */
-  verifyProof(wallet: Account, hashToVerify: string): boolean {
+  verifyOnChain(wallet: Account, hashToVerify: bytes): boolean {
     assert(this.proofHashBoxes(wallet).exists, 'No proof exists for this wallet');
     return this.proofHashBoxes(wallet).value === hashToVerify;
   }
