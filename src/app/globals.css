@@ -124,7 +124,7 @@
 
 @layer components {
   .bg-premium-gradient {
-    @apply bg-gradient-to-br from-black via-gray-900 to-gray-800;
+    background: linear-gradient(to bottom right, #000000, #111827, #1f2937);
   }
 
   .glass-card {
@@ -153,7 +153,8 @@
     @apply border-border outline-ring/50;
   }
   body {
-    @apply bg-premium-gradient text-foreground min-h-screen antialiased;
+    @apply text-foreground min-h-screen antialiased;
+    background: linear-gradient(to bottom right, #000000, #111827, #1f2937);
   }
   html {
     @apply font-sans;
