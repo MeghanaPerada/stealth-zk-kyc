@@ -35,20 +35,10 @@ export default function Navbar() {
       }
     }
     
-    function handleOpenWalletModal() {
-      // Find the button inside our wui-custom-trigger wrapper and click it
-      const walletBtn = document.querySelector('.wui-custom-trigger button') as HTMLButtonElement;
-      if (walletBtn) {
-        walletBtn.click();
-      }
-    }
-
     document.addEventListener("mousedown", handleClickOutside);
-    window.addEventListener("open-wallet-modal", handleOpenWalletModal);
     
     return () => {
       document.removeEventListener("mousedown", handleClickOutside);
-      window.removeEventListener("open-wallet-modal", handleOpenWalletModal);
     };
   }, []);
 
@@ -98,29 +88,27 @@ export default function Navbar() {
             // Render a fixed placeholder on server to prevent hydration mismatch
             <div className="h-10 w-36 rounded-full bg-primary/10 border border-primary/20 animate-pulse" />
           ) : !isConnected ? (
-            <div className="wui-custom-trigger relative">
+            <div className="relative">
               <WalletButton />
+              {/* Force standard wui-trigger style to match emerald theme */}
               <style jsx global>{`
-                .wui-custom-trigger button {
-                  position: relative;
-                  display: flex;
-                  align-items: center;
-                  gap: 0.625rem;
-                  padding: 0.5rem 1.5rem;
-                  border-radius: 9999px;
-                  font-weight: 700;
-                  font-size: 0.875rem;
-                  letter-spacing: 0.025em;
-                  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-                  background: linear-gradient(to right, #34d399, #10b981);
-                  color: black;
-                  box-shadow: 0 0 25px rgba(52, 211, 153, 0.4);
-                  border: none;
-                  cursor: pointer;
+                [data-wui-button] {
+                  background: linear-gradient(to right, #34d399, #10b981) !important;
+                  color: black !important;
+                  border-radius: 9999px !important;
+                  font-weight: 800 !important;
+                  text-transform: uppercase !important;
+                  letter-spacing: 0.1em !important;
+                  font-size: 11px !important;
+                  padding: 10px 24px !important;
+                  box-shadow: 0 0 25px rgba(52, 211, 153, 0.4) !important;
+                  border: none !important;
+                  transition: all 0.3s ease !important;
+                  cursor: pointer !important;
                 }
-                .wui-custom-trigger button:hover {
-                  box-shadow: 0 0 40px rgba(52, 211, 153, 0.6);
-                  transform: scale(1.03);
+                [data-wui-button]:hover {
+                  box-shadow: 0 0 40px rgba(52, 211, 153, 0.6) !important;
+                  transform: scale(1.05) !important;
                 }
               `}</style>
             </div>

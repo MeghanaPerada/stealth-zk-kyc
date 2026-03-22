@@ -10,7 +10,7 @@ import { toast } from "sonner";
 import { useWallet } from "@/hooks/useWallet";
 import PageWrapper from "@/components/layout/PageWrapper";
 
-const APP_ID = process.env.NEXT_PUBLIC_APP_ID ?? "12345";
+const APP_ID = process.env.NEXT_PUBLIC_APP_ID || "112233445"; // Default to Verification Contract ID from .env.local
 
 const sleep = (ms: number) => new Promise(r => setTimeout(r, ms));
 
