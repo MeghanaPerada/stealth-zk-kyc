@@ -52,9 +52,9 @@ export default function Navbar() {
             <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors shadow-[0_0_15px_rgba(52,211,153,0.2)]">
                <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
-            <span className="font-black text-xl tracking-tight hidden sm:inline-block text-white">
+            <span className="font-black text-2xl tracking-tight hidden sm:inline-block text-white">
               Stealth
-              <span className="text-emerald-500 font-medium ml-1.5 text-sm tracking-widest uppercase">zk-kyc</span>
+              <span className="text-emerald-500 font-bold ml-2 text-base tracking-widest uppercase">zk-kyc</span>
             </span>
           </Link>
         </div>
@@ -70,10 +70,10 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 href={link.path}
-                className={`relative text-[10px] font-black tracking-widest uppercase transition-all duration-300 px-4 py-2 rounded-full group ${
+                className={`relative text-xs font-black tracking-[0.15em] uppercase transition-all duration-300 px-6 py-2.5 rounded-full group ${
                   isActive 
-                    ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(52,211,153,0.4)]" 
-                    : "text-zinc-400 hover:text-white hover:bg-white/5"
+                    ? "bg-emerald-500 text-black shadow-[0_0_25px_rgba(52,211,153,0.5)]" 
+                    : "text-zinc-200 hover:text-white hover:bg-white/10"
                 }`}
               >
                 <span className="relative z-10">{link.name}</span>
@@ -99,8 +99,8 @@ export default function Navbar() {
                   font-weight: 800 !important;
                   text-transform: uppercase !important;
                   letter-spacing: 0.1em !important;
-                  font-size: 11px !important;
-                  padding: 10px 24px !important;
+                  font-size: 12px !important;
+                  padding: 12px 28px !important;
                   box-shadow: 0 0 25px rgba(52, 211, 153, 0.4) !important;
                   border: none !important;
                   transition: all 0.3s ease !important;
@@ -116,12 +116,12 @@ export default function Navbar() {
             <div className="relative" ref={dropdownRef}>
               <button
                 onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                className="flex items-center gap-2.5 px-5 py-2 rounded-full font-bold text-sm tracking-wide transition-all duration-300 bg-primary/15 border border-primary/30 text-primary shadow-[0_0_15px_rgba(52,211,153,0.15)] hover:shadow-[0_0_25px_rgba(52,211,153,0.3)] hover:bg-primary/20"
+                className="flex items-center gap-3 px-6 py-2.5 rounded-full font-bold text-sm tracking-wide transition-all duration-300 bg-emerald-500/20 border border-emerald-500/40 text-emerald-400 shadow-[0_0_20px_rgba(52,211,153,0.2)] hover:shadow-[0_0_30px_rgba(52,211,153,0.4)] hover:bg-emerald-500/30"
               >
-                <div className="w-2 h-2 rounded-full bg-primary animate-pulse shadow-[0_0_8px_rgba(52,211,153,0.8)]" />
-                <span className="font-mono text-xs">{shortAddress}</span>
-                {isDemoMode && <span className="text-[8px] font-black bg-amber-500/20 text-amber-400 px-1.5 py-0.5 rounded-full border border-amber-500/30 uppercase tracking-widest">Demo</span>}
-                <ChevronDown className={`w-3.5 h-3.5 text-primary/60 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
+                <div className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse shadow-[0_0_10px_rgba(52,211,153,0.8)]" />
+                <span className="font-mono text-sm font-black">{shortAddress}</span>
+                {isDemoMode && <span className="text-[9px] font-black bg-amber-500/30 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/40 uppercase tracking-widest">Demo</span>}
+                <ChevronDown className={`w-4 h-4 text-emerald-400/70 transition-transform duration-200 ${isDropdownOpen ? 'rotate-180' : ''}`} />
               </button>
 
               {isDropdownOpen && (
