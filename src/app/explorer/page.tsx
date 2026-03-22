@@ -530,7 +530,7 @@ function ExplorerContent() {
 
                       <div className="flex flex-wrap items-center gap-3">
                         <Button 
-                          onClick={() => copyToClipboard(selectedProof.hash)} 
+                          onClick={() => copyToClipboard(selectedProof.id)} 
                           variant="outline" 
                           size="sm" 
                           className={`border-primary/30 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl ${
@@ -538,7 +538,7 @@ function ExplorerContent() {
                           }`}
                         >
                           {copiedHash ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />} 
-                          {copiedHash ? "Copied!" : "Copy Proof Hash"}
+                          {copiedHash ? "ID Copied!" : "Copy Proof ID"}
                         </Button>
 
                         <a href={getAlgorandExplorerUrl(selectedProof.algorandTx)} target="_blank" rel="noopener noreferrer">
