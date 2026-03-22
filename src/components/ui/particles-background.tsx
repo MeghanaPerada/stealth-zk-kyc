@@ -73,10 +73,10 @@ export default function ParticlesBackground() {
         density: {
           enable: true,
         },
-        value: 80,
+        value: 50,
       },
       opacity: {
-        value: 0.3,
+        value: 0.2,
       },
       shape: {
         type: "circle",
