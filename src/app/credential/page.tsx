@@ -10,6 +10,7 @@ import {
 } from "lucide-react";
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { useWallet } from "@/hooks/useWallet";
+import PageWrapper from "@/components/layout/PageWrapper";
 
 type Status = "idle" | "loading" | "verified" | "expired" | "revoked" | "invalid";
 
@@ -169,9 +170,8 @@ export default function CredentialPage() {
   if (!mounted) return null;
 
   return (
-    <div className="container pt-28 md:pt-40 pb-16 px-4 mx-auto min-h-screen relative">
-      <div className="absolute top-0 right-0 w-[700px] h-[700px] bg-primary/5 rounded-full blur-[160px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[600px] h-[600px] bg-blue-500/5 rounded-full blur-[140px] -z-10 pointer-events-none" />
+    <PageWrapper>
+      <div className="container pt-12 pb-16 px-4 mx-auto min-h-screen relative">
 
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-12">
         <div className="inline-flex items-center gap-2 bg-primary/10 border border-primary/20 px-4 py-2 rounded-full text-primary text-xs font-black uppercase tracking-widest mb-6">
@@ -371,6 +371,7 @@ export default function CredentialPage() {
           </div>
         </div>
       )}
-    </div>
+      </div>
+    </PageWrapper>
   );
 }

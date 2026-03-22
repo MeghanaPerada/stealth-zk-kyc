@@ -24,6 +24,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { Input } from "@/components/ui/input";
+import PageWrapper from "@/components/layout/PageWrapper";
 
 // Extended mock data for the explorer
 const INITIAL_PROOFS = [
@@ -610,13 +611,15 @@ function ExplorerContent() {
 
 export default function Explorer() {
   return (
-    <Suspense fallback={
-      <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-        <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-        <div className="text-muted-foreground font-medium animate-pulse uppercase tracking-widest text-[10px]">Loading Network Registry...</div>
-      </div>
-    }>
-      <ExplorerContent />
-    </Suspense>
+    <PageWrapper>
+      <Suspense fallback={
+        <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
+          <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+          <div className="text-gray-500 font-medium animate-pulse uppercase tracking-widest text-[10px]">Loading Network Registry...</div>
+        </div>
+      }>
+        <ExplorerContent />
+      </Suspense>
+    </PageWrapper>
   );
 }

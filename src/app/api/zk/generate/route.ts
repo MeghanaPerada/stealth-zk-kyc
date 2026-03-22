@@ -1,18 +1,14 @@
 import { NextResponse } from 'next/server';
-import path from 'path';
-import fs from 'fs';
 import crypto from 'crypto';
 import algosdk from 'algosdk';
 
-import { generateProofIdentifier, hashData } from '@/lib/helpers';
+import { generateProofIdentifier } from '@/lib/helpers';
 import { merkleService } from '@/lib/merkleService';
 
 const { buildPoseidon } = require('circomlibjs');
 
-// Initialize the Merkle Service if not already initialized
-let merkleInitialized = false;
-
-const ORACLE_SECRET = process.env.ORACLE_SECRET || 'stealth_zk_kyc_secret_12345';
+// Note: No ORACLE_SECRET needed for HMAC. We use asymmetric Ed25519 signatures only.
+const ORACLE_PUBKEY = process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "";
 const ALGOD_SERVER = process.env.NEXT_PUBLIC_ALGOD_SERVER || 'https://testnet-api.algonode.cloud';
 const ALGOD_PORT = process.env.NEXT_PUBLIC_ALGOD_PORT || '443';
 const ALGOD_TOKEN = process.env.NEXT_PUBLIC_ALGOD_TOKEN || '';
@@ -33,17 +29,18 @@ const panToAscii = (pan: string) => {
  * POST /api/zk/generate
  * 
  * Flow:
- * 1. Verify Oracle HMAC signature.
- * 2. Verify On-chain consent.
- * 3. Calculate Poseidon Identity Hash (Public Input).
- * 4. Generate Groth16 Proof.
+ * 1. Initialize Poseidon and Merkle Root.
+ * 2. Calculate Identity Hash.
+ * 3. Verify Oracle Ed25519 Signature.
+ * 4. Verify On-chain consent.
+ * 5. Generate Groth16 Proof Inputs.
  */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
     const { 
       wallet, 
-      oracleResult, // { dataHash, signature, issuer, _internalData }
+      oracleResult, // { signature, issuer, _internalData }
       currentYear = 2026,
       proofSource = "unknown"
     } = body;
@@ -52,22 +49,41 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required ZK generation inputs (Oracle results missing)." }, { status: 400 });
     }
 
-    // --- STEP 1: Verify Oracle HMAC ---
-    const expectedSignature = crypto.createHmac('sha256', ORACLE_SECRET)
-      .update(oracleResult.dataHash)
-      .digest('hex');
-
-    if (expectedSignature !== oracleResult.signature) {
-      return NextResponse.json({ error: "Oracle signature verification failed. Untrusted identity data." }, { status: 403 });
-    }
-    console.log("[ZK] Oracle HMAC verified.");
-
-    if (!merkleInitialized) {
+    // --- STEP 1: Initialization ---
+    if (!(merkleService as any).root) {
       await merkleService.init();
-      merkleInitialized = true;
+    }
+    const poseidon = await buildPoseidon();
+
+    // --- STEP 2: Calculate Identity Hash (Poseidon) ---
+    const pii = oracleResult._internalData || oracleResult; 
+    const dobNum = parseInt(pii.dob.replace(/-/g, '')); // 2003-08-15 -> 20030815
+    const aadhaarLast4 = parseInt(pii.aadhaar_last4);
+    const pan_ascii = panToAscii(pii.pan);
+    const issuerNum = pii.issuer === "UIDAI" || oracleResult.issuer === "UIDAI" ? 1 : 0;
+
+    const poseidonInputs = [dobNum, aadhaarLast4, ...pan_ascii, issuerNum];
+    const identityHash = poseidon.F.toObject(poseidon(poseidonInputs)).toString();
+
+    // --- STEP 3: Verify Oracle Ed25519 Signature ---
+    if (!ORACLE_PUBKEY) {
+      return NextResponse.json({ error: "Server Configuration Error: Oracle Public Key is missing." }, { status: 500 });
     }
 
-    // --- STEP 2: Verify On-Chain Consent ---
+    const pubKeyBytes = Buffer.from(ORACLE_PUBKEY, "hex");
+    const signatureBytes = Buffer.from(oracleResult.signature || "", "hex");
+    const dataToVerify = Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex");
+
+    // Convert public key to address for verifyBytes
+    const oracleAddr = algosdk.encodeAddress(pubKeyBytes);
+    const isSignatureValid = algosdk.verifyBytes(new Uint8Array(dataToVerify), new Uint8Array(signatureBytes), oracleAddr);
+
+    if (!isSignatureValid) {
+       return NextResponse.json({ error: "Oracle signature verification failed. Untrusted identity data." }, { status: 403 });
+    }
+    console.log("[ZK] Oracle Ed25519 Signature verified.");
+
+    // --- STEP 4: On-Chain Consent Check ---
     if (CONSENT_APP_ID > 0) {
       try {
         const userAccount = algosdk.decodeAddress(wallet);
@@ -83,23 +99,8 @@ export async function POST(request: Request) {
       }
     }
 
-    // --- STEP 3: Calculate Poseidon Hash (to match kycMain.circom / identityHash.circom) ---
-    const pii = oracleResult._internalData || oracleResult; // Support both old and new internal format
-    const dobNum = parseInt(pii.dob.replace(/-/g, '')); // 2003-08-15 -> 20030815
-    const aadhaarLast4 = parseInt(pii.aadhaar_last4);
-    const pan_ascii = panToAscii(pii.pan);
-    const issuerNum = pii.issuer === "UIDAI" || oracleResult.issuer === "UIDAI" ? 1 : 0;
-
-    const poseidon = await buildPoseidon();
-    // Inputs order: dob, aadhaar_last4, pan[10], issuer (Total 13 inputs)
-    const poseidonInputs = [dobNum, aadhaarLast4, ...pan_ascii, issuerNum];
-    const identityHash = poseidon.F.toObject(poseidon(poseidonInputs)).toString();
-
-    console.log("[ZK] Computed Poseidon Identity Hash:", identityHash);
-
-    // --- STEP 4: Dynamic Proof Identifier & Status ---
+    // --- STEP 5: Dynamic Proof Identifier & Status ---
     const timestamp = Date.now();
-    // Dynamic status logic: all fields non-empty = approved
     const status = Object.values(pii).every(v => v) ? "approved" : "rejected";
     
     const proofIdentifier = await generateProofIdentifier(
@@ -109,24 +110,20 @@ export async function POST(request: Request) {
       timestamp
     );
 
-    // --- STEP 5: Nullifier Generation (Poseidon(UserSecret, IdentityAnchor)) ---
-    // Deterministic secret for the user (can be random, but deterministic per identity is better for consistency)
-    const userSecret = crypto.createHmac('sha256', ORACLE_SECRET)
-      .update(identityHash)
+    // --- STEP 6: Nullifier Generation (Poseidon(UserSecret, IdentityAnchor)) ---
+    const userSecret = crypto.createHash('sha256')
+      .update(identityHash + ORACLE_PUBKEY)
       .digest('hex')
-      .slice(0, 32); // Use first 32 hex chars as a pseudo-random seed
+      .slice(0, 32); 
     const userSecretNum = BigInt('0x' + userSecret).toString();
 
     const nullifier = poseidon.F.toObject(poseidon([userSecretNum, identityHash])).toString();
-    console.log("[ZK] Generated Nullifier:", nullifier);
 
-    // --- STEP 6: Merkle Tree Inclusion Proof ---
-    // Add the user to our off-chain Merkle Tree
+    // --- STEP 7: Merkle Tree Inclusion Proof ---
     merkleService.addLeaf(identityHash);
     const merkleData = merkleService.getProof(identityHash);
-    console.log("[ZK] Merkle Root:", merkleData.root);
 
-    // --- STEP 7: Prepare Circuit Input ---
+    // --- STEP 8: Prepare Circuit Input ---
     const birthYear = parseInt(pii.dob.split('-')[0]);
     const circuitInput = {
       dob: dobNum,
@@ -143,15 +140,12 @@ export async function POST(request: Request) {
       merkle_path_elements: merkleData.pathElements,
       merkle_path_indices: merkleData.pathIndices
     };
-    // --- STEP 6: Generate Proof ---
-    // In Client-Side Proving mode, the backend PREPARES the inputs but the BROWSER generates the proof.
-    console.log("[ZK] Sending Circuit Inputs to Browser for Client-Side Proving.");
 
     return NextResponse.json({
-      circuitInput,           // The inputs for the WASM
-      zkIdentity: identityHash, // The public anchor
-      nullifier,              // The public nullifier
-      merkleRoot: merkleData.root, // The public merkle root
+      circuitInput,
+      zkIdentity: identityHash,
+      nullifier,
+      merkleRoot: merkleData.root,
       proofSource,
       proofIdentifier,
       status,
@@ -167,4 +161,3 @@ export async function POST(request: Request) {
     return NextResponse.json({ error: "Failed to generate ZK circuit inputs.", details: err.message }, { status: 500 });
   }
 }
-

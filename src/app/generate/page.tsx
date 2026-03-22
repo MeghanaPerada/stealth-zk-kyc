@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Progress } from "@/components/ui/progress";
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { useWallet } from "@/hooks/useWallet";
+import PageWrapper from "@/components/layout/PageWrapper";
 
 export default function ProofGenerator() {
   const { address, shortAddress, isDemoMode, algodClient, signTransactions } = useWallet();
@@ -151,9 +152,8 @@ export default function ProofGenerator() {
   }, [address]); // Re-run if address changes
 
   return (
-    <div className="container max-w-5xl pt-32 md:pt-40 lg:pt-48 pb-16 px-4 mx-auto min-h-[calc(100vh-4rem-200px)] flex flex-col items-center justify-center relative">
-      {/* Background ambient light */}
-      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[500px] bg-primary/5 rounded-full blur-[150px] -z-10 pointer-events-none" />
+    <PageWrapper>
+      <div className="container max-w-5xl pt-12 pb-16 px-4 mx-auto min-h-[calc(100vh-10rem)] flex flex-col items-center justify-center relative">
 
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -400,6 +400,7 @@ export default function ProofGenerator() {
             </AnimatePresence>
         </div>
       </div>
-    </div>
+      </div>
+    </PageWrapper>
   );
 }

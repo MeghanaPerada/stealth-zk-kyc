@@ -20,16 +20,6 @@ const VERIFICATION_CONTRACT_APP_ID = process.env.VERIFICATION_CONTRACT_APP_ID ? 
  * Gets the backend account from environment mnemonic or generates a temporary one.
  */
 const getBackendAccount = () => {
-  if (process.env.ALGORAND_MNEMONIC) {
-    try {
-      return algosdk.mnemonicToSecretKey(process.env.ALGORAND_MNEMONIC);
-    } catch (e) {
-      console.error('Invalid ALGORAND_MNEMONIC in environment.');
-    }
-  }
-  const account = algosdk.generateAccount();
-  console.warn(`\n[WARNING] No valid ALGORAND_MNEMONIC provided.`);
-  console.warn(`Generated ephemeral account: ${account.addr}`);
   console.warn(`Transactions will fail without funding this account with Testnet ALGO via https://bank.testnet.algorand.network/\n`);
   
   process.env.ALGORAND_MNEMONIC = algosdk.secretKeyToMnemonic(account.sk);

@@ -8,6 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useWallet } from "@/hooks/useWallet";
+import PageWrapper from "@/components/layout/PageWrapper";
 
 const APP_ID = process.env.NEXT_PUBLIC_APP_ID ?? "12345";
 
@@ -104,10 +105,8 @@ export default function SimulatePage() {
     type === "success" ? "text-emerald-400" : type === "error" ? "text-red-400" : "text-zinc-400";
 
   return (
-    <div className="container max-w-6xl pt-32 pb-24 px-4 mx-auto min-h-screen relative">
-      {/* Ambient Glows */}
-      <div className="absolute top-1/4 -right-20 w-[600px] h-[600px] bg-red-500/10 rounded-full blur-[150px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-1/4 -left-20 w-[600px] h-[600px] bg-blue-500/10 rounded-full blur-[150px] -z-10 pointer-events-none" />
+    <PageWrapper>
+      <div className="container max-w-6xl pt-12 pb-24 px-4 mx-auto min-h-screen relative">
 
       {/* Header */}
       <motion.div initial={{ opacity: 0, y: -20 }} animate={{ opacity: 1, y: 0 }} className="text-center mb-16">
@@ -168,7 +167,7 @@ export default function SimulatePage() {
           {/* ── TAB: NULLIFIER ─────────────────────────────────────────── */}
           {activeTab === "nullifier" && (
             <GlowingCard glowColor="primary" className="p-px">
-              <div className="bg-zinc-950 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+            <div className="bg-zinc-900 border border-white/5 rounded-3xl p-8 md:p-12 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-primary/10 blur-[100px] rounded-full pointer-events-none" />
                 <div className="grid md:grid-cols-2 gap-12 items-center relative z-10">
                   <div className="space-y-5">
@@ -248,7 +247,7 @@ export default function SimulatePage() {
           {/* ── TAB: SYBIL ATTACK ────────────────────────────────────────── */}
           {activeTab === "sybil" && (
             <GlowingCard glowColor="destructive" className="p-px">
-              <div className="bg-zinc-950 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+            <div className="bg-zinc-900 border border-white/5 rounded-3xl p-8 md:p-12 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-red-500/10 blur-[100px] rounded-full pointer-events-none" />
                 <div className="grid md:grid-cols-2 gap-12 items-start relative z-10">
                   <div className="space-y-5">
@@ -349,7 +348,7 @@ export default function SimulatePage() {
           {/* ── TAB: FORGED ZK PROOF ─────────────────────────────────────── */}
           {activeTab === "forge" && (
             <GlowingCard glowColor="none" className="p-px border border-purple-500/20">
-              <div className="bg-zinc-950 rounded-3xl p-8 md:p-12 relative overflow-hidden">
+            <div className="bg-zinc-900 border border-white/5 rounded-3xl p-8 md:p-12 relative overflow-hidden">
                 <div className="absolute top-0 right-0 w-64 h-64 bg-purple-500/10 blur-[100px] rounded-full pointer-events-none" />
                 <div className="grid md:grid-cols-2 gap-12 items-start relative z-10">
                   <div className="space-y-5">
@@ -457,6 +456,7 @@ export default function SimulatePage() {
           <ExternalLink className="w-3 h-3" /> Verify On-Chain
         </a>
       </motion.div>
-    </div>
+      </div>
+    </PageWrapper>
   );
 }

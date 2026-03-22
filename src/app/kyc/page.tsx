@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import EndToEndKYC from "@/components/kyc/EndToEndKYC";
 import { motion } from "framer-motion";
 import { Shield, Lock, Fingerprint, Database } from "lucide-react";
+import PageWrapper from "@/components/layout/PageWrapper";
 
 export default function KYCPage() {
   const [mounted, setMounted] = useState(false);
@@ -15,14 +16,8 @@ export default function KYCPage() {
   if (!mounted) return null;
 
   return (
-    <div className="min-h-screen bg-slate-950 text-white selection:bg-emerald-500/30">
-      {/* Background Orbs */}
-      <div className="fixed inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[10%] left-[20%] w-[500px] h-[500px] bg-emerald-600/10 rounded-full blur-[120px] animate-pulse" />
-        <div className="absolute bottom-[10%] right-[20%] w-[400px] h-[400px] bg-blue-600/10 rounded-full blur-[100px] animate-pulse" style={{ animationDelay: "2s" }} />
-      </div>
-
-      <div className="relative z-10 container mx-auto px-4 py-20">
+    <PageWrapper>
+      <div className="relative z-10 container mx-auto px-4 py-12">
         <EndToEndKYC />
 
         <div className="mt-20 grid grid-cols-1 md:grid-cols-3 gap-8 max-w-5xl mx-auto">
@@ -43,7 +38,7 @@ export default function KYCPage() {
           />
         </div>
       </div>
-    </div>
+    </PageWrapper>
   );
 }
 

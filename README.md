@@ -40,5 +40,18 @@ Stealth ZK-KYC solves the "Identity Honeypot" problem. Traditional KYC forces us
 2. **The KYC Flow**: Go to `/kyc`, run the **Live ZK Terminal**, and generate a proof.
 3. **The Anchor**: Click **"Verify on Algorand"** on the success screen to see the 100% on-chain verification in action.
 
+## 🛡️ Security & Mnemonic Management
+This project interacts with the Algorand blockchain and requires sensitive credentials for anchoring proofs and deploying contracts.
+
+### 1. Environment Variables
+Never commit `.env` or `.env.local` files to version control. They are already included in `.gitignore`.
+- Use `.env.example` as a template to create your local `.env.local`.
+- Store your **Algorand Mnemonic** and **Oracle Mnemonic** securely.
+
+### 2. Mnemonic Best Practices
+- **Use a dedicated account**: Create a fresh account for testing on TestNet. Do not use your MainNet account mnemonic.
+- **Never hardcode**: If you see a mnemonic in plain text in the codebase, replace it with an environment variable reference (`process.env.VAR_NAME`).
+- **CI/CD Secrets**: When using GitHub Actions for deployment, store mnemonics as **GitHub Repository Secrets** (specifically `DEPLOYER_MNEMONIC`).
+
 ---
 **Built to protect user privacy. Built for the future of decentralized identity.**

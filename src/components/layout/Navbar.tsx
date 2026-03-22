@@ -62,9 +62,9 @@ export default function Navbar() {
             <div className="p-2 bg-primary/10 rounded-xl group-hover:bg-primary/20 transition-colors shadow-[0_0_15px_rgba(52,211,153,0.2)]">
                <ShieldCheck className="h-6 w-6 text-primary" />
             </div>
-            <span className="font-black text-xl tracking-tight hidden sm:inline-block text-transparent bg-clip-text bg-gradient-to-r from-emerald-400 to-primary drop-shadow-sm">
+            <span className="font-black text-xl tracking-tight hidden sm:inline-block text-white">
               Stealth
-              <span className="text-zinc-500 font-medium ml-1.5 text-sm tracking-widest uppercase">zk-kyc</span>
+              <span className="text-emerald-500 font-medium ml-1.5 text-sm tracking-widest uppercase">zk-kyc</span>
             </span>
           </Link>
         </div>
@@ -80,11 +80,12 @@ export default function Navbar() {
               <Link
                 key={link.path}
                 href={link.path}
-                className={`relative text-sm font-bold tracking-wide transition-all duration-300 px-5 py-2 rounded-full overflow-hidden group bg-gradient-to-r from-primary to-emerald-400 text-black shadow-[0_0_25px_rgba(52,211,153,0.4)] hover:shadow-[0_0_40px_rgba(52,211,153,0.6)] hover:scale-[1.03] active:scale-[0.98] ${
-                  isActive ? "ring-2 ring-white/30 ring-offset-1 ring-offset-black" : ""
+                className={`relative text-[10px] font-black tracking-widest uppercase transition-all duration-300 px-4 py-2 rounded-full group ${
+                  isActive 
+                    ? "bg-emerald-500 text-black shadow-[0_0_20px_rgba(52,211,153,0.4)]" 
+                    : "text-zinc-400 hover:text-white hover:bg-white/5"
                 }`}
               >
-                <span className="absolute inset-0 bg-gradient-to-r from-transparent via-white/25 to-transparent -translate-x-[200%] group-hover:translate-x-[200%] transition-transform duration-700 ease-in-out" />
                 <span className="relative z-10">{link.name}</span>
               </Link>
             )

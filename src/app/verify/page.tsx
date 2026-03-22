@@ -11,6 +11,7 @@ import { Badge } from "@/components/ui/badge";
 import { CheckCircle2, ShieldAlert, XCircle, Search, Clock, FileJson, ShieldCheck, Lock, ArrowRight } from "lucide-react";
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { useWallet } from "@/hooks/useWallet";
+import PageWrapper from "@/components/layout/PageWrapper";
 
 function VerificationDashboardContent() {
   const searchParams = useSearchParams();
@@ -91,8 +92,6 @@ function VerificationDashboardContent() {
 
   return (
     <>
-      <div className="absolute top-0 right-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
-      <div className="absolute bottom-0 left-0 w-[500px] h-[500px] bg-primary/10 rounded-full blur-[120px] -z-10 pointer-events-none" />
 
       <motion.div 
         initial={{ opacity: 0, y: -20 }}
@@ -374,15 +373,17 @@ function VerificationDashboardContent() {
 
 export default function VerificationDashboard() {
   return (
-    <div className="container max-w-6xl pt-32 md:pt-40 lg:pt-48 pb-16 mx-auto min-h-[calc(100vh-4rem-200px)] relative flex flex-col justify-center">
-      <Suspense fallback={
-        <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
-          <div className="w-12 h-12 border-4 border-primary/20 border-t-primary rounded-full animate-spin"></div>
-          <div className="text-muted-foreground font-medium animate-pulse">Initializing Verifier Environment...</div>
-        </div>
-      }>
-         <VerificationDashboardContent />
-      </Suspense>
-    </div>
+    <PageWrapper>
+      <div className="container max-w-6xl pt-12 pb-16 mx-auto min-h-[calc(100vh-10rem)] relative flex flex-col justify-center">
+        <Suspense fallback={
+          <div className="flex flex-col items-center justify-center h-[50vh] space-y-4">
+            <div className="w-12 h-12 border-4 border-emerald-500/20 border-t-emerald-500 rounded-full animate-spin"></div>
+            <div className="text-gray-500 font-medium animate-pulse">Initializing Verifier Environment...</div>
+          </div>
+        }>
+           <VerificationDashboardContent />
+        </Suspense>
+      </div>
+    </PageWrapper>
   );
 }
