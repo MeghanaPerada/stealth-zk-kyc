@@ -36,21 +36,47 @@ function VerificationDashboardContent() {
     try {
       setVerificationSteps(prev => [...prev, "Initiating ZK-Groth16 Verification..."]);
       
-      // Step 1: Extract real ZK artifacts from storage
+      // Step 1: Resolve ZK artifacts (Real or Demo)
       const storedProofStr = localStorage.getItem("stealth_final_proof");
-      let zkArtifacts = null;
+      let zkArtifacts: any = null;
       
+      // 1.1 Local Storage Check (for current user)
       if (storedProofStr) {
         const stored = JSON.parse(storedProofStr);
-        // Only load if the Hash matches our searched Proof ID
-        if (stored.hash === proofId || proofId.includes(stored.hash)) {
-          zkArtifacts = stored.fullProof;
-          setVerificationSteps(prev => [...prev, "Cryptographic Artifacts Resolved."]);
+        // Robust check for any ID variant
+        const matches = [stored.hash, stored.identity_hash, stored.proofIdentifier, `prf_0x${stored.identity_hash?.slice(0, 10)}`].includes(proofId);
+        
+        if (matches || proofId.includes(stored.hash || "")) {
+          zkArtifacts = stored.proof ? { proof: stored.proof, publicSignals: stored.publicSignals } : stored.fullProof;
+          setVerificationSteps(prev => [...prev, "Cryptographic Artifacts Resolved from Vault."]);
         }
       }
 
-      if (!zkArtifacts && proofId.startsWith("zkp_")) {
-         setVerificationSteps(prev => [...prev, "Error: Full ZK artifacts missing for this ID in local vault. Use Demo Mode or re-generate."]);
+      // 1.2 Demo Fallback (for IDs from Explorer mock data)
+      const isDemoId = [
+        "prf_0x7b2a9u4e2d", "prf_0x2c4e1f9b5a", "prf_0x9d3b5a7c1f", 
+        "prf_0x4k8m2n6p9q", "prf_0x1z5x9c4v8b"
+      ].includes(proofId);
+
+      if (!zkArtifacts && isDemoId) {
+        setVerificationSteps(prev => [...prev, "Demo Mode: Resolving Historical Evidence Artifacts..."]);
+        // Return a mock successful result immediately for demo IDs
+        await new Promise(r => setTimeout(r, 1500));
+        setVerificationSteps(prev => [...prev, "Mathematical Consistency: PASSED (Demo)"]);
+        setVerificationSteps(prev => [...prev, "SnarkJS Groth16 Logic: VALID (Demo)"]);
+        setVerificationResult('valid');
+        setProofDetails({
+          w_bound: "V4K5...7J2L",
+          attr: "Verified Identity (Demo)",
+          trustScore: 95
+        });
+        setIsVerifying(false);
+        return;
+      }
+
+      if (!zkArtifacts) {
+         setVerificationSteps(prev => [...prev, "Error: Full ZK artifacts missing for this ID in local vault."]);
+         setVerificationSteps(prev => [...prev, "Tip: Only proofs generated in this browser can be fully verified."]);
          setVerificationResult('invalid');
          return;
       }
@@ -61,7 +87,8 @@ function VerificationDashboardContent() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           proof: zkArtifacts?.proof,
-          publicSignals: zkArtifacts?.publicSignals
+          publicSignals: zkArtifacts?.publicSignals,
+          proofHash: proofId
         })
       });
 
@@ -77,7 +104,7 @@ function VerificationDashboardContent() {
           trustScore: 99
         });
       } else {
-        setVerificationSteps(prev => [...prev, `Logic Error: ${data.message || data.error || "Inconsistent Proof"}`]);
+        setVerificationSteps(prev => [...prev, `Logic Error: ${data.reason || data.message || "Inconsistent Proof"}`]);
         setVerificationResult('invalid');
       }
 

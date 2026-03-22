@@ -178,6 +178,7 @@ export default function EndToEndKYC() {
       setProofData({ proof: generatedProof, publicSignals: generatedSignals });
       
       localStorage.setItem("stealth_final_proof", JSON.stringify({
+        hash: zkInputData.proofIdentifier,
         identity_hash: zkInputData.zkIdentity,
         proof: generatedProof, 
         publicSignals: generatedSignals, 
