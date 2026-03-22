@@ -14,9 +14,10 @@ export default function Navbar() {
   const navLinks = [
     { name: "Submit KYC", path: "/kyc" },
     { name: "Credential", path: "/credential" },
-    { name: "Verify Proof", path: "/verify" },
+    { name: "Verify", path: "/verify" },
+    { name: "Premium", path: "/premium" },
     { name: "Explorer", path: "/explorer" },
-    { name: "Hacker Mode", path: "/simulate" }
+    { name: "Hacker", path: "/simulate" }
   ];
 
   const { isConnected, address, shortAddress, isDemoMode, disconnectWallet } = useWallet();

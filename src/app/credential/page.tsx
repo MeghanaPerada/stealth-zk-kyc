@@ -357,13 +357,42 @@ export default function CredentialPage() {
                   </div>
 
                   {status === "verified" && (
-                    <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6">
-                      <div className="flex items-center gap-3 mb-4">
-                        <CheckCircle2 className="w-6 h-6 text-emerald-400" />
-                        <h3 className="font-black text-lg text-emerald-400 uppercase tracking-tighter">Approved</h3>
+                    <motion.div initial={{ opacity: 0, scale: 0.95 }} animate={{ opacity: 1, scale: 1 }} className="space-y-6">
+                      <div className="bg-emerald-500/5 border border-emerald-500/20 rounded-2xl p-6 relative overflow-hidden">
+                        <div className="absolute top-0 right-0 p-4 opacity-10">
+                          <Building2 className="w-20 h-20 text-emerald-400" />
+                        </div>
+                        <div className="flex items-center gap-3 mb-4">
+                          <CheckCircle2 className="w-6 h-6 text-emerald-400" />
+                          <h3 className="font-black text-lg text-emerald-400 uppercase tracking-tighter">Access Granted</h3>
+                        </div>
+                        <p className="text-zinc-500 text-xs leading-relaxed mb-6">Identity proven via ZK + Oracle + Algorand multi-layer protocol. You have unlocked exclusive ecosystem benefits.</p>
+                        
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="p-4 rounded-xl bg-black/40 border border-emerald-500/20 group hover:border-emerald-500/50 transition-all cursor-pointer">
+                            <Sparkles className="w-5 h-5 text-emerald-400 mb-3" />
+                            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-1">Mint Genesis NFT</h4>
+                            <p className="text-[10px] text-zinc-500">Claim your unique proof-of-identity badge on Algorand.</p>
+                          </div>
+                          <div className="p-4 rounded-xl bg-black/40 border border-emerald-500/20 group hover:border-emerald-500/50 transition-all cursor-pointer">
+                            <Shield className="w-5 h-5 text-emerald-400 mb-3" />
+                            <h4 className="text-xs font-black uppercase tracking-widest text-white mb-1">Airdrop Multiplier</h4>
+                            <p className="text-[10px] text-zinc-500">Your verified status grants a 2x bonus on upcoming rewards.</p>
+                          </div>
+                        </div>
                       </div>
-                      <p className="text-zinc-500 text-xs leading-relaxed">Identity proven via ZK + Oracle + Algorand multi-layer protocol.</p>
-                    </div>
+
+                      <div className="bg-gradient-to-br from-indigo-500/10 via-transparent to-transparent border border-indigo-500/20 rounded-2xl p-6">
+                        <div className="flex items-center gap-3 mb-4">
+                          <Sparkles className="w-6 h-6 text-indigo-400" />
+                          <h3 className="font-black text-lg text-indigo-400 uppercase tracking-tighter">Premium Portal</h3>
+                        </div>
+                        <p className="text-zinc-500 text-xs leading-relaxed mb-4">You now have access to the Private Institutional Lending pool with zero-slippage rates.</p>
+                        <button className="h-10 px-6 bg-indigo-600 text-white text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-indigo-500 transition-all">
+                          Enter Premium Portal <ArrowRight className="inline ml-1 w-3 h-3" />
+                        </button>
+                      </div>
+                    </motion.div>
                   )}
                 </motion.div>
               )}
