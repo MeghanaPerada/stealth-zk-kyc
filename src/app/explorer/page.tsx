@@ -4,22 +4,15 @@ import { useState, useEffect, useMemo, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
-import { 
-  Copy, 
-  Check,
-  Layers, 
-  ShieldCheck, 
-  ArrowDown, 
-  Search, 
-  X, 
-  ExternalLink, 
-  Info,
-  CheckCircle2,
-  Clock3,
-  Loader2,
-  Database,
-  Cpu
+import {
+  Search, ShieldCheck, ExternalLink, Filter,
+  ChevronRight, ArrowRight, Shield, Database,
+  Fingerprint, Clock, CheckCircle2, History,
+  Lock, Zap, Info, MoreVertical, Copy, Check,
+  AlertCircle, Building2, RefreshCw, Smartphone,
+  Trash2, Loader2, Play, Layers, Clock3, X, Cpu, ArrowDown
 } from "lucide-react";
+import { useWallet } from "@/hooks/useWallet";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { GlowingCard } from "@/components/ui/glowing-card";
@@ -95,6 +88,7 @@ function ExplorerContent() {
   const initialSearch = searchParams.get("search") || "";
   
   const [proofs, setProofs] = useState<any[]>([]);
+  const { address } = useWallet();
   const [searchQuery, setSearchQuery] = useState(initialSearch);
   const [attributeFilter, setAttributeFilter] = useState("All");
   const [statusFilter, setStatusFilter] = useState("All");
@@ -139,10 +133,22 @@ function ExplorerContent() {
         onChain: false,
       }));
 
-      setProofs(mappedProofs.length > 0 ? mappedProofs : INITIAL_PROOFS);
+      // Filter to only show proofs belonging to the connected wallet
+      const userProofs = mappedProofs.filter((p: any) => 
+        address && p.fullWallet.toLowerCase() === address.toLowerCase()
+      );
+      
+      if (userProofs.length > 0) {
+        setProofs(userProofs);
+      } else {
+        const matchedMocks = INITIAL_PROOFS.filter(p => 
+          address && p.fullWallet.toLowerCase() === address.toLowerCase()
+        );
+        setProofs(matchedMocks);
+      }
     } catch (err) {
       console.error("Failed to fetch proofs:", err);
-      if (proofs.length === 0) setProofs(INITIAL_PROOFS);
+      setProofs([]);
     } finally {
       setIsLoading(false);
     }
