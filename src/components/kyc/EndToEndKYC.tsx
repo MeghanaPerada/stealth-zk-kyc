@@ -151,6 +151,11 @@ export default function EndToEndKYC() {
       });
       
       const result = await res.json();
+      
+      if (!res.ok) {
+        throw new Error(result.error || "Oracle attestation failed. Check server logs.");
+      }
+      
       addZkLog(`> Oracle: Fetched attestation (source: ${result.source || "manual"})`);  
 
       const zkRes = await fetch("/api/zk/generate", {
