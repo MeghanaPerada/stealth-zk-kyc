@@ -121,7 +121,7 @@ export default function SimulatePage() {
         </p>
         <div className="flex items-center justify-center gap-3 mt-6">
           <a
-            href={`https://app.lora.algokit.io/testnet/application/${APP_ID}`}
+            href={`https://testnet.explorer.perawallet.app/application/${APP_ID}`}
             target="_blank"
             rel="noopener noreferrer"
             className="flex items-center gap-2 px-4 py-2 rounded-full bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest hover:bg-primary/20 transition-colors"
@@ -277,7 +277,7 @@ export default function SimulatePage() {
                     </div>
 
                     <a
-                      href={`https://app.lora.algokit.io/testnet/application/${APP_ID}`}
+                      href={`https://testnet.explorer.perawallet.app/application/${APP_ID}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="inline-flex items-center gap-2 text-xs text-primary hover:underline font-bold uppercase tracking-widest"
@@ -448,7 +448,7 @@ export default function SimulatePage() {
           The Algorand Virtual Machine (AVM 11) verifies the elliptic curve pairing directly in the smart contract execution layer — no server involved.
         </p>
         <a
-          href={`https://app.lora.algokit.io/testnet/application/${APP_ID}`}
+          href={`https://testnet.explorer.perawallet.app/application/${APP_ID}`}
           target="_blank"
           rel="noopener noreferrer"
           className="flex-shrink-0 flex items-center gap-2 bg-primary/10 border border-primary/20 text-primary text-xs font-black uppercase tracking-widest px-4 py-2 rounded-full hover:bg-primary/20 transition-colors"

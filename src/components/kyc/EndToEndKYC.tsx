@@ -337,7 +337,7 @@ export default function EndToEndKYC() {
                   <span className="text-gray-500">Tx Hash:</span>
                   {onChainTxId ? (
                     <a 
-                      href={`https://app.lora.algokit.io/testnet/transaction/${onChainTxId}`}
+                      href={`https://testnet.explorer.perawallet.app/tx/${onChainTxId}`}
                       target="_blank"
                       rel="noopener noreferrer"
                       className="text-emerald-400 truncate max-w-[150px] hover:underline flex items-center gap-1"
