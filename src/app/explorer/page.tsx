@@ -107,7 +107,7 @@ function ExplorerContent() {
   useEffect(() => {
     setIsMounted(true);
     fetchProofs();
-  }, []);
+  }, [address]);
 
   const fetchProofs = async () => {
     try {
@@ -170,11 +170,7 @@ function ExplorerContent() {
       );
       
       // Combine local proofs and backend proofs
-      if (address) {
-        setProofs([...localProofs, ...userProofs]);
-      } else {
-        setProofs([]); 
-      }
+      setProofs([...localProofs, ...(address ? userProofs : [])]);
     } catch (err) {
       console.error("Failed to fetch proofs:", err);
       setProofs([]);
