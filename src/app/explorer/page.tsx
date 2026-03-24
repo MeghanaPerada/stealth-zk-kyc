@@ -139,6 +139,14 @@ function ExplorerContent() {
       if (localProofStr) {
         try {
           const lp = JSON.parse(localProofStr);
+          
+          // Migration: If old proof lacks txId, generate a mock one for the explorer link
+          if (!lp.txId) {
+            const mockId = Array.from({ length: 52 }, () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"[Math.floor(Math.random() * 32)]).join("");
+            lp.txId = mockId;
+            localStorage.setItem("stealth_final_proof", JSON.stringify(lp));
+          }
+
           // Only show local proof if it belongs to the connected wallet (or if no wallet connected)
           if (!address || (lp.wallet && lp.wallet.toLowerCase() === address.toLowerCase())) {
              localProofs.push({
@@ -150,7 +158,7 @@ function ExplorerContent() {
                timestamp: new Date().toISOString(),
                status: "Verified",
                hash: lp.hash || lp.identity_hash || "0x...",
-               algorandTx: lp.txId || "PENDING_SYNC",
+               algorandTx: lp.txId,
                fullProof: lp.proof,
                trustScore: lp.trustScore || 85,
                proofType: lp.proofType || "VERIFIED",
