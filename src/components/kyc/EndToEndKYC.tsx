@@ -63,7 +63,12 @@ export default function EndToEndKYC() {
 
   const handleWalletAuth = async () => {
     if (!isConnected) {
-      connectWallet();
+      const wuiBtn = document.querySelector('[data-wui-button]') as HTMLButtonElement;
+      if (wuiBtn) {
+        wuiBtn.click();
+      } else {
+        toast.error("Wallet module initializing... please use the top right button.");
+      }
       return;
     }
 
