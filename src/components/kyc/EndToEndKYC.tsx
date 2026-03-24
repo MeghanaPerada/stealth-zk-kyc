@@ -123,7 +123,7 @@ export default function EndToEndKYC() {
         proofTypeLabel: "Govt-Grade Verified",
         source: "digilocker"
       });
-      setVerifiedData({ type: "reused_proof", name: "Meghana Perada", aadhaar_last4: "1234", pan: "ABCDE1234F" });
+      setVerifiedData({ type: "reused_proof", name: "Private Identity (ZK)", aadhaar: "XXXX", pan: "XXXXX" });
       setStep(4);
       triggerConfetti();
     } catch (err: any) {
@@ -304,15 +304,15 @@ export default function EndToEndKYC() {
                 <div className="space-y-3 relative z-10">
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="text-blue-100/40 text-[10px] font-black uppercase">Name</span>
-                    <span className="text-lg font-bold text-white">{verifiedData?.name || "Meghana Perada"}</span>
+                    <span className="text-lg font-bold text-white truncate max-w-[200px] text-right">{verifiedData?.name || "Verified Identity"}</span>
                   </div>
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="text-blue-100/40 text-[10px] font-black uppercase">Aadhaar (Masked)</span>
-                    <span className="text-lg font-mono text-white">XXXX XXXX {verifiedData?.aadhaar_last4 || "1234"}</span>
+                    <span className="text-lg font-mono text-white">XXXX XXXX {verifiedData?.aadhaar ? verifiedData.aadhaar.slice(-4) : (verifiedData?.aadhaar_last4 || "XXXX")}</span>
                   </div>
                   <div className="flex justify-between items-center border-b border-white/5 pb-2">
                     <span className="text-blue-100/40 text-[10px] font-black uppercase">PAN Card</span>
-                    <span className="text-lg font-mono text-white">{verifiedData?.pan || "ABCDE1234F"}</span>
+                    <span className="text-lg font-mono text-white">{verifiedData?.pan || "N/A"}</span>
                   </div>
                   <div className="flex justify-between items-center">
                     <span className="text-blue-100/40 text-[10px] font-black uppercase">Identity Hash</span>

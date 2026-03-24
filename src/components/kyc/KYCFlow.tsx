@@ -9,6 +9,7 @@ interface KYCFlowProps {
 }
 
 export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
+  const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
@@ -22,6 +23,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
 
   // 1️⃣ Send OTP
   const sendOtp = async () => {
+    if (!name) return toast.error("Please enter your name.");
     if (!key) return toast.error("Please enter an email or phone number.");
     setIsSending(true);
     try {
@@ -60,6 +62,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
       if (mode === "digilocker") {
         onVerified({
           type: "digilocker",
+          name: name,
           email,
           phone,
           pan: "ABCDE1234F",
@@ -70,6 +73,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
       } else {
         onVerified({
           type: "manual",
+          name: name,
           ...manualData,
           email,
           phone,
@@ -128,10 +132,8 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
       </div>
 
       {/* Trust indicator banner */}
-      <div className={`mb-4 px-4 py-3 rounded-2xl border flex items-start gap-3 ${
-        isDigilocker
-          ? "bg-emerald-500/5 border-emerald-500/20"
-          : "bg-amber-500/5 border-amber-500/20"
+      <div className={`mb-6 p-3 rounded-xl border flex items-start gap-3 transition-colors ${
+        isDigilocker ? "bg-emerald-950/30 border-emerald-500/20" : "bg-amber-950/30 border-amber-500/20"
       }`}>
         <div className={`w-6 h-6 rounded-full flex items-center justify-center flex-shrink-0 mt-0.5 ${
           isDigilocker ? "bg-emerald-500/20 text-emerald-400" : "bg-amber-500/20 text-amber-400"
@@ -165,8 +167,16 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
         </div>
       </div>
 
-      {/* Input fields */}
-      <div className="space-y-3 mb-4">
+      {/* Form Fields */}
+      <div className="space-y-3 mb-6 relative">
+        <input
+          type="text"
+          placeholder="Full Name as per ID"
+          value={name}
+          onChange={(e) => setName(e.target.value)}
+          className="w-full bg-slate-950 border border-slate-800 rounded-xl py-2.5 px-4 text-white focus:border-amber-500/50 outline-none text-sm"
+        />
+
         {isDigilocker ? (
           <>
             <div className="relative">
