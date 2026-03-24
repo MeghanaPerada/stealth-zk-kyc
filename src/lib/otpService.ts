@@ -7,10 +7,13 @@
  */
 export async function sendEmailOTP(email: string, otp: string) {
   const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey) {
+  if (!apiKey || apiKey === "YOUR_RESEND_API_KEY_HERE") {
     console.warn(`[OTP SERVICE] Resend API Key missing. Simulation to ${email}: ${otp}`);
     return { success: false, error: "Missing API Key" };
   }
+
+  // Resend requires a verified domain unless sending to your own signup email using onboarding@resend.dev
+  const fromEmail = process.env.RESEND_FROM_EMAIL || "Stealth ZK-KYC <onboarding@resend.dev>";
 
   try {
     const res = await fetch("https://api.resend.com/emails", {
@@ -20,15 +23,24 @@ export async function sendEmailOTP(email: string, otp: string) {
         "Authorization": `Bearer ${apiKey}`,
       },
       body: JSON.stringify({
-        from: "Stealth ZK-KYC <onboarding@resend.dev>",
+        from: fromEmail,
         to: email,
         subject: "Your KYC Verification Code",
         html: `<strong>Your verification code is: ${otp}</strong><p>This code expires in 5 minutes.</p>`,
       }),
     });
-    return await res.json();
+    
+    const data = await res.json();
+    
+    if (!res.ok) {
+      console.error("[OTP SERVICE] Resend API rejected the email:", data);
+      return { success: false, error: data.message || "Resend API Error" };
+    }
+    
+    console.log(`[OTP SERVICE] Email sent successfully to ${email} via Resend. (ID: ${data.id})`);
+    return { success: true, data };
   } catch (err: any) {
-    console.error("[OTP SERVICE] Email dispatch failed:", err.message);
+    console.error("[OTP SERVICE] Email dispatch crash:", err.message);
     return { success: false, error: err.message };
   }
 }
