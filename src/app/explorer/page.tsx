@@ -169,15 +169,11 @@ function ExplorerContent() {
         address && p.fullWallet.toLowerCase() === address.toLowerCase()
       );
       
-      // Combine local proofs, backend proofs, and the fallback mock proofs
-      const combinedProofs = [...localProofs, ...userProofs];
-      
-      if (combinedProofs.length > 0) {
-        // Show user's actual proofs + some mock proofs to fill up the explorer feed
-        setProofs([...combinedProofs, ...INITIAL_PROOFS]);
+      // Combine local proofs and backend proofs
+      if (address) {
+        setProofs([...localProofs, ...userProofs]);
       } else {
-        // If the user has no proofs, just show the public mock registry feed
-        setProofs([...INITIAL_PROOFS]);
+        setProofs([]); 
       }
     } catch (err) {
       console.error("Failed to fetch proofs:", err);
