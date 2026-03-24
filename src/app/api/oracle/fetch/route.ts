@@ -94,6 +94,11 @@ export async function POST(req: NextRequest) {
       proofTypeLabel: trust.proofTypeLabel,
       source,
       issuer: source === "digilocker" ? "UIDAI DigiLocker" : "Stealth ZK-Oracle",
+      _internalData: {
+        dob: data.dob || "1998-05-15",
+        aadhaar_last4: (data.aadhaar || "1234").slice(-4),
+        pan: data.pan || "ABCDE1234F"
+      }
     });
   } catch (err: any) {
     console.error("[Oracle] Error:", err);

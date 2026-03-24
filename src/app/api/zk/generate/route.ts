@@ -57,8 +57,19 @@ export async function POST(request: Request) {
 
     // --- STEP 2: Calculate Identity Hash (Poseidon) ---
     const pii = oracleResult._internalData || oracleResult; 
+    console.log("[ZK] PII Inputs received:", { 
+      hasDob: !!pii.dob, 
+      hasAadhaar: !!pii.aadhaar_last4, 
+      hasPan: !!pii.pan,
+      issuer: pii.issuer || oracleResult.issuer
+    });
+
+    if (!pii.dob || !pii.pan) {
+      throw new Error(`Missing PII inputs from Oracle result: dob=${!!pii.dob}, pan=${!!pii.pan}`);
+    }
+
     const dobNum = parseInt(pii.dob.replace(/-/g, '')); // 2003-08-15 -> 20030815
-    const aadhaarLast4 = parseInt(pii.aadhaar_last4);
+    const aadhaarLast4 = parseInt(pii.aadhaar_last4 || "0");
     const pan_ascii = panToAscii(pii.pan);
     const issuerNum = pii.issuer === "UIDAI" || oracleResult.issuer === "UIDAI" ? 1 : 0;
 
