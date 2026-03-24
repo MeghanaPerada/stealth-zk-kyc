@@ -1,46 +1,47 @@
 // /src/lib/otpService.ts
 // Handles actual dispatch of OTPs via Resend (Email) and Twilio (SMS)
 
+import nodemailer from "nodemailer";
+
 /**
  * sendEmailOTP
- * Dispatch OTP via Resend. Requires RESEND_API_KEY in .env.local
+ * Dispatch OTP via Email using Nodemailer (Gmail or standard SMTP)
  */
 export async function sendEmailOTP(email: string, otp: string) {
-  const apiKey = process.env.RESEND_API_KEY;
-  if (!apiKey || apiKey === "YOUR_RESEND_API_KEY_HERE") {
-    console.warn(`[OTP SERVICE] Resend API Key missing. Simulation to ${email}: ${otp}`);
-    return { success: false, error: "Missing API Key" };
+  const emailUser = process.env.EMAIL_USER;
+  const emailPass = process.env.EMAIL_APP_PASSWORD;
+
+  if (!emailUser || !emailPass) {
+    console.warn(`[OTP SERVICE] EMAIL_USER or EMAIL_APP_PASSWORD missing. Simulation to ${email}: ${otp}`);
+    return { success: false, error: "Missing Email Credentials" };
   }
 
-  // Resend requires a verified domain unless sending to your own signup email using onboarding@resend.dev
-  const fromEmail = process.env.RESEND_FROM_EMAIL || "Stealth ZK-KYC <onboarding@resend.dev>";
-
   try {
-    const res = await fetch("https://api.resend.com/emails", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Authorization": `Bearer ${apiKey}`,
-      },
-      body: JSON.stringify({
-        from: fromEmail,
-        to: email,
-        subject: "Your KYC Verification Code",
-        html: `<strong>Your verification code is: ${otp}</strong><p>This code expires in 5 minutes.</p>`,
-      }),
+    const transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: emailUser,
+        pass: emailPass
+      }
+    });
+
+    const info = await transporter.sendMail({
+      from: `"Stealth ZK-KYC" <${emailUser}>`,
+      to: email,
+      subject: "Your KYC Verification Code",
+      html: `
+        <div style="font-family: sans-serif; max-width: 600px; margin: 0 auto;">
+          <h2>Stealth ZK-KYC Protocol</h2>
+          <p>Your identity verification code is: <strong>${otp}</strong></p>
+          <p>This code expires in 5 minutes.</p>
+        </div>
+      `,
     });
     
-    const data = await res.json();
-    
-    if (!res.ok) {
-      console.error("[OTP SERVICE] Resend API rejected the email:", data);
-      return { success: false, error: data.message || "Resend API Error" };
-    }
-    
-    console.log(`[OTP SERVICE] Email sent successfully to ${email} via Resend. (ID: ${data.id})`);
-    return { success: true, data };
+    console.log(`[OTP SERVICE] Email sent successfully to ${email} via Nodemailer. (ID: ${info.messageId})`);
+    return { success: true, messageId: info.messageId };
   } catch (err: any) {
-    console.error("[OTP SERVICE] Email dispatch crash:", err.message);
+    console.error("[OTP SERVICE] Email dispatch failed:", err.message);
     return { success: false, error: err.message };
   }
 }
