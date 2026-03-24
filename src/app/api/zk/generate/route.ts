@@ -7,7 +7,6 @@ import { merkleService } from '@/lib/merkleService';
 
 const { buildPoseidon } = require('circomlibjs');
 
-// Note: No ORACLE_SECRET needed for HMAC. We use asymmetric Ed25519 signatures only.
 const ORACLE_PUBKEY = process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "";
 const ALGOD_SERVER = process.env.NEXT_PUBLIC_ALGOD_SERVER || 'https://testnet-api.algonode.cloud';
 const ALGOD_PORT = process.env.NEXT_PUBLIC_ALGOD_PORT || '443';

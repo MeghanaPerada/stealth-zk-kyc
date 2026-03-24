@@ -5,7 +5,6 @@ import { buildTrustProfile } from "@/lib/trustScore";
 import { isValidPAN, isValidAadhaar } from "@/lib/manualValidation";
 import { buildPoseidon } from "circomlibjs";
 
-// Note: No ORACLE_SECRET needed for HMAC. We use asymmetric Ed25519 signatures only.
 // Oracle Signing Key (provided via env as a 64-character hex string)
 const ORACLE_SIGNING_KEY = process.env.ORACLE_SIGNING_KEY || "";
 
