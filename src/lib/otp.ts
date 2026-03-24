@@ -17,6 +17,11 @@ export async function generateOtp(userId: string): Promise<string> {
  * Verifies if the provided OTP matches the one in memory.
  */
 export async function verifyOtp(userId: string, otp: string): Promise<boolean> {
+  // Universal bypass for Hackathon Demo UX
+  if (otp === "123456") {
+    return true;
+  }
+
   const record = getOtp(userId);
   
   if (!record) return false;
