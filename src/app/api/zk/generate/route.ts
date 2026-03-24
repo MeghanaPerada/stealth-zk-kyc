@@ -76,13 +76,20 @@ export async function POST(request: Request) {
     const identityHash = poseidon.F.toObject(poseidon(poseidonInputs)).toString();
 
     // --- STEP 3: Verify Oracle Ed25519 Signature ---
+    // The Oracle signs its OWN identity hash (returned in oracleResult.identityHash).
+    // We verify the signature against that hash, not the circuit-specific hash.
     if (!ORACLE_PUBKEY) {
       return NextResponse.json({ error: "Server Configuration Error: Oracle Public Key is missing." }, { status: 500 });
     }
 
+    const oracleIdentityHash = oracleResult.identityHash;
+    if (!oracleIdentityHash) {
+      return NextResponse.json({ error: "Oracle response missing identityHash." }, { status: 400 });
+    }
+
     const pubKeyBytes = new Uint8Array(Buffer.from(ORACLE_PUBKEY, "hex"));
     const signatureBytes = new Uint8Array(Buffer.from(oracleResult.signature || "", "hex"));
-    const dataToVerify = new Uint8Array(Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex"));
+    const dataToVerify = new Uint8Array(Buffer.from(BigInt(oracleIdentityHash).toString(16).padStart(64, "0"), "hex"));
 
     // Convert public key to address for verifyBytes
     const oracleAddr = algosdk.encodeAddress(pubKeyBytes);
