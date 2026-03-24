@@ -335,7 +335,18 @@ export default function EndToEndKYC() {
               <div className="space-y-4 font-mono text-xs">
                 <div className="flex justify-between">
                   <span className="text-gray-500">Tx Hash:</span>
-                  <span className="text-gray-300 truncate max-w-[150px]">{onChainTxId || "Pending Verification..."}</span>
+                  {onChainTxId ? (
+                    <a 
+                      href={`https://app.lora.algokit.io/testnet/transaction/${onChainTxId}`}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-emerald-400 truncate max-w-[150px] hover:underline flex items-center gap-1"
+                    >
+                      {onChainTxId} <ExternalLink className="w-2 h-2" />
+                    </a>
+                  ) : (
+                    <span className="text-gray-300 truncate max-w-[150px]">Pending Verification...</span>
+                  )}
                 </div>
                 <div className="flex justify-between">
                   <span className="text-gray-500">Status:</span>

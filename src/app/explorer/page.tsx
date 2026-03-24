@@ -241,9 +241,9 @@ function ExplorerContent() {
   const getAlgorandExplorerUrl = (txId: string) => {
     const cleanTx = txId.replace(/^TX_/i, "").trim();
     if (/^[A-Z0-9]{52}$/i.test(cleanTx)) {
-      return `https://testnet.explorer.perawallet.com/tx/${cleanTx}`;
+      return `https://app.lora.algokit.io/testnet/transaction/${cleanTx}`;
     }
-    return `https://testnet.explorer.perawallet.com`;
+    return `https://app.lora.algokit.io/testnet`;
   };
 
   const handleRevoke = async (walletAddress: string) => {
