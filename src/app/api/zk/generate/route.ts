@@ -80,13 +80,13 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Server Configuration Error: Oracle Public Key is missing." }, { status: 500 });
     }
 
-    const pubKeyBytes = Buffer.from(ORACLE_PUBKEY, "hex");
-    const signatureBytes = Buffer.from(oracleResult.signature || "", "hex");
-    const dataToVerify = Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex");
+    const pubKeyBytes = new Uint8Array(Buffer.from(ORACLE_PUBKEY, "hex"));
+    const signatureBytes = new Uint8Array(Buffer.from(oracleResult.signature || "", "hex"));
+    const dataToVerify = new Uint8Array(Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex"));
 
     // Convert public key to address for verifyBytes
     const oracleAddr = algosdk.encodeAddress(pubKeyBytes);
-    const isSignatureValid = algosdk.verifyBytes(new Uint8Array(dataToVerify), new Uint8Array(signatureBytes), oracleAddr);
+    const isSignatureValid = algosdk.verifyBytes(dataToVerify, signatureBytes, oracleAddr);
 
     if (!isSignatureValid) {
        return NextResponse.json({ error: "Oracle signature verification failed. Untrusted identity data." }, { status: 403 });

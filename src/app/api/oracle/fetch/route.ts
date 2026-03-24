@@ -57,10 +57,10 @@ export async function POST(req: NextRequest) {
     // 3️⃣ Real Ed25519 Signature (Oracle Authentication)
     let oracleSignature = "0".repeat(128); 
     if (ORACLE_SIGNING_KEY) {
-      // Use the hex signing key directly (32 bytes / 64 hex chars)
-      const secretKey = Buffer.from(ORACLE_SIGNING_KEY, "hex");
+      // ORACLE_SIGNING_KEY must be the full 64-byte (128 hex char) Ed25519 secret key
+      const secretKey = new Uint8Array(Buffer.from(ORACLE_SIGNING_KEY, "hex"));
       // We sign the 32-byte representation of the Poseidon hash
-      const dataToSign = Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex");
+      const dataToSign = new Uint8Array(Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex"));
       const sig = algosdk.signBytes(dataToSign, secretKey);
       oracleSignature = Buffer.from(sig).toString("hex");
     }
