@@ -133,18 +133,51 @@ function ExplorerContent() {
         onChain: false,
       }));
 
-      // Filter to only show proofs belonging to the connected wallet
+      // Also check local storage for a recently generated proof
+      let localProofs: any[] = [];
+      const localProofStr = localStorage.getItem("stealth_final_proof");
+      if (localProofStr) {
+        try {
+          const lp = JSON.parse(localProofStr);
+          // Only show local proof if it belongs to the connected wallet (or if no wallet connected)
+          if (!address || (lp.wallet && lp.wallet.toLowerCase() === address.toLowerCase())) {
+             localProofs.push({
+               id: `prf_raw_${(lp.hash || "").slice(0, 10) || "generated"}`,
+               wallet: lp.wallet ? `${lp.wallet.slice(0, 4)}...${lp.wallet.slice(-4)}` : "Unknown",
+               fullWallet: lp.wallet || "Unknown",
+               attribute: lp.proofTypeLabel?.toLowerCase().includes("kyc") ? "KYC Verified" : "Age ≥ 18",
+               type: lp.proofTypeLabel?.toLowerCase().includes("kyc") ? "KYC" : "Age",
+               timestamp: new Date().toISOString(),
+               status: "Verified",
+               hash: lp.hash || lp.identity_hash || "0x...",
+               algorandTx: lp.txId || "PENDING_SYNC",
+               fullProof: lp.proof,
+               trustScore: lp.trustScore || 85,
+               proofType: lp.proofType || "VERIFIED",
+               proofTypeLabel: lp.proofTypeLabel || "🟢 Verified",
+               source: lp.proofSource || "app",
+               onChain: false,
+             });
+          }
+        } catch (e) {
+          console.error("Error parsing local proof:", e);
+        }
+      }
+
+      // Filter to only show proofs belonging to the connected wallet (if using backend)
       const userProofs = mappedProofs.filter((p: any) => 
         address && p.fullWallet.toLowerCase() === address.toLowerCase()
       );
       
-      if (userProofs.length > 0) {
-        setProofs(userProofs);
+      // Combine local proofs, backend proofs, and the fallback mock proofs
+      const combinedProofs = [...localProofs, ...userProofs];
+      
+      if (combinedProofs.length > 0) {
+        // Show user's actual proofs + some mock proofs to fill up the explorer feed
+        setProofs([...combinedProofs, ...INITIAL_PROOFS]);
       } else {
-        const matchedMocks = INITIAL_PROOFS.filter(p => 
-          address && p.fullWallet.toLowerCase() === address.toLowerCase()
-        );
-        setProofs(matchedMocks);
+        // If the user has no proofs, just show the public mock registry feed
+        setProofs([...INITIAL_PROOFS]);
       }
     } catch (err) {
       console.error("Failed to fetch proofs:", err);
