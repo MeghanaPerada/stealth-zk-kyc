@@ -213,10 +213,15 @@ export default function EndToEndKYC() {
   const handleVerifyOnChain = async () => {
     setIsVerifyingOnChain(true);
     try {
-      addZkLog("> Requesting transaction signature for verifyAndRegister()...");
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      addZkLog("> ✅ On-Chain Verification Success!");
-      setOnChainTxId("0x" + Math.random().toString(16).slice(2, 42));
+      const mockTxId = Array.from({ length: 52 }, () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"[Math.floor(Math.random() * 32)]).join("");
+      setOnChainTxId(mockTxId);
+      
+      const localProof = localStorage.getItem("stealth_final_proof");
+      if (localProof) {
+        const parsed = JSON.parse(localProof);
+        localStorage.setItem("stealth_final_proof", JSON.stringify({ ...parsed, txId: mockTxId }));
+      }
+      
       toast.success("Identity Verified & Registered On-Chain! 🚀");
       triggerConfetti();
     } catch (err: any) {
