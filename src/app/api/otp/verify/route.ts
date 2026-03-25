@@ -7,6 +7,7 @@ export async function POST(req: NextRequest) {
     if (!key || !otp) return NextResponse.json({ error: "Missing key or otp" }, { status: 400 });
 
     const now = Date.now();
+    const record = getOtp(key);
     
     // Master OTP for Hackathon Demo bypasses the stateless cache issue on Vercel
     const IS_MASTER_OTP = otp === "789012";
