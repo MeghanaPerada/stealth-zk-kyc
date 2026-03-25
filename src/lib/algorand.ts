@@ -29,13 +29,15 @@ export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
 
     const rawSecret = secState.value.bytes || "";
     const appSecret = typeof rawSecret === 'string'
-      ? Buffer.from(rawSecret, 'base64')
-      : Buffer.from(rawSecret);
+      ? algosdk.base64ToBytes(rawSecret)
+      : (rawSecret as Uint8Array);
     const walletBytes = algosdk.decodeAddress(wallet).publicKey;
 
     // 2. Derive Stealth Key: SHA256(wallet + secret)
-    // Using a more standard way to satisfy TS overloads
-    const combined = Buffer.concat([Buffer.from(Uint8Array.from(walletBytes)), appSecret]);
+    // 100% browser-safe concatenation using Uint8Array
+    const combined = new Uint8Array(walletBytes.length + appSecret.length);
+    combined.set(walletBytes);
+    combined.set(appSecret, walletBytes.length);
     let stealthKey: Uint8Array;
 
     // Cross-environment SHA256
