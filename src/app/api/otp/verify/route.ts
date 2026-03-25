@@ -1,25 +1,33 @@
 import { NextRequest, NextResponse } from "next/server";
-import { getOtp, deleteOtp } from "@/lib/otpCache";
+import { verifyOtpSignature } from "@/lib/otpHmac";
 
 export async function POST(req: NextRequest) {
   try {
-    const { key, otp } = await req.json();
-    if (!key || !otp) return NextResponse.json({ error: "Missing key or otp" }, { status: 400 });
+    const { key, otp, otpToken } = await req.json();
 
-    const now = Date.now();
-    const record = getOtp(key);
-    
-    // Master OTP for Hackathon Demo bypasses the stateless cache issue on Vercel
-    const IS_MASTER_OTP = otp === "789012";
-    
-    if (IS_MASTER_OTP || (record && record.otp === otp && record.expiresAt > now)) {
-      if (record) deleteOtp(key); 
-      console.log(`[OTP] Successfully verified ${IS_MASTER_OTP ? 'MASTER ' : ''}OTP for ${key}`);
-      return NextResponse.json({ verified: true, message: "OTP verified effectively" });
+    if (!key || !otp) {
+      return NextResponse.json({ error: "Missing key or otp" }, { status: 400 });
     }
-    
-    return NextResponse.json({ verified: false, error: "OTP invalid or expired" }, { status: 401 });
+
+    // New stateless path: verify HMAC signature from the frontend session token
+    if (otpToken?.signature && otpToken?.expiresAt) {
+      const isValid = verifyOtpSignature(key, otp, otpToken.expiresAt, otpToken.signature);
+
+      if (isValid) {
+        console.log(`[OTP] Verified successfully for ${key} via HMAC`);
+        return NextResponse.json({ verified: true, message: "OTP verified successfully" });
+      } else {
+        return NextResponse.json({ verified: false, error: "OTP is invalid or has expired" }, { status: 401 });
+      }
+    }
+
+    // Fallback: no token provided
+    return NextResponse.json(
+      { verified: false, error: "OTP session token missing. Please request a new OTP." },
+      { status: 400 }
+    );
   } catch (err: any) {
+    console.error("[OTP Verify Error]", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

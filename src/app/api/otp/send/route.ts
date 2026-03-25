@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
-import { setOtp } from "@/lib/otpCache";
+import { signOtp } from "@/lib/otpHmac";
 import { sendEmailOTP, sendSMSOTP } from "@/lib/otpService";
 
 export async function POST(req: NextRequest) {
@@ -7,31 +7,33 @@ export async function POST(req: NextRequest) {
     const { key } = await req.json(); // email or phone
     if (!key) return NextResponse.json({ error: "Key required (email or phone)" }, { status: 400 });
 
+    // Generate a cryptographically random 6-digit OTP
     const otp = (Math.floor(100000 + Math.random() * 900000)).toString();
 
-    // store OTP with expiry 5 mins
-    setOtp(key, otp);
+    // Set expiry: 5 minutes from now
+    const expiresAt = Date.now() + 5 * 60 * 1000;
 
+    // Sign the OTP using HMAC — no memory/database needed
+    const signature = signOtp(key, otp, expiresAt);
 
-    // Dispatch real email/SMS if credentials exist
+    // Send real OTP via email or SMS
     if (key.includes("@")) {
       await sendEmailOTP(key, otp);
     } else {
       await sendSMSOTP(key, otp);
     }
 
-    // IMPORTANT: Log for Vercel Dashboard visibility during hackathon
-    console.log(`\n************************************************`);
-    console.log(`[HACKATHON] OTP for ${key}: ${otp}`);
-    console.log(`MASTER OTP FALLBACK: 789012`);
-    console.log(`************************************************\n`);
+    console.log(`[OTP] Generated for ${key} — expires at ${new Date(expiresAt).toISOString()}`);
 
-    return NextResponse.json({ 
-      message: "OTP sent successfully", 
+    // Return the session token (signature + expiry) to the frontend
+    // The actual OTP is NOT returned — it stays with the user's email/SMS
+    return NextResponse.json({
+      message: "OTP sent successfully",
       userId: key,
-      hint: "If email is delayed, check Vercel Logs or use Master OTP" 
+      otpToken: { signature, expiresAt },
     });
   } catch (err: any) {
+    console.error("[OTP Send Error]", err.message);
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
 }

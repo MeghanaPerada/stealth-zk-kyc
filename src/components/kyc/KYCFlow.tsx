@@ -14,6 +14,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
   const [phone, setPhone] = useState("");
   const [otp, setOtp] = useState("");
   const [otpSent, setOtpSent] = useState(false);
+  const [otpToken, setOtpToken] = useState<{ signature: string; expiresAt: number } | null>(null);
   const [isSending, setIsSending] = useState(false);
   const [isVerifying, setIsVerifying] = useState(false);
   const [manualData, setManualData] = useState({ pan: "", aadhaar: "", dob: "", city: "", state: "", mobile: "" });
@@ -32,10 +33,13 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
         body: JSON.stringify({ key }),
         headers: { "Content-Type": "application/json" },
       });
+      const data = await res.json();
       if (!res.ok) {
-        const errData = await res.json().catch(() => null);
+        const errData = data;
         throw new Error(errData?.error || "Failed to send OTP");
       }
+      // Store the session token for stateless verification
+      if (data.otpToken) setOtpToken(data.otpToken);
       setOtpSent(true);
       toast.success("OTP Code Sent!");
     } catch (err: any) {
@@ -52,7 +56,7 @@ export default function KYCFlow({ onVerified, walletAddress }: KYCFlowProps) {
     try {
       const res = await fetch("/api/otp/verify", {
         method: "POST",
-        body: JSON.stringify({ key, otp }),
+        body: JSON.stringify({ key, otp, otpToken }),
         headers: { "Content-Type": "application/json" },
       });
       const data = await res.json();
