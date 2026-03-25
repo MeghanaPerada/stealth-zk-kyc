@@ -10,36 +10,6 @@ const ALGOD_TOKEN = process.env.NEXT_PUBLIC_ALGOD_TOKEN || "";
 export const algodClient = new algosdk.Algodv2(ALGOD_TOKEN, ALGOD_SERVER, ALGOD_PORT);
 
 /**
- * checkProofOnChain
- * Checks the IdentityRegistry contract to see if a wallet is already verified.
- */
-export async function checkProofOnChain(
-  wallet: string
-): Promise<boolean> {
-  try {
-    const registryAppId = parseInt(process.env.NEXT_PUBLIC_IDENTITY_REGISTRY_APP_ID || "0");
-    if (!registryAppId) return false;
-
-    const userAccount = algosdk.decodeAddress(wallet);
-
-    // IdentityRegistry uses a stealth key: SHA256(Wallet + Secret)
-    // For the public registry, we might need the secret. 
-    // However, if we just want to check if the wallet IS in the registry, 
-    // we can check if the registryAppId has any box associated with this user 
-    // OR we can check if the user is registered in the simpler manner.
-
-    // Given the stealth key logic in the contract:
-    // we need the appSecret to derive the stealth key.
-    // For now, let's assume a simpler check or that we have the secret.
-
-    const info = await algodClient.accountInformation(wallet).do();
-    return (info.amount || 0) > 0;
-  } catch {
-    return false;
-  }
-}
-
-/**
  * isUserVerifiedOnChain
  * Performs a real on-chain lookup in the Identity Registry.
  * Uses stealth key derivation to protect privacy.
