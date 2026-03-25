@@ -57,12 +57,17 @@ export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
     const secState = globalState.find((s: any) => s.key === "c2Vj");
     if (!secState) return false;
     
-    const appSecret = Buffer.from(secState.value.bytes, "base64");
+    const appSecret = Buffer.from(secState.value.bytes, 'base64');
     const walletBytes = algosdk.decodeAddress(wallet).publicKey;
     
     // 2. Derive Stealth Key: SHA256(wallet + secret)
+    // We use a simple concat and standard crypto hash if available, or just Buffer
     const combined = Buffer.concat([Buffer.from(walletBytes), appSecret]);
-    const stealthKey = new Uint8Array(Buffer.from(algosdk.sha256(combined)));
+    
+    // Fallback for sha256 if not directly on algosdk
+    // Using a more standard way to avoid lint errors
+    const hash = await crypto.subtle.digest('SHA-256', combined);
+    const stealthKey = new Uint8Array(hash);
     
     // 3. Check for Proof Box: Prefix 'v' (0x76) + Stealth Key
     const boxName = new Uint8Array(1 + stealthKey.length);
