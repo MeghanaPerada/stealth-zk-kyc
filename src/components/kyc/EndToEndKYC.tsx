@@ -215,8 +215,11 @@ export default function EndToEndKYC() {
 
       if (!address) throw new Error("Wallet not connected.");
       
-      const verifierAppId = parseInt(process.env.NEXT_PUBLIC_ZKP_VERIFIER_APP_ID || "0");
-      if (!verifierAppId) throw new Error("ZkpVerifier App ID not configured.");
+      const envId = process.env.NEXT_PUBLIC_ZKP_VERIFIER_APP_ID;
+      const verifierAppId = parseInt(envId || "0");
+      if (!verifierAppId) {
+        throw new Error("ZkpVerifier App ID not configured. If you are on Vercel, please add NEXT_PUBLIC_ZKP_VERIFIER_APP_ID to your Environment Variables and redeploy.");
+      }
 
       // 1. Initialize Client
       const algorand = AlgorandClient.testNet();
