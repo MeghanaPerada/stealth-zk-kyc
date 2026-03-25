@@ -7,6 +7,7 @@ import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
+import { WalletButton } from "@txnlab/use-wallet-ui-react";
 import { ZkpVerifierClient } from "@/contracts/zkp_verifier/ZkpVerifierClient";
 import { AlgorandClient, microAlgos } from "@algorandfoundation/algokit-utils";
 import * as algosdk from "algosdk";
@@ -63,12 +64,7 @@ export default function EndToEndKYC() {
 
   const handleWalletAuth = async () => {
     if (!isConnected) {
-      const wuiBtn = document.querySelector('[data-wui-button]') as HTMLButtonElement;
-      if (wuiBtn) {
-        wuiBtn.click();
-      } else {
-        toast.error("Wallet module initializing... please use the top right button.");
-      }
+      // WalletButton handles the connection itself now
       return;
     }
 
@@ -501,13 +497,43 @@ export default function EndToEndKYC() {
                      <h2 className="text-3xl font-black text-white">Connect Web3 Wallet</h2>
                      <p className="text-gray-400 px-4">Secure your identity on the Algorand blockchain.</p>
                    </div>
-                   <button 
-                    onClick={handleWalletAuth}
-                    disabled={isAuthenticating}
-                    className="btn-premium btn-green w-full py-4 text-lg flex items-center justify-center gap-2"
-                  >
-                    {isConnected ? "Verify Authenticity" : "Connect Algorand Wallet"}
-                  </button>
+                   {!isConnected ? (
+                     <div className="w-full central-wallet-trigger">
+                       <WalletButton />
+                       <style jsx global>{`
+                         .central-wallet-trigger [data-wui-button] {
+                           width: 100% !important;
+                           height: 64px !important;
+                           font-size: 18px !important;
+                           background: linear-gradient(to right, #34d399, #10b981) !important;
+                           color: black !important;
+                           border-radius: 1rem !important;
+                           font-weight: 900 !important;
+                           text-transform: uppercase !important;
+                           letter-spacing: 0.1em !important;
+                           box-shadow: 0 0 30px rgba(52, 211, 153, 0.2) !important;
+                           border: none !important;
+                           transition: all 0.3s ease !important;
+                           cursor: pointer !important;
+                           display: flex !important;
+                           align-items: center !important;
+                           justify-content: center !important;
+                         }
+                         .central-wallet-trigger [data-wui-button]:hover {
+                           box-shadow: 0 0 50px rgba(52, 211, 153, 0.4) !important;
+                           transform: scale(1.02) !important;
+                         }
+                       `}</style>
+                     </div>
+                   ) : (
+                     <button 
+                       onClick={handleWalletAuth}
+                       disabled={isAuthenticating}
+                       className="btn-premium btn-green w-full py-4 text-lg flex items-center justify-center gap-2"
+                     >
+                       Verify Authenticity
+                     </button>
+                   )}
                   {isConnected && (
                     <button 
                       onClick={handleReuseProof}
