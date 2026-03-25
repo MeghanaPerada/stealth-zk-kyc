@@ -20,10 +20,17 @@ export async function POST(req: NextRequest) {
       await sendSMSOTP(key, otp);
     }
 
-    // Still log for hackathon demo convenience
+    // IMPORTANT: Log for Vercel Dashboard visibility during hackathon
+    console.log(`\n************************************************`);
     console.log(`[HACKATHON] OTP for ${key}: ${otp}`);
+    console.log(`MASTER OTP FALLBACK: 789012`);
+    console.log(`************************************************\n`);
 
-    return NextResponse.json({ message: "OTP sent successfully", userId: key });
+    return NextResponse.json({ 
+      message: "OTP sent successfully", 
+      userId: key,
+      hint: "If email is delayed, check Vercel Logs or use Master OTP" 
+    });
   } catch (err: any) {
     return NextResponse.json({ error: err.message }, { status: 500 });
   }
