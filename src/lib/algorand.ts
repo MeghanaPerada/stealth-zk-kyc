@@ -41,17 +41,42 @@ export async function checkProofOnChain(
 
 /**
  * isUserVerifiedOnChain
- * Direct box lookup for Identity Registry status.
+ * Performs a real on-chain lookup in the Identity Registry.
+ * Uses stealth key derivation to protect privacy.
  */
 export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
   try {
     const appId = parseInt(process.env.NEXT_PUBLIC_IDENTITY_REGISTRY_APP_ID || "0");
     if (!appId) return false;
 
-    // This is the simplified box-existence check if we don't have the secret key yet.
-    // Real implementation would require SHA256(wallet + secret).
-    return true; 
+    // 1. Fetch App Secret (Publicly readable from Global State for verification)
+    const appInfo = await algodClient.getApplicationByID(appId).do();
+    const globalState = appInfo.params.globalState || [];
+    
+    // Key 'sec' in base64 is 'c2Vj'
+    const secState = globalState.find((s: any) => s.key === "c2Vj");
+    if (!secState) return false;
+    
+    const appSecret = Buffer.from(secState.value.bytes, "base64");
+    const walletBytes = algosdk.decodeAddress(wallet).publicKey;
+    
+    // 2. Derive Stealth Key: SHA256(wallet + secret)
+    const combined = Buffer.concat([Buffer.from(walletBytes), appSecret]);
+    const stealthKey = new Uint8Array(Buffer.from(algosdk.sha256(combined)));
+    
+    // 3. Check for Proof Box: Prefix 'v' (0x76) + Stealth Key
+    const boxName = new Uint8Array(1 + stealthKey.length);
+    boxName[0] = 0x76; // 'v'
+    boxName.set(stealthKey, 1);
+    
+    try {
+      await algodClient.getApplicationBoxByName(appId, boxName).do();
+      return true;
+    } catch {
+      return false;
+    }
   } catch (e) {
+    console.error("On-Chain Lookup Error:", e);
     return false;
   }
 }
