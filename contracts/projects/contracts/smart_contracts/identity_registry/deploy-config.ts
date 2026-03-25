@@ -17,4 +17,5 @@ export async function deploy() {
   })
 
   console.log(`IdentityRegistry deployed at App ID: ${appClient.appId}`)
+  return { appClient }
 }

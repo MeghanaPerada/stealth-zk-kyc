@@ -52,7 +52,30 @@ async function getDeployers() {
     return
   }
 
+  // --- CUSTOM DEPLOYMENT SEQUENCE ---
+  // 1. IdentityRegistry
+  const identityRegistry = contractDeployers.find(d => d.name === 'identity_registry')
+  let registryAppId: number | undefined
+  if (identityRegistry) {
+    const result = await identityRegistry.deploy()
+    registryAppId = Number(result?.appClient?.appId)
+  }
+
+  // 2. ZkpVerifier (depends on IdentityRegistry)
+  const zkpVerifier = contractDeployers.find(d => d.name === 'zkp_verifier')
+  if (zkpVerifier) {
+    await zkpVerifier.deploy(registryAppId)
+  }
+
+  // 3. KycAnchor (Consolidated - No dependencies)
+  const kycAnchor = contractDeployers.find(d => d.name === 'consent_manager')
+  if (kycAnchor) {
+    await kycAnchor.deploy()
+  }
+
+  // Run any remaining deployers
   for (const deployer of filteredDeployers) {
+    if (['identity_registry', 'zkp_verifier', 'consent_manager'].includes(deployer.name)) continue;
     try {
       await deployer.deploy()
     } catch (e) {

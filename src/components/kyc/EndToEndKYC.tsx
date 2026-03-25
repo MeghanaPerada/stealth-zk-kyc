@@ -8,8 +8,8 @@ import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { ZkpVerifierClient } from "@/contracts/zkp_verifier/ZkpVerifierClient";
+import { AlgorandClient, microAlgos } from "@algorandfoundation/algokit-utils";
 import * as algosdk from "algosdk";
-import { AlgorandClient } from "@algorandfoundation/algokit-utils";
 
 import PageWrapper from "@/components/layout/PageWrapper";
 
@@ -213,19 +213,65 @@ export default function EndToEndKYC() {
   const handleVerifyOnChain = async () => {
     setIsVerifyingOnChain(true);
     try {
-      const mockTxId = Array.from({ length: 52 }, () => "ABCDEFGHIJKLMNOPQRSTUVWXYZ234567"[Math.floor(Math.random() * 32)]).join("");
-      setOnChainTxId(mockTxId);
-      
       const localProof = localStorage.getItem("stealth_final_proof");
-      if (localProof) {
-        const parsed = JSON.parse(localProof);
-        localStorage.setItem("stealth_final_proof", JSON.stringify({ ...parsed, txId: mockTxId }));
-      }
+      if (!localProof) throw new Error("No proof found in local storage.");
+      const parsed = JSON.parse(localProof);
+
+      if (!address) throw new Error("Wallet not connected.");
+      
+      const verifierAppId = parseInt(process.env.NEXT_PUBLIC_ZKP_VERIFIER_APP_ID || "0");
+      if (!verifierAppId) throw new Error("ZkpVerifier App ID not configured.");
+
+      // 1. Initialize Client
+      const algorand = AlgorandClient.testNet();
+      algorand.setSigner(address, signMessage as any); // signMessage is from our hook
+      
+      const client = new ZkpVerifierClient({
+        algorand,
+        appId: BigInt(verifierAppId),
+        defaultSender: address
+      });
+
+      // 2. Prepare Arguments
+      // The contract expects byte[] for proof and publicInputs.
+      // We use our helpers to pack them.
+      const packedProof = packProofBytes(parsed.proof);
+      const packedSignals = packPublicSignals(parsed.publicSignals);
+      
+      // Oracle Data: The hash the oracle signed (32 bytes)
+      const oracleData = new Uint8Array(Buffer.from(BigInt(oracleResult.identityHash).toString(16).padStart(64, "0"), "hex"));
+      const oraclePubKeys = [new Uint8Array(Buffer.from(process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "", "hex"))];
+      const oracleSignatures = [new Uint8Array(Buffer.from(oracleResult.signature, "hex"))];
+
+      toast.loading("Sending Verification Transaction...");
+
+      const registryAppId = parseInt(process.env.NEXT_PUBLIC_IDENTITY_REGISTRY_APP_ID || "0");
+
+      // 3. Call Contract
+      const result = await client.send.verifyAndRegister({
+        args: {
+            proof: packedProof,
+            publicInputs: packedSignals,
+            oracleData: oracleData,
+            oraclePubKeys: oraclePubKeys,
+            oracleSignatures: oracleSignatures,
+            proofId: parsed.hash || "manual_reg"
+        },
+        appReferences: registryAppId ? [BigInt(registryAppId)] : [],
+        extraFee: microAlgos(2000), // Cover inner txn fee
+      });
+
+      const txId = result.transaction.txID();
+      setOnChainTxId(txId);
+      
+      // Update local storage with real Tx ID
+      localStorage.setItem("stealth_final_proof", JSON.stringify({ ...parsed, txId: txId }));
       
       toast.success("Identity Verified & Registered On-Chain! 🚀");
       triggerConfetti();
     } catch (err: any) {
-      toast.error("On-Chain Verification Failed");
+      console.error("On-Chain Verification Error:", err);
+      toast.error("On-Chain Verification Failed: " + (err.message || "Unknown error"));
     } finally {
       setIsVerifyingOnChain(false);
     }
