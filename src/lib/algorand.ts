@@ -69,9 +69,10 @@ export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
     let stealthKey: Uint8Array;
 
     // Cross-environment SHA256
-    if (typeof window === "undefined" || !window.crypto || !window.crypto.subtle) {
+    if (typeof window === "undefined") {
       // Node.js environment
-      stealthKey = new Uint8Array(crypto.createHash("sha256").update(combined).digest());
+      const c = require("crypto");
+      stealthKey = new Uint8Array(c.createHash("sha256").update(combined).digest());
     } else {
       // Browser environment
       const hash = await window.crypto.subtle.digest("SHA-256", combined);
