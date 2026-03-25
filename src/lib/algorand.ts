@@ -58,7 +58,10 @@ export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
     const secState = globalState.find((s: any) => s.key === "c2Vj");
     if (!secState) return false;
     
-    const appSecret = Buffer.from(secState.value.bytes, 'base64');
+    const rawSecret = secState.value.bytes || "";
+    const appSecret = typeof rawSecret === 'string' 
+      ? Buffer.from(rawSecret, 'base64') 
+      : Buffer.from(rawSecret);
     const walletBytes = algosdk.decodeAddress(wallet).publicKey;
     
     // 2. Derive Stealth Key: SHA256(wallet + secret)
