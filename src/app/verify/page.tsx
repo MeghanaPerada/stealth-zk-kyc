@@ -12,6 +12,7 @@ import { CheckCircle2, ShieldAlert, XCircle, Search, Clock, FileJson, ShieldChec
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { useWallet } from "@/hooks/useWallet";
 import PageWrapper from "@/components/layout/PageWrapper";
+import { isUserVerifiedOnChain } from "@/lib/algorand";
 
 function VerificationDashboardContent() {
   const searchParams = useSearchParams();
@@ -37,6 +38,34 @@ function VerificationDashboardContent() {
       const normalizedId = proofId.trim();
       setVerificationSteps(prev => [...prev, `Analyzing Identifier: ${normalizedId}`]);
       
+      // Step 0: Check if it's a Wallet Address (Direct On-Chain Lookup)
+      if (normalizedId.length === 58 || normalizedId.includes("...")) {
+        setVerificationSteps(prev => [...prev, "Type: Wallet Address Detected."]);
+        setVerificationSteps(prev => [...prev, "Action: Querying Identity Registry via Algorand..."]);
+        
+        // Handle truncated addresses from UI copy-paste if needed, 
+        // but real check needs full address.
+        if (normalizedId.length === 58) {
+          const isVerified = await isUserVerifiedOnChain(normalizedId);
+          await new Promise(r => setTimeout(r, 800));
+          
+          if (isVerified) {
+            setVerificationSteps(prev => [...prev, "Consensus: IDENTITY VERIFIED ON-CHAIN 🚀"]);
+            setVerificationResult('valid');
+            setProofDetails({
+              w_bound: normalizedId,
+              attr: "Registered User (On-Chain)",
+              trustScore: 100
+            });
+            setIsVerifying(false);
+            return;
+          } else {
+            setVerificationSteps(prev => [...prev, "Registry: Wallet not found in verified database."]);
+            // Continue to ZK proof check as fallback
+          }
+        }
+      }
+
       // Step 1: Resolve Demo Mode FIRST (for best reliability)
       const isMockId = [
         "prf_0x7b2a9u4e2d", "prf_0x2c4e1f9b5a", "prf_0x9d3b5a7c1f", 
