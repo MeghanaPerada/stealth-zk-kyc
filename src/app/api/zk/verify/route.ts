@@ -2,7 +2,7 @@ import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
 import crypto from 'crypto';
-import { checkProofOnChain } from '@/lib/algorand';
+import { isUserVerifiedOnChain } from '@/lib/algorand';
 
 const snarkjs = require('snarkjs');
 
@@ -55,12 +55,7 @@ export async function POST(request: Request) {
     }
     checks.revoked = false;
 
-    // 3. On-chain existence check (optional)
-    if (wallet) {
-      checks.onChain = await checkProofOnChain(wallet, proofHash || '');
-    }
-
-    // 4. Proof Identifier check (Public Signals contain binding data)
+    // 3. Proof Identifier check (Public Signals contain binding data)
     // Circuit Output index 0 is 'isVerified' (Age check)
     const isAdultVerified = publicSignals[0] === '1';
     checks.isAdult = isAdultVerified;
@@ -75,13 +70,13 @@ export async function POST(request: Request) {
     const idValid = proofIdentifier ? publicSignals.includes(proofIdentifier) : true;
     checks.identifier = idValid;
 
-    // 5. Cryptographic ZK verification
+    // 4. Cryptographic ZK verification
     const zkPath = path.join(process.cwd(), 'public', 'zk');
     const vKeyPath = path.join(zkPath, 'verification_key.json');
 
     let zkVerified = false;
     if (!fs.existsSync(vKeyPath)) {
-      // Demo mode: structural check
+      // Demo mode: structural check if key is missing locally
       zkVerified = proof && proof.pi_a?.length >= 2 && publicSignals?.length > 0;
       checks.zkMath = 'simulated';
     } else {
@@ -90,15 +85,16 @@ export async function POST(request: Request) {
       checks.zkMath = zkVerified;
     }
 
-    // 6. MULTI-LAYER ENFORCEMENT: Final On-Chain Double Check
-    // We check if the proofHash provided actually exists in the Algorand Box for this wallet
-    if (zkVerified && wallet && proofHash) {
-      const onChainRecord = await checkProofOnChain(wallet, proofHash);
-      checks.onChainMatch = onChainRecord;
-      if (!onChainRecord) {
+    // 5. MULTI-LAYER ENFORCEMENT: Final On-Chain Double Check
+    // We check the Identity Registry for the wallet's verification status
+    if (zkVerified && wallet) {
+      const isRegistered = await isUserVerifiedOnChain(wallet);
+      checks.onChainMatch = isRegistered;
+      
+      if (!isRegistered) {
         return NextResponse.json({
           verified: false,
-          reason: 'Layer 2 Mismatch: ZK Proof is valid, but no matching anchor found on Algorand Testnet Boxes.',
+          reason: 'Layer 2 Mismatch: ZK Proof is valid, but no corresponding entry found in the On-Chain Identity Registry.',
           checks
         });
       }

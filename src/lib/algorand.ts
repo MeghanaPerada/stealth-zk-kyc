@@ -2,6 +2,7 @@
 // Algorand proof anchoring and on-chain lookup helpers
 
 import algosdk from "algosdk";
+import crypto from "crypto";
 
 const ALGOD_SERVER = process.env.NEXT_PUBLIC_ALGOD_SERVER || "https://testnet-api.algonode.cloud";
 const ALGOD_PORT   = process.env.NEXT_PUBLIC_ALGOD_PORT   || "443";
@@ -61,13 +62,19 @@ export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
     const walletBytes = algosdk.decodeAddress(wallet).publicKey;
     
     // 2. Derive Stealth Key: SHA256(wallet + secret)
-    // We use a simple concat and standard crypto hash if available, or just Buffer
-    const combined = Buffer.concat([Buffer.from(walletBytes), appSecret]);
+    // Using a more standard way to satisfy TS overloads
+    const combined = Buffer.concat([Buffer.from(Uint8Array.from(walletBytes)), appSecret]);
+    let stealthKey: Uint8Array;
     
-    // Fallback for sha256 if not directly on algosdk
-    // Using a more standard way to avoid lint errors
-    const hash = await crypto.subtle.digest('SHA-256', combined);
-    const stealthKey = new Uint8Array(hash);
+    // Cross-environment SHA256
+    if (typeof window === "undefined" || !window.crypto || !window.crypto.subtle) {
+      // Node.js environment
+      stealthKey = new Uint8Array(crypto.createHash("sha256").update(combined).digest());
+    } else {
+      // Browser environment
+      const hash = await window.crypto.subtle.digest("SHA-256", combined);
+      stealthKey = new Uint8Array(hash);
+    }
     
     // 3. Check for Proof Box: Prefix 'v' (0x76) + Stealth Key
     const boxName = new Uint8Array(1 + stealthKey.length);
