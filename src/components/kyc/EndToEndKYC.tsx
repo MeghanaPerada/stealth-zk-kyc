@@ -332,9 +332,9 @@ export default function EndToEndKYC() {
       // 3. Call Contract via Group to increase Opcode Budget
       const composer = algorand.newGroup();
 
-      // We need ~15,500 opcode budget for BN254 Groth16 verify.
-      // Add 30 dummy app calls to ensure we have plenty of budget (30 * 700 = 21,000 extra pool).
-      for (let i = 0; i < 30; i++) {
+      // Algorand atomic group limit is 16. We use 15 dummy calls + 1 real call.
+      // Total budget pool = 16 * 700 = 11,200.
+      for (let i = 0; i < 15; i++) {
         const opUpParams = await client.params.opUp({
           sender: address,
           args: [],
