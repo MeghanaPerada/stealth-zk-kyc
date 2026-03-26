@@ -2,21 +2,17 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useWallet } from "@/hooks/useWallet";
 import KYCFlow from "./KYCFlow";
-import { calculateIdentityHash, calculateConsentHash, toFieldElement, packProofBytes, packPublicSignals } from "@/lib/circuitHelpers";
 import { ShieldCheck, Wallet, Sparkles, Database, History, ChevronRight, Loader2, Info, Check, Lock, ExternalLink, Terminal, Cpu } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
 import confetti from "canvas-confetti";
 import { WalletButton } from "@txnlab/use-wallet-ui-react";
-import { ZkpVerifierClient } from "@/contracts/zkp_verifier/ZkpVerifierClient";
-import { AlgorandClient, microAlgos } from "@algorandfoundation/algokit-utils";
-import * as algosdk from "algosdk";
-
+import Link from "next/link";
 import PageWrapper from "@/components/layout/PageWrapper";
 import { isUserVerifiedOnChain } from "@/lib/algorand";
 
 export default function EndToEndKYC() {
-  const { address, isConnected, connectWallet, signMessage, signTransactions } = useWallet();
+  const { address, isConnected, signMessage } = useWallet();
   const [verifiedData, setVerifiedData] = useState<any>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
@@ -24,7 +20,6 @@ export default function EndToEndKYC() {
   const [step, setStep] = useState(1); // 1: Connect, 2: OTP/KYC, 3: Consent, 4: Result
   const [isReusing, setIsReusing] = useState(false);
   const [zkLogs, setZkLogs] = useState<string[]>([]);
-  const [isVerifyingOnChain, setIsVerifyingOnChain] = useState(false);
   const [onChainTxId, setOnChainTxId] = useState<string | null>(null);
   const zkLogRef = useRef<HTMLDivElement>(null);
 
@@ -42,10 +37,9 @@ export default function EndToEndKYC() {
       try {
         const alreadyVerified = await isUserVerifiedOnChain(address);
         if (alreadyVerified) {
-          // Fast-track to the credential view — no need to redo KYC
           setVerifiedData({ type: "reused_proof", name: "Private Identity (ZK)", aadhaar: "XXXX", pan: "XXXXX" });
           setOracleResult({
-            identityHash: alreadyVerified, // Use the actual Proof ID string retrieved directly from the blockchain box
+            identityHash: alreadyVerified,
             reused: true,
             message: "Identity already registered on Algorand Testnet",
             timestamp: new Date().toISOString(),
@@ -54,18 +48,17 @@ export default function EndToEndKYC() {
             proofTypeLabel: "On-Chain Verified",
             source: "algorand",
           });
-          setOnChainTxId("already_verified_skip"); // Highlight as already anchored
+          setOnChainTxId("already_verified_skip");
           setStep(4);
           toast.success("✅ Welcome back! Your identity is already verified on-chain.");
         }
       } catch {
-        // Silently ignore — just run normal KYC if the check fails
+        // Silently ignore
       }
     };
 
     checkVerified();
   }, [isConnected, address]);
-  // ─────────────────────────────────────────────────────────────────────────
 
   const triggerConfetti = () => {
     const duration = 3 * 1000;
@@ -97,10 +90,7 @@ export default function EndToEndKYC() {
   const [proofData, setProofData] = useState<any>(null);
 
   const handleWalletAuth = async () => {
-    if (!isConnected) {
-      // WalletButton handles the connection itself now
-      return;
-    }
+    if (!isConnected) return;
 
     setIsAuthenticating(true);
     try {
@@ -163,7 +153,7 @@ export default function EndToEndKYC() {
     }
   };
 
-  const handleKYCVerified = async (data: any) => {
+  const handleKYCVerified = (data: any) => {
     setVerifiedData(data);
     setStep(3);
   };
@@ -186,10 +176,7 @@ export default function EndToEndKYC() {
       });
       
       const result = await res.json();
-      
-      if (!res.ok) {
-        throw new Error(result.error || "Oracle attestation failed. Check server logs.");
-      }
+      if (!res.ok) throw new Error(result.error || "Oracle attestation failed.");
       
       addZkLog(`> Oracle: Fetched attestation (source: ${result.source || "manual"})`);  
 
@@ -199,7 +186,6 @@ export default function EndToEndKYC() {
         headers: { "Content-Type": "application/json" },
       });
       const zkInputData = await zkRes.json();
-      
       if (!zkRes.ok) throw new Error(zkInputData.error || "Failed to prepare ZK inputs");
 
       // @ts-ignore
@@ -227,7 +213,6 @@ export default function EndToEndKYC() {
         trustScore: result.trustScore,
         proofType: result.proofType,
         proofTypeLabel: result.proofTypeLabel,
-        // Persist oracle auth data so handleVerifyOnChain works even after a page refresh
         oracleSignature: result.signature,
         oracleDataHex: result.oracleDataHex,
         identityHash: result.identityHash,
@@ -244,150 +229,12 @@ export default function EndToEndKYC() {
     }
   };
 
-  const handleVerifyOnChain = async () => {
-    setIsVerifyingOnChain(true);
-    try {
-      const localProof = localStorage.getItem("stealth_final_proof");
-      if (!localProof) throw new Error("No proof found in local storage.");
-      const parsed = JSON.parse(localProof);
-
-      if (!address) throw new Error("Wallet not connected.");
-      
-      const envId = process.env.NEXT_PUBLIC_ZKP_VERIFIER_APP_ID;
-      const verifierAppId = parseInt(envId || "0");
-      if (!verifierAppId) {
-        throw new Error("ZkpVerifier App ID not configured. If you are on Vercel, please add NEXT_PUBLIC_ZKP_VERIFIER_APP_ID to your Environment Variables and redeploy.");
-      }
-
-      // 1. Initialize Client
-      const algorand = AlgorandClient.testNet();
-      algorand.setSigner(address, async (group, indexes) => {
-        const signed = await signTransactions(group, indexes);
-        return signed.map(s => s!) as Uint8Array[];
-      });
-      
-      const client = new ZkpVerifierClient({
-        algorand,
-        appId: BigInt(verifierAppId),
-        defaultSender: address
-      });
-
-      // 2. Prepare Arguments
-      // The contract expects byte[] for proof and publicInputs.
-      // We use our helpers to pack them.
-      const packedProof = packProofBytes(parsed.proof);
-      const packedSignals = packPublicSignals(parsed.publicSignals);
-      
-      // Oracle Data: use the exact 32-byte blob the oracle signed (oracleDataHex from oracle API).
-      // Fall back to parsed localStorage value if in-memory state is stale (e.g. after page refresh).
-      const oracleDataHex = oracleResult?.oracleDataHex || parsed.oracleDataHex;
-      const oracleSigHex  = oracleResult?.signature     || parsed.oracleSignature;
-
-      if (!oracleDataHex || !oracleSigHex) {
-        throw new Error("Oracle attestation data is missing. Please complete the KYC flow again to generate a fresh proof.");
-      }
-
-      const oracleData      = new Uint8Array(Buffer.from(oracleDataHex, "hex"));
-      const oraclePubKeys   = [new Uint8Array(Buffer.from(process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "", "hex"))];
-      const oracleSignatures = [new Uint8Array(Buffer.from(oracleSigHex, "hex"))];
-
-      toast.loading("Sending Verification Transaction...");
-
-      const registryAppId = parseInt(process.env.NEXT_PUBLIC_IDENTITY_REGISTRY_APP_ID || "0");
-
-      // Calculate explicit box references for AVM 9 state access mapping
-      const nullifierHex = BigInt(parsed.publicSignals[1]).toString(16).padStart(64, "0");
-      const nullifierBytes = new Uint8Array(Buffer.from(nullifierHex, "hex"));
-      const nullifierBoxName = new Uint8Array(1 + nullifierBytes.length);
-      nullifierBoxName[0] = 0x6e; // 'n'
-      nullifierBoxName.set(nullifierBytes, 1);
-
-      const oraclePubKey = process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "";
-      const oraclePubKeyBytes = new Uint8Array(Buffer.from(oraclePubKey, "hex"));
-      const oracleBoxName = new Uint8Array(2 + oraclePubKeyBytes.length);
-      oracleBoxName[0] = 0x61; // 'a'
-      oracleBoxName[1] = 0x6f; // 'o'
-      oracleBoxName.set(oraclePubKeyBytes, 2);
-
-      let registryBoxName = new Uint8Array(0);
-      if (registryAppId) {
-        const walletBytes = algosdk.decodeAddress(address).publicKey;
-        const registryAppInfo = await algorand.client.algod.getApplicationByID(registryAppId).do();
-        const secState = (registryAppInfo.params.globalState || []).find((s: any) => s.key === "c2Vj");
-        let appSecret = new Uint8Array(0);
-        if (secState && secState.value && secState.value.bytes) {
-            const rawSecret = secState.value.bytes;
-            appSecret = (typeof rawSecret === "string" ? algosdk.base64ToBytes(rawSecret) : rawSecret) as any;
-        }
-        const combined = new Uint8Array(walletBytes.length + appSecret.length);
-        combined.set(walletBytes);
-        combined.set(appSecret, walletBytes.length);
-        const stealthHash = await window.crypto.subtle.digest("SHA-256", combined);
-        const stealthKey = new Uint8Array(stealthHash) as any;
-        registryBoxName = new Uint8Array(1 + stealthKey.length) as any;
-        registryBoxName[0] = 0x76; // 'v'
-        registryBoxName.set(stealthKey, 1);
-      }
-
-      // 3. Call Contract via Group to increase Opcode Budget
-      const composer = algorand.newGroup();
-
-      // Algorand atomic group limit is 16. We use 15 dummy calls + 1 real call.
-      // Total budget pool = 16 * 700 = 11,200.
-      for (let i = 0; i < 15; i++) {
-        const opUpParams = await client.params.opUp({
-          sender: address,
-          args: [],
-          note: new Uint8Array(Buffer.from(`opup-${i}`))
-        });
-        composer.addAppCallMethodCall(opUpParams);
-      }
-
-      const verifyCall = await client.params.verifyAndRegister({
-        args: {
-            proof: packedProof,
-            publicInputs: packedSignals,
-            oracleData: oracleData,
-            oraclePubKeys: oraclePubKeys,
-            oracleSignatures: oracleSignatures,
-            proofId: parsed.hash || "manual_reg"
-        },
-        appReferences: registryAppId ? [BigInt(registryAppId)] : [],
-        boxReferences: [
-           { appId: BigInt(verifierAppId), name: nullifierBoxName as any },
-           { appId: BigInt(verifierAppId), name: oracleBoxName as any },
-           ...(registryAppId ? [{ appId: BigInt(registryAppId), name: registryBoxName as any }] : [])
-        ],
-        extraFee: microAlgos(2000), // Cover self + inner txn fee
-      });
-
-      composer.addAppCallMethodCall(verifyCall);
-
-      const result = await composer.send();
-      const txId = result.transactions[result.transactions.length - 1].txID();
-      setOnChainTxId(txId);
-      
-      // Update local storage with real Tx ID
-      localStorage.setItem("stealth_final_proof", JSON.stringify({ ...parsed, txId: txId }));
-      
-      toast.success("Identity Verified & Registered On-Chain! 🚀");
-      triggerConfetti();
-    } catch (err: any) {
-      console.error("On-Chain Verification Error:", err);
-      toast.error("On-Chain Verification Failed: " + (err.message || "Unknown error"));
-    } finally {
-      setIsVerifyingOnChain(false);
-    }
-  };
-
   return (
     <PageWrapper className="pt-2">
       <AnimatePresence>
         {isGeneratingProof && (
           <motion.div 
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+            initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
             className="fixed inset-0 z-[100] bg-black/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 text-center"
           >
             <motion.div
@@ -431,173 +278,60 @@ export default function EndToEndKYC() {
         </h1>
         <p className="text-gray-400 max-w-2xl mx-auto text-lg">
           Privacy-preserving identity standard for the Algorand Ecosystem. 
-          Verify with DigiLocker, prove with Zero-Knowledge, and anchor on-chain.
         </p>
       </div>
 
       {step === 4 ? (
         <motion.div 
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
+          initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
           className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
         >
-          {/* LEFT: DigiLocker Premium Card */}
-          <div className="lg:col-span-5 space-y-6">
-            <div className="digilocker-card group">
-              <div className="flex justify-between items-start mb-8">
-                <div className="space-y-1">
-                  <h2 className="text-2xl font-black text-white">🏛 DigiLocker</h2>
-                  <p className="text-blue-100/60 text-xs font-bold uppercase tracking-widest">Identity Certificate</p>
+          <div className="lg:col-span-12">
+            <div className="glass-card rounded-3xl p-8 space-y-8 text-center">
+              <div className="flex flex-col items-center">
+                <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20">
+                  <Check className="w-10 h-10 text-emerald-400" />
                 </div>
-                <span className="bg-emerald-500 text-black px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-tighter animate-pulse shadow-lg shadow-emerald-500/20">
-                  Govt Grade
-                </span>
-              </div>
-
-              <div className="glass-card rounded-xl p-6 space-y-4 relative overflow-hidden">
-                <div className="space-y-3 relative z-10">
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-blue-100/40 text-[10px] font-black uppercase">Name</span>
-                    <span className="text-lg font-bold text-white truncate max-w-[200px] text-right">{verifiedData?.name || "Verified Identity"}</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-blue-100/40 text-[10px] font-black uppercase">Aadhaar (Masked)</span>
-                    <span className="text-lg font-mono text-white">XXXX XXXX {verifiedData?.aadhaar ? verifiedData.aadhaar.slice(-4) : (verifiedData?.aadhaar_last4 || "XXXX")}</span>
-                  </div>
-                  <div className="flex justify-between items-center border-b border-white/5 pb-2">
-                    <span className="text-blue-100/40 text-[10px] font-black uppercase">PAN Card</span>
-                    <span className="text-lg font-mono text-white">{verifiedData?.pan || "N/A"}</span>
-                  </div>
-                  <div className="flex justify-between items-center">
-                    <span className="text-blue-100/40 text-[10px] font-black uppercase">Identity Hash</span>
-                    <span className="text-[10px] font-mono text-emerald-400 truncate max-w-[120px]">{oracleResult?.identityHash}</span>
-                  </div>
-                </div>
-                <ShieldCheck className="absolute -bottom-4 -right-4 w-24 h-24 text-white/5 transform -rotate-12" />
-              </div>
-
-              <div className="mt-6 flex items-center gap-3 text-sm text-blue-100/60 font-medium">
-                <div className="w-2 h-2 rounded-full bg-emerald-400 shadow-[0_0_10px_rgba(52,211,153,1)]" />
-                Securely Verified via Crypto-Enclave
-              </div>
-            </div>
-
-            <div className="glass-card rounded-2xl p-6">
-              <h3 className="text-sm font-black text-white uppercase tracking-widest mb-4 flex items-center gap-2">
-                <Database className="w-4 h-4 text-emerald-500" /> Blockchain Evidence
-              </h3>
-              <div className="space-y-4 font-mono text-xs">
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Tx Hash:</span>
-                  {onChainTxId ? (
-                    onChainTxId === "already_verified_skip" ? (
-                      <span className="text-emerald-400 truncate max-w-[150px] font-bold">Anchored in Box Storage</span>
-                    ) : (
-                      <a 
-                        href={`https://testnet.explorer.perawallet.app/tx/${onChainTxId}`}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-emerald-400 truncate max-w-[150px] hover:underline flex items-center gap-1"
-                      >
-                        {onChainTxId} <ExternalLink className="w-2 h-2" />
-                      </a>
-                    )
-                  ) : (
-                    <span className="text-gray-300 truncate max-w-[150px]">Pending Verification...</span>
-                  )}
-                </div>
-                <div className="flex justify-between">
-                  <span className="text-gray-500">Status:</span>
-                  <span className={onChainTxId ? "text-emerald-500 font-bold" : "text-amber-500"}>
-                    {onChainTxId ? "🟢 Confirmed" : "🟡 Not Anchored"}
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          {/* RIGHT: ZK Verification Section */}
-          <div className="lg:col-span-7">
-            <div className="glass-card rounded-3xl p-8 space-y-8">
-              <div className="flex items-center justify-between">
-                <h2 className="text-3xl font-black text-white tracking-tighter">
-                  🔐 ZK-Proof Dashboard
+                <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-4">
+                  ZK Proof <span className="text-emerald-500">Generated</span>
                 </h2>
-                <div className="flex items-center gap-2 text-emerald-400 font-black text-xs uppercase bg-emerald-500/10 px-3 py-1.5 rounded-full border border-emerald-500/20">
-                   Valid Proof Verified Locally
+                <p className="text-zinc-400 max-w-xl mx-auto font-bold uppercase tracking-tight mb-8">
+                  Your identity has been cryptographically verified. You can now anchor this proof on-chain to enable decentralized credit and verified access.
+                </p>
+                
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl mb-12">
+                   <div className="verify-stat-card">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Method</p>
+                      <p className="text-xl font-black text-white tracking-tighter">ZK-SNARK</p>
+                   </div>
+                   <div className="verify-stat-card">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Trust Score</p>
+                      <p className="text-xl font-black text-emerald-400 tracking-tighter">{oracleResult?.trustScore || 100}</p>
+                   </div>
+                   <div className="verify-stat-card">
+                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Network</p>
+                      <p className="text-xl font-black text-white tracking-tighter">ALGORAND</p>
+                   </div>
                 </div>
-              </div>
 
-              <div className="grid grid-cols-2 gap-4">
-                <div className="verify-stat-card">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Status</p>
-                  <p className="text-2xl font-black text-emerald-400 tracking-tighter flex items-center gap-2">
-                    <Check className="w-6 h-6" /> VALID
-                  </p>
+                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
+                   <Link href="/register" className="w-full">
+                      <button className="btn-premium btn-green w-full h-16 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3">
+                        <ShieldCheck className="w-6 h-6" /> Proceed to Registration
+                      </button>
+                   </Link>
+                   <Link href="/explorer" className="w-full">
+                      <button className="w-full h-16 rounded-2xl border border-zinc-800 flex items-center justify-center font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-all">
+                        View Log Explorer
+                      </button>
+                   </Link>
                 </div>
-                <div className="verify-stat-card">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Trust Score</p>
-                  <p className="text-2xl font-black text-white tracking-tighter">{oracleResult?.trustScore || 100}</p>
-                </div>
-                <div className="verify-stat-card">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Certification</p>
-                  <p className="text-2xl font-black text-white tracking-tighter">GOVT-GRADE</p>
-                </div>
-                <div className="verify-stat-card">
-                  <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Source</p>
-                  <p className="text-2xl font-black text-white tracking-tighter uppercase">{oracleResult?.source || "DIGILOCKER"}</p>
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                 <h4 className="text-xs font-black text-gray-500 uppercase tracking-[0.2em]">Public Verification Signals</h4>
-                 <div className="bg-black/60 rounded-xl p-6 font-mono text-sm text-emerald-400/80 border border-emerald-500/10 h-48 overflow-y-auto">
-                    {JSON.stringify(proofData?.publicSignals, null, 2)}
-                 </div>
-              </div>
-
-              <div className="pt-4">
-                {!onChainTxId ? (
-                  <button 
-                    onClick={handleVerifyOnChain}
-                    disabled={isVerifyingOnChain}
-                    className="btn-premium btn-green w-full py-5 text-xl tracking-tight shadow-[0_0_30px_rgba(16,185,129,0.2)] flex items-center justify-center gap-3"
-                  >
-                    {isVerifyingOnChain ? (
-                      <>
-                        <Loader2 className="animate-spin w-6 h-6" />
-                        Verifying on Algorand...
-                      </>
-                    ) : (
-                      <>
-                        <ShieldCheck className="w-6 h-6" />
-                        Finalize & Register on Algorand
-                      </>
-                    )}
-                  </button>
-                ) : (
-                  <div className="flex gap-4">
-                    <button 
-                      onClick={() => window.location.href = "/explorer"}
-                      className="btn-premium bg-white/10 hover:bg-white/20 text-white flex-1 py-4 flex items-center justify-center gap-2"
-                    >
-                      <ExternalLink className="w-5 h-5" /> View Registry
-                    </button>
-                    <button 
-                      onClick={() => setStep(1)}
-                      className="btn-premium bg-emerald-600/20 text-emerald-400 hover:bg-emerald-600/30 flex-1 py-4 border border-emerald-500/20"
-                    >
-                      New Verification
-                    </button>
-                  </div>
-                )}
               </div>
             </div>
           </div>
         </motion.div>
       ) : (
         <div className="max-w-xl mx-auto space-y-8">
-           {/* Steps 1, 2, 3 wrapped in a simpler glass UI */}
            <div className="glass-card rounded-[40px] p-8 md:p-12 shadow-inner border-white/5">
               {step === 1 && (
                 <div className="space-y-8 text-center py-4">
@@ -630,10 +364,6 @@ export default function EndToEndKYC() {
                            align-items: center !important;
                            justify-content: center !important;
                          }
-                         .central-wallet-trigger [data-wui-button]:hover {
-                           box-shadow: 0 0 50px rgba(52, 211, 153, 0.4) !important;
-                           transform: scale(1.02) !important;
-                         }
                        `}</style>
                      </div>
                    ) : (
@@ -645,15 +375,15 @@ export default function EndToEndKYC() {
                        Verify Authenticity
                      </button>
                    )}
-                  {isConnected && (
-                    <button 
-                      onClick={handleReuseProof}
-                      disabled={isReusing}
-                      className="w-full text-slate-500 hover:text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 py-2"
-                    >
-                      <History className="w-3 h-3" /> or reuse existing credential
-                    </button>
-                  )}
+                   {isConnected && (
+                     <button 
+                       onClick={handleReuseProof}
+                       disabled={isReusing}
+                       className="w-full text-slate-500 hover:text-white text-xs font-black uppercase tracking-widest flex items-center justify-center gap-2 py-2"
+                     >
+                       <History className="w-3 h-3" /> or reuse existing credential
+                     </button>
+                   )}
                 </div>
               )}
 
