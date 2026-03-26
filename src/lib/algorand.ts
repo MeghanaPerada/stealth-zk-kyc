@@ -25,12 +25,15 @@ export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
 
     // Key 'sec' in base64 is 'c2Vj'
     const secState = globalState.find((s: any) => s.key === "c2Vj");
-    if (!secState) return false;
-
-    const rawSecret = secState.value.bytes || "";
-    const appSecret = typeof rawSecret === 'string'
-      ? algosdk.base64ToBytes(rawSecret)
-      : (rawSecret as Uint8Array);
+    
+    let appSecret: Uint8Array = new Uint8Array(0);
+    if (secState && secState.value && secState.value.bytes) {
+      const rawSecret = secState.value.bytes;
+      appSecret = typeof rawSecret === 'string'
+        ? algosdk.base64ToBytes(rawSecret)
+        : (rawSecret as Uint8Array);
+    }
+    
     const walletBytes = algosdk.decodeAddress(wallet).publicKey;
 
     // 2. Derive Stealth Key: SHA256(wallet + secret)

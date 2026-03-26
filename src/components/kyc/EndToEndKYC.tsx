@@ -291,6 +291,33 @@ export default function EndToEndKYC() {
 
       const registryAppId = parseInt(process.env.NEXT_PUBLIC_IDENTITY_REGISTRY_APP_ID || "0");
 
+      // Calculate explicit box references for AVM 9 state access mapping
+      const nullifierHex = BigInt(parsed.publicSignals[1]).toString(16).padStart(64, "0");
+      const nullifierBytes = new Uint8Array(Buffer.from(nullifierHex, "hex"));
+      const nullifierBoxName = new Uint8Array(1 + nullifierBytes.length);
+      nullifierBoxName[0] = 0x6e; // 'n'
+      nullifierBoxName.set(nullifierBytes, 1);
+
+      let registryBoxName = new Uint8Array(0);
+      if (registryAppId) {
+        const walletBytes = algosdk.decodeAddress(address).publicKey;
+        const registryAppInfo = await algorand.client.algod.getApplicationByID(registryAppId).do();
+        const secState = (registryAppInfo.params.globalState || []).find((s: any) => s.key === "c2Vj");
+        let appSecret = new Uint8Array(0);
+        if (secState && secState.value && secState.value.bytes) {
+           const rawSecret = secState.value.bytes;
+           appSecret = typeof rawSecret === "string" ? algosdk.base64ToBytes(rawSecret) : rawSecret;
+        }
+        const combined = new Uint8Array(walletBytes.length + appSecret.length);
+        combined.set(walletBytes);
+        combined.set(appSecret, walletBytes.length);
+        const stealthHash = await window.crypto.subtle.digest("SHA-256", combined);
+        const stealthKey = new Uint8Array(stealthHash);
+        registryBoxName = new Uint8Array(1 + stealthKey.length);
+        registryBoxName[0] = 0x76; // 'v'
+        registryBoxName.set(stealthKey, 1);
+      }
+
       // 3. Call Contract
       const result = await client.send.verifyAndRegister({
         args: {
@@ -302,6 +329,10 @@ export default function EndToEndKYC() {
             proofId: parsed.hash || "manual_reg"
         },
         appReferences: registryAppId ? [BigInt(registryAppId)] : [],
+        boxReferences: [
+           { appId: BigInt(verifierAppId), name: new Uint8Array(nullifierBoxName) as any },
+           ...(registryAppId ? [{ appId: BigInt(registryAppId), name: new Uint8Array(registryBoxName) as any }] : [])
+        ],
         extraFee: microAlgos(2000), // Cover inner txn fee
       });
 
