@@ -45,7 +45,7 @@ export default function EndToEndKYC() {
           // Fast-track to the credential view — no need to redo KYC
           setVerifiedData({ type: "reused_proof", name: "Private Identity (ZK)", aadhaar: "XXXX", pan: "XXXXX" });
           setOracleResult({
-            identityHash: address,
+            identityHash: alreadyVerified, // Use the actual Proof ID string retrieved directly from the blockchain box
             reused: true,
             message: "Identity already registered on Algorand Testnet",
             timestamp: new Date().toISOString(),
@@ -54,6 +54,7 @@ export default function EndToEndKYC() {
             proofTypeLabel: "On-Chain Verified",
             source: "algorand",
           });
+          setOnChainTxId("already_verified_skip"); // Highlight as already anchored
           setStep(4);
           toast.success("✅ Welcome back! Your identity is already verified on-chain.");
         }
@@ -462,14 +463,18 @@ export default function EndToEndKYC() {
                 <div className="flex justify-between">
                   <span className="text-gray-500">Tx Hash:</span>
                   {onChainTxId ? (
-                    <a 
-                      href={`https://testnet.explorer.perawallet.app/tx/${onChainTxId}`}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="text-emerald-400 truncate max-w-[150px] hover:underline flex items-center gap-1"
-                    >
-                      {onChainTxId} <ExternalLink className="w-2 h-2" />
-                    </a>
+                    onChainTxId === "already_verified_skip" ? (
+                      <span className="text-emerald-400 truncate max-w-[150px] font-bold">Anchored in Box Storage</span>
+                    ) : (
+                      <a 
+                        href={`https://testnet.explorer.perawallet.app/tx/${onChainTxId}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="text-emerald-400 truncate max-w-[150px] hover:underline flex items-center gap-1"
+                      >
+                        {onChainTxId} <ExternalLink className="w-2 h-2" />
+                      </a>
+                    )
                   ) : (
                     <span className="text-gray-300 truncate max-w-[150px]">Pending Verification...</span>
                   )}

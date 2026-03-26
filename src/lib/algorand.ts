@@ -14,10 +14,10 @@ export const algodClient = new algosdk.Algodv2(ALGOD_TOKEN, ALGOD_SERVER, ALGOD_
  * Performs a real on-chain lookup in the Identity Registry.
  * Uses stealth key derivation to protect privacy.
  */
-export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
+export async function isUserVerifiedOnChain(wallet: string): Promise<string | null> {
   try {
     const appId = parseInt(process.env.NEXT_PUBLIC_IDENTITY_REGISTRY_APP_ID || "0");
-    if (!appId) return false;
+    if (!appId) return null;
 
     // 1. Fetch App Secret (Publicly readable from Global State for verification)
     const appInfo = await algodClient.getApplicationByID(appId).do();
@@ -60,13 +60,14 @@ export async function isUserVerifiedOnChain(wallet: string): Promise<boolean> {
     boxName.set(stealthKey, 1);
 
     try {
-      await algodClient.getApplicationBoxByName(appId, boxName).do();
-      return true;
+      const box = await algodClient.getApplicationBoxByName(appId, boxName).do();
+      const proofId = new TextDecoder().decode(box.value);
+      return proofId;
     } catch {
-      return false;
+      return null;
     }
   } catch (e) {
     console.error("On-Chain Lookup Error:", e);
-    return false;
+    return null;
   }
 }
