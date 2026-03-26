@@ -42,10 +42,10 @@ export default function RegisterOnChain() {
     setIsVerifyingOnChain(true);
     
     try {
-      const verifierAppIdStr = process.env.NEXT_PUBLIC_VERIFIER_APP_ID;
-      const registryAppIdStr = process.env.NEXT_PUBLIC_REGISTRY_APP_ID;
+      const verifierAppIdStr = process.env.NEXT_PUBLIC_ZKP_VERIFIER_APP_ID;
+      const registryAppIdStr = process.env.NEXT_PUBLIC_IDENTITY_REGISTRY_APP_ID;
       
-      if (!verifierAppIdStr) throw new Error("Verifier App ID not configured");
+      if (!verifierAppIdStr) throw new Error("Verifier App ID not configured (checked NEXT_PUBLIC_ZKP_VERIFIER_APP_ID)");
 
       const parsed = proofData;
       const packedProof = new Uint8Array(Object.values(parsed.proof));
@@ -55,12 +55,22 @@ export default function RegisterOnChain() {
       
       if (!nullifierHex) throw new Error("Nullifier not found in proof data.");
 
-      // Oracle Data
       const identityHashHex = parsed.hash || parsed.identityHash || "";
-      const oracleData = [new Uint8Array(Buffer.from(identityHashHex, "hex"))];
+      const oracleDataHex = parsed.oracleDataHex;
+      let oracleData: Uint8Array;
+      
+      if (oracleDataHex) {
+        oracleData = new Uint8Array(Buffer.from(oracleDataHex, "hex"));
+      } else {
+        // Fallback: This is rare as oracleDataHex should be in localStorage
+        throw new Error("Missing oracle metadata. Please re-generate your proof.");
+      }
+
       const oraclePubKey = process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "";
       const oraclePubKeys = [new Uint8Array(Buffer.from(oraclePubKey, "hex"))];
-      const oracleSignatures = [new Uint8Array(Buffer.from(parsed.oracleSignature || "", "base64"))];
+      // Oracle API returns HEX by default for signature now
+      const sigHex = parsed.oracleSignature || parsed.signature || "";
+      const oracleSignatures = [new Uint8Array(Buffer.from(sigHex, "hex"))];
 
       // 1. Initialize Client
       const algorand = AlgorandClient.testNet();
