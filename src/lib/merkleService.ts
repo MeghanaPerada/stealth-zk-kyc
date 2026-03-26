@@ -1,5 +1,10 @@
 import crypto from 'crypto';
 import { buildPoseidon } from 'circomlibjs';
+import fs from 'fs';
+import path from 'path';
+import algosdk from 'algosdk';
+
+const MERKLE_FILE = path.join(process.cwd(), 'merkle_tree.json');
 
 /**
  * A lightweight, in-memory Poseidon-based Merkle Tree implementation
@@ -33,9 +38,76 @@ export class MerkleService {
     this.defaultHashes.push(currentZero);
     
     for (let i = 1; i <= this.levels; i++) {
-      currentZero = this.hash(currentZero, currentZero);
-      this.defaultHashes.push(currentZero);
+        currentZero = this.hash(currentZero, currentZero);
+        this.defaultHashes.push(currentZero);
     }
+
+    this.loadState();
+  }
+
+  private loadState() {
+    try {
+        if (fs.existsSync(MERKLE_FILE)) {
+            const data = fs.readFileSync(MERKLE_FILE, 'utf-8');
+            const state = JSON.parse(data);
+            if (state && Array.isArray(state.leaves)) {
+                this.leaves = state.leaves;
+                this.rebuildTree();
+                console.log(`[MerkleService] Loaded ${this.leaves.length} leaves from storage.`);
+            }
+        }
+    } catch (err) {
+        console.error("[MerkleService] Error loading state:", err);
+    }
+  }
+
+  private saveState() {
+    try {
+        const state = { leaves: this.leaves };
+        fs.writeFileSync(MERKLE_FILE, JSON.stringify(state, null, 2));
+    } catch (err) {
+        console.error("[MerkleService] Error saving state:", err);
+    }
+  }
+
+  private async anchorRoot() {
+      try {
+          const rootStr = this.getRoot();
+          // Pad the decimal string to hex (32 bytes)
+          let rootHex = BigInt(rootStr).toString(16);
+          rootHex = rootHex.padStart(64, '0');
+
+          const ALGOD_SERVER = process.env.NEXT_PUBLIC_ALGOD_SERVER || "https://testnet-api.algonode.cloud";
+          const ALGOD_PORT = process.env.NEXT_PUBLIC_ALGOD_PORT || 443;
+          const ALGOD_TOKEN = process.env.NEXT_PUBLIC_ALGOD_TOKEN || "";
+          const MNEMONIC = process.env.DEPLOYER_MNEMONIC;
+          const APP_ID = parseInt(process.env.NEXT_PUBLIC_ZKP_VERIFIER_APP_ID || "757733134");
+
+          if (!MNEMONIC) {
+              console.warn("[MerkleService] Skipping anchor: DEPLOYER_MNEMONIC not set.");
+              return;
+          }
+
+          const client = new algosdk.Algodv2(ALGOD_TOKEN, ALGOD_SERVER, ALGOD_PORT);
+          const account = algosdk.mnemonicToSecretKey(MNEMONIC);
+          const suggest = await client.getTransactionParams().do();
+
+          const setRootTxn = algosdk.makeApplicationNoOpTxnFromObject({
+              sender: account.addr,
+              appIndex: APP_ID,
+              appArgs: [
+                  new algosdk.ABIMethod({ name: "updateMerkleRoot", args: [{ type: "byte[]" }], returns: { type: "void" } }).getSelector(),
+                  Buffer.concat([Buffer.from([0, 32]), Buffer.from(rootHex, "hex")])
+              ],
+              suggestedParams: suggest
+          });
+
+          const signed = setRootTxn.signTxn(account.sk);
+          const response = await client.sendRawTransaction(signed).do() as any;
+          console.log(`[MerkleService] Anchored new root to Testnet. TxID: ${response.txId}`);
+      } catch (err) {
+          console.error("[MerkleService] Failed to anchor root on chain:", err);
+      }
   }
 
   /**
@@ -56,6 +128,10 @@ export class MerkleService {
     }
     this.leaves.push(leafStr);
     this.rebuildTree();
+    this.saveState();
+    
+    // Anchor asynchronously so it doesn't block the API response
+    this.anchorRoot().catch(console.error);
   }
 
   /**

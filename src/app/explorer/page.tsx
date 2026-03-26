@@ -482,26 +482,26 @@ function ExplorerContent() {
                       </div>
                     </div>
 
-                    <div className="mb-6">
+                    <div className="mb-8">
                       {!onChainData ? (
                         <button
                           onClick={() => checkOnChain(selectedProof.fullWallet)}
                           disabled={isVerifyingOnChain}
-                          className="w-full py-3 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-2xl text-[10px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-2 group"
+                          className="w-full py-4 bg-primary/10 hover:bg-primary/20 text-primary border border-primary/20 rounded-2xl text-[11px] font-black uppercase tracking-widest transition-all flex items-center justify-center gap-3 group shadow-[0_0_20px_rgba(52,211,153,0.1)]"
                         >
-                          {isVerifyingOnChain ? <Loader2 className="h-3 w-3 animate-spin" /> : <Database className="h-3 w-3 group-hover:scale-110 transition-transform" />}
+                          {isVerifyingOnChain ? <Loader2 className="h-4 w-4 animate-spin" /> : <Database className="h-4 w-4 group-hover:scale-110 transition-transform" />}
                           Verify Direct On-Chain (Algorand Indexer)
                         </button>
                       ) : (
-                        <div className={`p-4 rounded-2xl border ${onChainData.exists ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
-                          <div className="flex items-center gap-3 mb-2">
-                            {onChainData.exists ? <ShieldCheck className="h-4 w-4 text-emerald-400" /> : <Info className="h-4 w-4 text-red-400" />}
-                            <p className={`text-[10px] font-black uppercase tracking-widest ${onChainData.exists ? 'text-emerald-400' : 'text-red-400'}`}>
+                        <div className={`p-5 rounded-2xl border text-center ${onChainData.exists ? 'bg-emerald-500/5 border-emerald-500/20' : 'bg-red-500/5 border-red-500/20'}`}>
+                          <div className="flex items-center justify-center gap-3 mb-3">
+                            {onChainData.exists ? <ShieldCheck className="h-5 w-5 text-emerald-400" /> : <Info className="h-5 w-5 text-red-400" />}
+                            <p className={`text-[11px] font-black uppercase tracking-widest ${onChainData.exists ? 'text-emerald-400' : 'text-red-400'}`}>
                               {onChainData.exists ? "On-Chain Match Found" : "On-Chain Anchor Missing"}
                             </p>
                           </div>
                           {onChainData.exists && (
-                            <p className="font-mono text-[9px] text-zinc-500 break-all uppercase leading-relaxed">
+                            <p className="font-mono text-[10px] text-zinc-400 break-all uppercase leading-relaxed">
                               Anchored Status: {onChainData.hash}
                             </p>
                           )}
@@ -509,46 +509,46 @@ function ExplorerContent() {
                       )}
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-                      <div className="space-y-2">
-                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600 pl-1">User Identity Anchor</p>
-                        <div className="bg-white/[0.04] p-3.5 rounded-2xl border border-white/5">
-                          <p className="font-mono text-[10px] text-zinc-300 break-all leading-relaxed uppercase">{selectedProof.fullWallet}</p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8 mt-4">
+                      <div className="space-y-3 flex flex-col items-center">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-500 text-center">User Identity Anchor</p>
+                        <div className="bg-white/[0.04] w-full p-5 rounded-2xl border border-white/5 flex items-center justify-center text-center shadow-inner min-h-[90px]">
+                          <p className="font-mono text-[11px] text-zinc-300 break-all leading-relaxed uppercase">{selectedProof.fullWallet}</p>
                         </div>
                       </div>
-                      <div className="space-y-2">
-                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600 pl-1">Algorand Transaction</p>
-                        <div className="bg-white/[0.04] p-3.5 rounded-2xl border border-white/5">
-                          <p className="font-mono text-[10px] text-primary break-all leading-relaxed uppercase">{selectedProof.algorandTx}</p>
+                      <div className="space-y-3 flex flex-col items-center">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-500 text-center">Algorand Transaction</p>
+                        <div className="bg-white/[0.04] w-full p-5 rounded-2xl border border-white/5 flex items-center justify-center text-center shadow-inner min-h-[90px]">
+                          <p className="font-mono text-[11px] text-primary break-all leading-relaxed uppercase">{selectedProof.algorandTx}</p>
                         </div>
                       </div>
                     </div>
 
-                    <div className="grid grid-cols-3 gap-4 py-5 border-y border-white/5 mb-6">
-                      <div className="space-y-1.5 text-center">
-                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Verification</p>
-                        <p className="text-sm font-black text-emerald-400 uppercase tracking-tight">{selectedProof.attribute}</p>
+                    <div className="grid grid-cols-3 gap-6 py-6 border-y border-white/10 mb-8 mt-4">
+                      <div className="space-y-2 flex flex-col items-center text-center">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-500">Verification</p>
+                        <p className="text-sm md:text-base font-black text-emerald-400 uppercase tracking-tight">{selectedProof.attribute}</p>
                       </div>
-                      <div className="space-y-1.5 text-center">
-                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Audit Date</p>
-                        <p className="text-[10px] font-black text-zinc-300 uppercase leading-relaxed">
+                      <div className="space-y-2 flex flex-col items-center text-center">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-500">Audit Date</p>
+                        <p className="text-[10px] md:text-[11px] font-black text-zinc-300 uppercase leading-relaxed">
                           {new Date(selectedProof.timestamp).toLocaleDateString()}<br/>
                           {new Date(selectedProof.timestamp).toLocaleTimeString()}
                         </p>
                       </div>
-                      <div className="space-y-1.5 text-center">
-                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">Protocol</p>
-                        <Badge className="bg-primary/20 text-primary border-primary/20 font-black px-2 py-0.5 text-[9px] tracking-widest uppercase">Stealth v1.0</Badge>
+                      <div className="space-y-2 flex flex-col items-center text-center">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-500">Protocol</p>
+                        <Badge className="bg-primary/20 text-primary border-primary/30 font-black px-3 py-1 text-[10px] tracking-widest uppercase">Stealth v1.0</Badge>
                       </div>
                     </div>
 
-                    <div className="space-y-3 mb-6">
-                      <div className="flex items-center justify-between">
-                        <p className="text-[9px] uppercase tracking-widest font-black text-zinc-600">PLONK Cryptographic Artifacts</p>
-                        <Badge variant="outline" className="text-[8px] border-primary/20 text-primary uppercase font-black px-2 py-0.5">zk-SNARK (PLONK)</Badge>
+                    <div className="space-y-4 mb-8 mt-4">
+                      <div className="flex flex-col md:flex-row items-center justify-between gap-3 text-center md:text-left">
+                        <p className="text-[10px] uppercase tracking-widest font-black text-zinc-500">PLONK Cryptographic Artifacts</p>
+                        <Badge variant="outline" className="text-[9px] border-primary/30 text-primary uppercase font-black px-3 py-1">zk-SNARK (PLONK)</Badge>
                       </div>
-                      <div className="bg-black/70 rounded-2xl border border-white/5 p-4 font-mono text-[10px] text-zinc-400 max-h-36 overflow-y-auto">
-                        <pre className="whitespace-pre-wrap">
+                      <div className="bg-black/80 rounded-2xl border border-white/10 p-5 font-mono text-[10px] text-zinc-400 max-h-48 overflow-y-auto shadow-inner text-left">
+                        <pre className="whitespace-pre-wrap leading-relaxed">
                           {JSON.stringify(selectedProof.fullProof || { 
                             message: "Proof payload anchored on-chain. Signature: " + selectedProof.hash.slice(0, 32) + "..." 
                           }, null, 2)}
@@ -556,33 +556,33 @@ function ExplorerContent() {
                       </div>
                     </div>
 
-                    <div className="p-6 bg-primary/5 rounded-2xl border border-primary/20 relative overflow-hidden group">
+                    <div className="p-8 bg-primary/5 rounded-3xl border border-primary/20 relative overflow-hidden group mt-4">
                       <div className="absolute -top-4 -right-4 opacity-[0.04] group-hover:opacity-[0.08] transition-opacity">
-                        <ShieldCheck className="h-28 w-28" />
+                        <ShieldCheck className="h-32 w-32" />
                       </div>
-                      <h4 className="text-primary font-black uppercase tracking-widest text-[10px] mb-2 flex items-center gap-2">
-                        <CheckCircle2 className="h-3.5 w-3.5 flex-shrink-0" /> Validated PLONK Integrity
+                      <h4 className="text-primary font-black uppercase tracking-widest text-[11px] mb-3 flex items-center justify-center md:justify-start gap-2">
+                        <CheckCircle2 className="h-4 w-4 flex-shrink-0" /> Validated PLONK Integrity
                       </h4>
-                      <p className="text-zinc-400 text-xs leading-relaxed mb-5 uppercase tracking-tight">
+                      <p className="text-zinc-400 text-xs leading-relaxed mb-6 uppercase tracking-tight text-center md:text-left">
                         This record was verified using a PLONK ZK-SNARK circuit. Mathematical confirmation is anchored to Algorand Testnet.
                       </p>
 
-                      <div className="flex flex-wrap items-center gap-3">
+                      <div className="flex flex-wrap items-center justify-center md:justify-start gap-3">
                         <Button 
                           onClick={() => copyToClipboard(selectedProof.id)} 
                           variant="outline" 
                           size="sm" 
-                          className={`border-primary/30 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl ${
+                          className={`border-primary/30 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl ${
                             copiedHash ? "bg-primary text-black" : "bg-black/60 hover:bg-primary hover:text-black"
                           }`}
                         >
-                          {copiedHash ? <Check className="h-3.5 w-3.5" /> : <Copy className="h-3.5 w-3.5" />} 
+                          {copiedHash ? <Check className="h-4 w-4" /> : <Copy className="h-4 w-4" />} 
                           {copiedHash ? "ID Copied!" : "Copy Proof ID"}
                         </Button>
 
                         <a href={getAlgorandExplorerUrl(selectedProof.algorandTx)} target="_blank" rel="noopener noreferrer">
-                          <Button variant="outline" size="sm" className="bg-black/60 border-white/10 hover:bg-zinc-800 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl">
-                            <ExternalLink className="h-3.5 w-3.5" /> View on Algorand
+                          <Button variant="outline" size="sm" className="bg-black/60 border-white/10 hover:bg-zinc-800 transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl">
+                            <ExternalLink className="h-4 w-4" /> View on Algorand
                           </Button>
                         </a>
 
@@ -591,9 +591,9 @@ function ExplorerContent() {
                           disabled={isSimulatingAVM}
                           variant="outline" 
                           size="sm" 
-                          className="bg-emerald-600/10 border-emerald-500/40 hover:bg-emerald-600 text-emerald-400 hover:text-white transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl"
+                          className="bg-emerald-600/10 border-emerald-500/40 hover:bg-emerald-600 text-emerald-400 hover:text-white transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl"
                         >
-                          {isSimulatingAVM ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <Cpu className="h-3.5 w-3.5" />}
+                          {isSimulatingAVM ? <Loader2 className="h-4 w-4 animate-spin" /> : <Cpu className="h-4 w-4" />}
                           Verify ZK Integrity
                         </Button>
 
@@ -603,9 +603,9 @@ function ExplorerContent() {
                             disabled={isRevoking}
                             variant="outline" 
                             size="sm" 
-                            className="ml-auto bg-red-500/10 border-red-500/40 hover:bg-red-500 text-red-400 hover:text-white transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-10 px-5 rounded-xl"
+                            className="md:ml-auto bg-red-500/10 border-red-500/40 hover:bg-red-500 text-red-400 hover:text-white transition-all gap-2 text-[10px] font-black uppercase tracking-widest h-11 px-6 rounded-xl"
                           >
-                            {isRevoking ? <Loader2 className="h-3.5 w-3.5 animate-spin" /> : <X className="h-3.5 w-3.5" />} Revoke Consent
+                            {isRevoking ? <Loader2 className="h-4 w-4 animate-spin" /> : <X className="h-4 w-4" />} Revoke Consent
                           </Button>
                         )}
                       </div>
@@ -614,9 +614,9 @@ function ExplorerContent() {
                         <motion.div 
                           initial={{ opacity: 0, height: 0 }}
                           animate={{ opacity: 1, height: "auto" }}
-                          className="mt-4 p-4 bg-black rounded-xl border border-emerald-500/20 font-mono text-[9px] text-emerald-500"
+                          className="mt-5 p-5 bg-black rounded-2xl border border-emerald-500/20 font-mono text-[10px] text-emerald-500 leading-relaxed"
                         >
-                          {avmLog.map((log, i) => <div key={i}>{log}</div>)}
+                          {avmLog.map((log, i) => <div key={i} className="py-0.5">{log}</div>)}
                         </motion.div>
                       )}
                     </div>
