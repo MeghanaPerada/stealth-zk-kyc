@@ -31,6 +31,22 @@ export class ZkpVerifier extends Contract {
   }
 
   /**
+   * Allow the creator to update the contract.
+   */
+  @arc4.abimethod({ allowActions: ['UpdateApplication'] })
+  public update(): void {
+    assert(Txn.sender === Global.creatorAddress, 'Only creator can update')
+  }
+
+  /**
+   * Allow the creator to delete the contract.
+   */
+  @arc4.abimethod({ allowActions: ['DeleteApplication'] })
+  public delete(): void {
+    assert(Txn.sender === Global.creatorAddress, 'Only creator can delete')
+  }
+
+  /**
    * Revoke an Oracle.
    */
   public removeOracle(pubKey: bytes): void {
@@ -139,9 +155,13 @@ export class ZkpVerifier extends Contract {
     // 7. Update Registry via Inner Transaction
     const selector = methodSelector('registerVerification(account,string)void')
     
+    // ABI string encoding: 2 bytes length prefix
+    const proofIdBytes = Bytes(proofId)
+    const proofIdAbi = op.itob(proofIdBytes.length).slice(6, 8).concat(proofIdBytes)
+
     itxn.applicationCall({
       appId: Application(this.registryAppId.value),
-      appArgs: [selector, Txn.sender, Bytes(proofId)],
+      appArgs: [selector, op.itob(Uint64(1)).slice(7, 8), proofIdAbi],
       accounts: [Txn.sender],
       fee: Uint64(0),
     }).submit()
