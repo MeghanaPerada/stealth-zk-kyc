@@ -13,6 +13,7 @@ import { AlgorandClient, microAlgos } from "@algorandfoundation/algokit-utils";
 import * as algosdk from "algosdk";
 
 import PageWrapper from "@/components/layout/PageWrapper";
+import { isUserVerifiedOnChain } from "@/lib/algorand";
 
 export default function EndToEndKYC() {
   const { address, isConnected, connectWallet, signMessage } = useWallet();
@@ -32,6 +33,38 @@ export default function EndToEndKYC() {
   }, [zkLogs]);
 
   const addZkLog = (msg: string) => setZkLogs(p => [...p, msg]);
+
+  // ─── On-Chain Check: Skip KYC if already verified ──────────────────────────
+  useEffect(() => {
+    if (!isConnected || !address) return;
+
+    const checkVerified = async () => {
+      try {
+        const alreadyVerified = await isUserVerifiedOnChain(address);
+        if (alreadyVerified) {
+          // Fast-track to the credential view — no need to redo KYC
+          setVerifiedData({ type: "reused_proof", name: "Private Identity (ZK)", aadhaar: "XXXX", pan: "XXXXX" });
+          setOracleResult({
+            identityHash: address,
+            reused: true,
+            message: "Identity already registered on Algorand Testnet",
+            timestamp: new Date().toISOString(),
+            trustScore: 100,
+            proofType: "ON_CHAIN",
+            proofTypeLabel: "On-Chain Verified",
+            source: "algorand",
+          });
+          setStep(4);
+          toast.success("✅ Welcome back! Your identity is already verified on-chain.");
+        }
+      } catch {
+        // Silently ignore — just run normal KYC if the check fails
+      }
+    };
+
+    checkVerified();
+  }, [isConnected, address]);
+  // ─────────────────────────────────────────────────────────────────────────
 
   const triggerConfetti = () => {
     const duration = 3 * 1000;
@@ -193,6 +226,10 @@ export default function EndToEndKYC() {
         trustScore: result.trustScore,
         proofType: result.proofType,
         proofTypeLabel: result.proofTypeLabel,
+        // Persist oracle auth data so handleVerifyOnChain works even after a page refresh
+        oracleSignature: result.signature,
+        oracleDataHex: result.oracleDataHex,
+        identityHash: result.identityHash,
       }));
 
       setOracleResult({ ...result, ...zkInputData });
@@ -237,10 +274,18 @@ export default function EndToEndKYC() {
       const packedProof = packProofBytes(parsed.proof);
       const packedSignals = packPublicSignals(parsed.publicSignals);
       
-      // Oracle Data: The hash the oracle signed (32 bytes)
-      const oracleData = new Uint8Array(Buffer.from(BigInt(oracleResult.identityHash).toString(16).padStart(64, "0"), "hex"));
-      const oraclePubKeys = [new Uint8Array(Buffer.from(process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "", "hex"))];
-      const oracleSignatures = [new Uint8Array(Buffer.from(oracleResult.signature, "hex"))];
+      // Oracle Data: use the exact 32-byte blob the oracle signed (oracleDataHex from oracle API).
+      // Fall back to parsed localStorage value if in-memory state is stale (e.g. after page refresh).
+      const oracleDataHex = oracleResult?.oracleDataHex || parsed.oracleDataHex;
+      const oracleSigHex  = oracleResult?.signature     || parsed.oracleSignature;
+
+      if (!oracleDataHex || !oracleSigHex) {
+        throw new Error("Oracle attestation data is missing. Please complete the KYC flow again to generate a fresh proof.");
+      }
+
+      const oracleData      = new Uint8Array(Buffer.from(oracleDataHex, "hex"));
+      const oraclePubKeys   = [new Uint8Array(Buffer.from(process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "", "hex"))];
+      const oracleSignatures = [new Uint8Array(Buffer.from(oracleSigHex, "hex"))];
 
       toast.loading("Sending Verification Transaction...");
 

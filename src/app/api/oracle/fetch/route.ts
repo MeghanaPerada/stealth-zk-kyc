@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
 import crypto from "crypto";
-import algosdk from "algosdk";
+const nacl = require('tweetnacl');
 import { buildTrustProfile } from "@/lib/trustScore";
 import { isValidPAN, isValidAadhaar } from "@/lib/manualValidation";
 import { buildPoseidon } from "circomlibjs";
@@ -54,14 +54,22 @@ export async function POST(req: NextRequest) {
     const hash = p([BigInt(dobNumeric), BigInt(aadhaar4), panHashNumeric, walletNumeric]);
     const identityHash = p.F.toString(hash);
 
-    // 3️⃣ Real Ed25519 Signature (Oracle Authentication)
-    let oracleSignature = "0".repeat(128); 
+    // 3️⃣ Real Ed25519 Signature (Oracle Authentication) — bare signature (no domain prefix)
+    // op.ed25519verifyBare on-chain expects a raw Ed25519 sig; algosdk.signBytes adds "MX" prefix so we
+    // use nacl.sign.detached directly.
+    // oracleData = sha256(identityHash_hex_bytes) so it is always exactly 32 bytes
+    const identityHashHex = BigInt(identityHash).toString(16).padStart(64, "0");
+    const identityHashBytes = new Uint8Array(Buffer.from(identityHashHex, "hex"));
+    // Use SHA-256 to produce a stable 32-byte message
+    const oracleDataBytes = new Uint8Array(crypto.createHash("sha256").update(identityHashBytes).digest());
+    const oracleDataHex = Buffer.from(oracleDataBytes).toString("hex");
+
+    let oracleSignature = "0".repeat(128);
     if (ORACLE_SIGNING_KEY) {
-      // ORACLE_SIGNING_KEY must be the full 64-byte (128 hex char) Ed25519 secret key
+      // ORACLE_SIGNING_KEY: full 64-byte (128 hex char) Ed25519 secret key
       const secretKey = new Uint8Array(Buffer.from(ORACLE_SIGNING_KEY, "hex"));
-      // We sign the 32-byte representation of the Poseidon hash
-      const dataToSign = new Uint8Array(Buffer.from(BigInt(identityHash).toString(16).padStart(64, "0"), "hex"));
-      const sig = algosdk.signBytes(dataToSign, secretKey);
+      // nacl uses the first 32 bytes as the seed; algosdk compatible key layout
+      const sig = nacl.sign.detached(oracleDataBytes, secretKey);
       oracleSignature = Buffer.from(sig).toString("hex");
     }
 
@@ -83,6 +91,9 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({
       success: true,
       identityHash,
+      // oracleDataHex: the exact 32-byte blob the oracle signed (sha256 of identityHashBytes)
+      // Frontend must use this verbatim as oracleData when calling verifyAndRegister
+      oracleDataHex,
       signature: oracleSignature,
       proof,
       publicSignals,
