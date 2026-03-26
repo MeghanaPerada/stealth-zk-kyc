@@ -16,7 +16,7 @@ import PageWrapper from "@/components/layout/PageWrapper";
 import { isUserVerifiedOnChain } from "@/lib/algorand";
 
 export default function EndToEndKYC() {
-  const { address, isConnected, connectWallet, signMessage } = useWallet();
+  const { address, isConnected, connectWallet, signMessage, signTransactions } = useWallet();
   const [verifiedData, setVerifiedData] = useState<any>(null);
   const [isAuthenticating, setIsAuthenticating] = useState(false);
   const [isGeneratingProof, setIsGeneratingProof] = useState(false);
@@ -261,7 +261,10 @@ export default function EndToEndKYC() {
 
       // 1. Initialize Client
       const algorand = AlgorandClient.testNet();
-      algorand.setSigner(address, signMessage as any); // signMessage is from our hook
+      algorand.setSigner(address, async (group, indexes) => {
+        const signed = await signTransactions(group, indexes);
+        return signed.map(s => s!) as Uint8Array[];
+      });
       
       const client = new ZkpVerifierClient({
         algorand,
@@ -299,6 +302,13 @@ export default function EndToEndKYC() {
       nullifierBoxName[0] = 0x6e; // 'n'
       nullifierBoxName.set(nullifierBytes, 1);
 
+      const oraclePubKey = process.env.NEXT_PUBLIC_ORACLE_PUBKEY || "";
+      const oraclePubKeyBytes = new Uint8Array(Buffer.from(oraclePubKey, "hex"));
+      const oracleBoxName = new Uint8Array(2 + oraclePubKeyBytes.length);
+      oracleBoxName[0] = 0x61; // 'a'
+      oracleBoxName[1] = 0x6f; // 'o'
+      oracleBoxName.set(oraclePubKeyBytes, 2);
+
       let registryBoxName = new Uint8Array(0);
       if (registryAppId) {
         const walletBytes = algosdk.decodeAddress(address).publicKey;
@@ -306,15 +316,15 @@ export default function EndToEndKYC() {
         const secState = (registryAppInfo.params.globalState || []).find((s: any) => s.key === "c2Vj");
         let appSecret = new Uint8Array(0);
         if (secState && secState.value && secState.value.bytes) {
-           const rawSecret = secState.value.bytes;
-           appSecret = typeof rawSecret === "string" ? algosdk.base64ToBytes(rawSecret) : new Uint8Array(rawSecret);
+            const rawSecret = secState.value.bytes;
+            appSecret = (typeof rawSecret === "string" ? algosdk.base64ToBytes(rawSecret) : rawSecret) as any;
         }
         const combined = new Uint8Array(walletBytes.length + appSecret.length);
         combined.set(walletBytes);
         combined.set(appSecret, walletBytes.length);
         const stealthHash = await window.crypto.subtle.digest("SHA-256", combined);
-        const stealthKey = new Uint8Array(stealthHash);
-        registryBoxName = new Uint8Array(1 + stealthKey.length);
+        const stealthKey = new Uint8Array(stealthHash) as any;
+        registryBoxName = new Uint8Array(1 + stealthKey.length) as any;
         registryBoxName[0] = 0x76; // 'v'
         registryBoxName.set(stealthKey, 1);
       }
@@ -328,7 +338,8 @@ export default function EndToEndKYC() {
       for (let i = 0; i < 5; i++) {
         const opUpParams = await client.params.opUp({
           sender: address,
-          note: new TextEncoder().encode(`opup-${i}`)
+          args: [],
+          note: new Uint8Array(Buffer.from(`opup-${i}`))
         });
         composer.addAppCallMethodCall(opUpParams);
       }
@@ -344,8 +355,9 @@ export default function EndToEndKYC() {
         },
         appReferences: registryAppId ? [BigInt(registryAppId)] : [],
         boxReferences: [
-           { appId: BigInt(verifierAppId), name: new Uint8Array(nullifierBoxName) as any },
-           ...(registryAppId ? [{ appId: BigInt(registryAppId), name: new Uint8Array(registryBoxName) as any }] : [])
+           { appId: BigInt(verifierAppId), name: nullifierBoxName as any },
+           { appId: BigInt(verifierAppId), name: oracleBoxName as any },
+           ...(registryAppId ? [{ appId: BigInt(registryAppId), name: registryBoxName as any }] : [])
         ],
         extraFee: microAlgos(2000 + 5000), // Cover inner txn fee + 5 dummy calls
       });
