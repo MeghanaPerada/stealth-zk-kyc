@@ -332,10 +332,9 @@ export default function EndToEndKYC() {
       // 3. Call Contract via Group to increase Opcode Budget
       const composer = algorand.newGroup();
 
-      // We need ~3500 extra opcode budget for the Ed25519 pairing check.
-      // Add 5 dummy app calls to the same verifier app before the real call.
-      // Each inner app call adds 700 budget pool.
-      for (let i = 0; i < 5; i++) {
+      // We need ~15,500 opcode budget for BN254 Groth16 verify.
+      // Add 30 dummy app calls to ensure we have plenty of budget (30 * 700 = 21,000 extra pool).
+      for (let i = 0; i < 30; i++) {
         const opUpParams = await client.params.opUp({
           sender: address,
           args: [],
@@ -359,7 +358,7 @@ export default function EndToEndKYC() {
            { appId: BigInt(verifierAppId), name: oracleBoxName as any },
            ...(registryAppId ? [{ appId: BigInt(registryAppId), name: registryBoxName as any }] : [])
         ],
-        extraFee: microAlgos(2000 + 5000), // Cover inner txn fee + 5 dummy calls
+        extraFee: microAlgos(2000), // Cover self + inner txn fee
       });
 
       composer.addAppCallMethodCall(verifyCall);
