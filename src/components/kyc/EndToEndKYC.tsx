@@ -326,12 +326,11 @@ export default function EndToEndKYC() {
       // Add 5 dummy app calls to the same verifier app before the real call.
       // Each inner app call adds 700 budget pool.
       for (let i = 0; i < 5; i++) {
-        composer.addAppCall({
-          appId: BigInt(verifierAppId),
+        const opUpParams = await client.params.opUp({
           sender: address,
-          onComplete: algosdk.OnApplicationComplete.NoOpOC,
           note: new TextEncoder().encode(`opup-${i}`)
         });
+        composer.addAppCallMethodCall(opUpParams);
       }
 
       const verifyCall = await client.params.verifyAndRegister({

@@ -8,18 +8,24 @@ main:
     // smart_contracts/zkp_verifier/contract.algo.ts:9
     // export class ZkpVerifier extends Contract {
     txn NumAppArgs
-    bz main___algots__.defaultCreate@13
+    bz main___algots__.defaultCreate@14
     txn OnCompletion
     !
     assert
     txn ApplicationID
     assert
-    pushbytess 0x2792a587 0x664ba410 0x8e51dfc6 0xdf4a951d 0x97aaf80e 0x9cb1cbf2 // method "addOracle(byte[])void", method "removeOracle(byte[])void", method "setMinConsensus(uint64)void", method "setRegistryAppId(uint64)void", method "verifyAndRegister(byte[],byte[],byte[],byte[][],byte[][],string)void", method "updateMerkleRoot(byte[])void"
+    pushbytess 0x2792a587 0x664ba410 0x8e51dfc6 0xdf4a951d 0x854dede0 0x97aaf80e 0x9cb1cbf2 // method "addOracle(byte[])void", method "removeOracle(byte[])void", method "setMinConsensus(uint64)void", method "setRegistryAppId(uint64)void", method "opUp()void", method "verifyAndRegister(byte[],byte[],byte[],byte[][],byte[][],string)void", method "updateMerkleRoot(byte[])void"
     txna ApplicationArgs 0
-    match addOracle removeOracle setMinConsensus setRegistryAppId verifyAndRegister updateMerkleRoot
+    match addOracle removeOracle setMinConsensus setRegistryAppId main_opUp_route@8 verifyAndRegister updateMerkleRoot
     err
 
-main___algots__.defaultCreate@13:
+main_opUp_route@8:
+    // smart_contracts/zkp_verifier/contract.algo.ts:62
+    // public opUp(): void {
+    intc_2 // 1
+    return
+
+main___algots__.defaultCreate@14:
     // smart_contracts/zkp_verifier/contract.algo.ts:9
     // export class ZkpVerifier extends Contract {
     txn OnCompletion
@@ -135,7 +141,7 @@ setMinConsensus:
 
 // smart_contracts/zkp_verifier/contract.algo.ts::ZkpVerifier.setRegistryAppId[routing]() -> void:
 setRegistryAppId:
-    // smart_contracts/zkp_verifier/contract.algo.ts:52
+    // smart_contracts/zkp_verifier/contract.algo.ts:53
     // public setRegistryAppId(appId: uint64): void {
     txna ApplicationArgs 1
     dup
@@ -144,14 +150,20 @@ setRegistryAppId:
     ==
     assert // invalid number of bytes for arc4.uint64
     btoi
+    // smart_contracts/zkp_verifier/contract.algo.ts:54
+    // assert(Txn.sender === Global.creatorAddress, 'Unrecognized admin')
+    txn Sender
+    global CreatorAddress
+    ==
+    assert // Unrecognized admin
     // smart_contracts/zkp_verifier/contract.algo.ts:23
     // registryAppId = GlobalState<uint64>({ key: 'rai' })
     bytec_2 // "rai"
-    // smart_contracts/zkp_verifier/contract.algo.ts:53
+    // smart_contracts/zkp_verifier/contract.algo.ts:55
     // this.registryAppId.value = appId
     swap
     app_global_put
-    // smart_contracts/zkp_verifier/contract.algo.ts:52
+    // smart_contracts/zkp_verifier/contract.algo.ts:53
     // public setRegistryAppId(appId: uint64): void {
     intc_2 // 1
     return
@@ -163,7 +175,7 @@ verifyAndRegister:
     dupn 4
     pushbytes ""
     dupn 7
-    // smart_contracts/zkp_verifier/contract.algo.ts:66-73
+    // smart_contracts/zkp_verifier/contract.algo.ts:76-83
     // public verifyAndRegister(
     //   proof: bytes,
     //   publicInputs: bytes,
@@ -221,7 +233,7 @@ verifyAndRegister:
     intc_0 // 0
 
 verifyAndRegister_for_header@1:
-    // smart_contracts/zkp_verifier/contract.algo.ts:66-73
+    // smart_contracts/zkp_verifier/contract.algo.ts:76-83
     // public verifyAndRegister(
     //   proof: bytes,
     //   publicInputs: bytes,
@@ -262,7 +274,7 @@ verifyAndRegister_for_header@1:
     b verifyAndRegister_for_header@1
 
 verifyAndRegister_after_for@4:
-    // smart_contracts/zkp_verifier/contract.algo.ts:66-73
+    // smart_contracts/zkp_verifier/contract.algo.ts:76-83
     // public verifyAndRegister(
     //   proof: bytes,
     //   publicInputs: bytes,
@@ -295,7 +307,7 @@ verifyAndRegister_after_for@4:
     bury 14
 
 verifyAndRegister_for_header@5:
-    // smart_contracts/zkp_verifier/contract.algo.ts:66-73
+    // smart_contracts/zkp_verifier/contract.algo.ts:76-83
     // public verifyAndRegister(
     //   proof: bytes,
     //   publicInputs: bytes,
@@ -337,7 +349,7 @@ verifyAndRegister_for_header@5:
     b verifyAndRegister_for_header@5
 
 verifyAndRegister_after_for@8:
-    // smart_contracts/zkp_verifier/contract.algo.ts:66-73
+    // smart_contracts/zkp_verifier/contract.algo.ts:76-83
     // public verifyAndRegister(
     //   proof: bytes,
     //   publicInputs: bytes,
@@ -364,7 +376,7 @@ verifyAndRegister_after_for@8:
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
     bury 19
-    // smart_contracts/zkp_verifier/contract.algo.ts:75
+    // smart_contracts/zkp_verifier/contract.algo.ts:85
     // assert(oraclePubKeys.length === oracleSignatures.length, 'PubKeys and Signatures count mismatch')
     dig 4
     dig 16
@@ -372,29 +384,29 @@ verifyAndRegister_after_for@8:
     cover 2
     ==
     assert // PubKeys and Signatures count mismatch
-    // smart_contracts/zkp_verifier/contract.algo.ts:76
+    // smart_contracts/zkp_verifier/contract.algo.ts:86
     // assert(oracleSignatures.length >= this.minOracleConsensus.value, 'Not enough signatures provided')
     intc_0 // 0
     // smart_contracts/zkp_verifier/contract.algo.ts:17
     // minOracleConsensus = GlobalState<uint64>({ key: 'moc' })
     bytec_1 // "moc"
-    // smart_contracts/zkp_verifier/contract.algo.ts:76
+    // smart_contracts/zkp_verifier/contract.algo.ts:86
     // assert(oracleSignatures.length >= this.minOracleConsensus.value, 'Not enough signatures provided')
     app_global_get_ex
     assert // check GlobalState exists
     >=
     assert // Not enough signatures provided
-    // smart_contracts/zkp_verifier/contract.algo.ts:77
+    // smart_contracts/zkp_verifier/contract.algo.ts:87
     // let validSignatureCount = Uint64(0);
     intc_0 // 0
     bury 9
-    // smart_contracts/zkp_verifier/contract.algo.ts:79
+    // smart_contracts/zkp_verifier/contract.algo.ts:89
     // for (let i = Uint64(0); i < oraclePubKeys.length; i++) {
     intc_0 // 0
     bury 15
 
 verifyAndRegister_while_top@10:
-    // smart_contracts/zkp_verifier/contract.algo.ts:79
+    // smart_contracts/zkp_verifier/contract.algo.ts:89
     // for (let i = Uint64(0); i < oraclePubKeys.length; i++) {
     dig 14
     dig 5
@@ -402,7 +414,7 @@ verifyAndRegister_while_top@10:
     dup
     bury 12
     bz verifyAndRegister_after_while@20
-    // smart_contracts/zkp_verifier/contract.algo.ts:80
+    // smart_contracts/zkp_verifier/contract.algo.ts:90
     // const pubKey = oraclePubKeys[i];
     dig 10
     assert // index access is out of bounds
@@ -425,7 +437,7 @@ verifyAndRegister_while_top@10:
     extract3
     extract 2 0
     bury 20
-    // smart_contracts/zkp_verifier/contract.algo.ts:81
+    // smart_contracts/zkp_verifier/contract.algo.ts:91
     // const sig = oracleSignatures[i];
     swap
     dig 17
@@ -442,19 +454,19 @@ verifyAndRegister_while_top@10:
     extract3
     extract 2 0
     bury 17
-    // smart_contracts/zkp_verifier/contract.algo.ts:83
+    // smart_contracts/zkp_verifier/contract.algo.ts:93
     // for (let j = Uint64(0); j < i; j++) {
     intc_0 // 0
     bury 13
 
 verifyAndRegister_while_top@12:
-    // smart_contracts/zkp_verifier/contract.algo.ts:83
+    // smart_contracts/zkp_verifier/contract.algo.ts:93
     // for (let j = Uint64(0); j < i; j++) {
     dig 12
     dig 15
     <
     bz verifyAndRegister_after_while@14
-    // smart_contracts/zkp_verifier/contract.algo.ts:84
+    // smart_contracts/zkp_verifier/contract.algo.ts:94
     // assert(pubKey !== oraclePubKeys[j], 'Oracle public keys must be unique');
     dig 12
     dup
@@ -477,7 +489,7 @@ verifyAndRegister_while_top@12:
     dig 19
     !=
     assert // Oracle public keys must be unique
-    // smart_contracts/zkp_verifier/contract.algo.ts:83
+    // smart_contracts/zkp_verifier/contract.algo.ts:93
     // for (let j = Uint64(0); j < i; j++) {
     intc_2 // 1
     +
@@ -492,7 +504,7 @@ verifyAndRegister_after_while@14:
     concat
     dup
     bury 21
-    // smart_contracts/zkp_verifier/contract.algo.ts:88
+    // smart_contracts/zkp_verifier/contract.algo.ts:98
     // if (this.authorizedOracles(pubKey).exists && this.authorizedOracles(pubKey).value === true) {
     box_len
     bury 1
@@ -504,7 +516,7 @@ verifyAndRegister_after_while@14:
     intc_2 // 1
     ==
     bz verifyAndRegister_after_if_else@19
-    // smart_contracts/zkp_verifier/contract.algo.ts:89-93
+    // smart_contracts/zkp_verifier/contract.algo.ts:99-103
     // if (op.ed25519verifyBare(
     //     oracleData,
     //     sig,
@@ -515,7 +527,7 @@ verifyAndRegister_after_while@14:
     dig 19
     ed25519verify_bare
     bz verifyAndRegister_after_if_else@19
-    // smart_contracts/zkp_verifier/contract.algo.ts:94
+    // smart_contracts/zkp_verifier/contract.algo.ts:104
     // validSignatureCount++;
     dig 8
     intc_2 // 1
@@ -523,7 +535,7 @@ verifyAndRegister_after_while@14:
     bury 9
 
 verifyAndRegister_after_if_else@19:
-    // smart_contracts/zkp_verifier/contract.algo.ts:79
+    // smart_contracts/zkp_verifier/contract.algo.ts:89
     // for (let i = Uint64(0); i < oraclePubKeys.length; i++) {
     dig 14
     intc_2 // 1
@@ -532,20 +544,20 @@ verifyAndRegister_after_if_else@19:
     b verifyAndRegister_while_top@10
 
 verifyAndRegister_after_while@20:
-    // smart_contracts/zkp_verifier/contract.algo.ts:98
+    // smart_contracts/zkp_verifier/contract.algo.ts:108
     // assert(validSignatureCount >= this.minOracleConsensus.value, 'Insufficient valid oracle signatures')
     intc_0 // 0
     // smart_contracts/zkp_verifier/contract.algo.ts:17
     // minOracleConsensus = GlobalState<uint64>({ key: 'moc' })
     bytec_1 // "moc"
-    // smart_contracts/zkp_verifier/contract.algo.ts:98
+    // smart_contracts/zkp_verifier/contract.algo.ts:108
     // assert(validSignatureCount >= this.minOracleConsensus.value, 'Insufficient valid oracle signatures')
     app_global_get_ex
     assert // check GlobalState exists
     dig 9
     <=
     assert // Insufficient valid oracle signatures
-    // smart_contracts/zkp_verifier/contract.algo.ts:156
+    // smart_contracts/zkp_verifier/contract.algo.ts:166
     // const a = proof.slice(0, 64)
     dig 7
     dup
@@ -568,7 +580,7 @@ verifyAndRegister_after_while@20:
     uncover 2
     dig 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:157
+    // smart_contracts/zkp_verifier/contract.algo.ts:167
     // const b = proof.slice(64, 192)
     pushint 192
     dig 3
@@ -581,7 +593,7 @@ verifyAndRegister_after_while@20:
     uncover 3
     dig 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:158
+    // smart_contracts/zkp_verifier/contract.algo.ts:168
     // const c = proof.slice(192, 256)
     intc 4 // 256
     dig 4
@@ -594,7 +606,7 @@ verifyAndRegister_after_while@20:
     uncover 3
     uncover 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:184
+    // smart_contracts/zkp_verifier/contract.algo.ts:194
     // const x = g1.slice(0, 32)
     dig 2
     len
@@ -616,7 +628,7 @@ verifyAndRegister_after_while@20:
     uncover 2
     dig 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:185
+    // smart_contracts/zkp_verifier/contract.algo.ts:195
     // const y = g1.slice(32, 64)
     pushint 64
     dig 3
@@ -629,12 +641,12 @@ verifyAndRegister_after_while@20:
     uncover 3
     uncover 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:188
+    // smart_contracts/zkp_verifier/contract.algo.ts:198
     // const negY = BigUint(MODULUS - yBig)
     pushbytes 0x30644e72e131a029b85045b68181585d97816a916871ca8d3c208c16d87cfd47
     swap
     b-
-    // smart_contracts/zkp_verifier/contract.algo.ts:189
+    // smart_contracts/zkp_verifier/contract.algo.ts:199
     // return x.concat(new arc4.Uint256(negY).bytes)
     dup
     len
@@ -645,24 +657,24 @@ verifyAndRegister_after_while@20:
     bzero
     b|
     concat
-    // smart_contracts/zkp_verifier/contract.algo.ts:177
+    // smart_contracts/zkp_verifier/contract.algo.ts:187
     // const g1Points = aNeg.concat(alpha1).concat(vkX).concat(c)
     pushbytes 0x2d4d9aa7e302d9df41749d5507949d05dbea33fbb16c643b22f599a2be6df2e214bedd503c37ceb061d8ec60209fe345ce89830a19230301f076caff004d19261442a0f2ae59c8f86b563efce57d6b8ca73fe8ab2bf778408e646cc2b1f93aea048ba3f8fcf48494d3113de444b5f3b9e06354056c8a54af8295529e86a7361e
     concat
     swap
     concat
-    // smart_contracts/zkp_verifier/contract.algo.ts:178
+    // smart_contracts/zkp_verifier/contract.algo.ts:188
     // const g2Points = b.concat(beta2).concat(gamma2).concat(delta2)
     swap
     pushbytes 0x0e187847ad4c798374d0d6732bf501847dd68bc0e071241e0213bc7fc13db7ab0967032fcbf776d1afc985f88877f182d38480a653f2decaa9794cbc3bf3060c1739c1b1a457a8c7313123d24d2f9192f896b7c63eea05a9d57f06547ad0cec8304cfbd1e08a704a99f5e847d93f8c3caafddec46b7a0d379da69a4d112346a71800deef121f1e76426a00665e5c4479674322d4f75edadd46debd5cd992f6ed198e9393920d483a7260bfb731fb5d25f1aa493335a9e71297e485b7aef312c212c85ea5db8c6deb4aab71808dcb408fe3d1e7690c43d37b4ce6cc0166fa7daa090689d0585ff075ec9e99ad690c3395bc4b313370b38ef355acdadcd122975b15ab2cb5bacce049f4ef0a21a81e82fe10322189eb13db6160c34b5048d7b4551b73fead3b8c946b55f8e1280251a1a55a38a1ce2ec53496301e0a44748f20e21b8eae50de598ff6ba19d3fb3ab935eb9000b8a04c5d357b5d1bae5c70eb24b716938331acc5eefedc142671282eeef6cfeadc0c5a4419f14a2c728bce7968b1
     concat
-    // smart_contracts/zkp_verifier/contract.algo.ts:180
+    // smart_contracts/zkp_verifier/contract.algo.ts:190
     // return op.EllipticCurve.pairingCheck(Ec.BN254g1, g1Points, g2Points)
     ec_pairing_check BN254g1
-    // smart_contracts/zkp_verifier/contract.algo.ts:103
+    // smart_contracts/zkp_verifier/contract.algo.ts:113
     // assert(isZkValid, 'ZK Proof verification failed')
     assert // ZK Proof verification failed
-    // smart_contracts/zkp_verifier/contract.algo.ts:107
+    // smart_contracts/zkp_verifier/contract.algo.ts:117
     // assert(publicInputs.length === Uint64(96), 'Invalid public inputs length (expected 3 signals)')
     dig 7
     dup
@@ -671,7 +683,7 @@ verifyAndRegister_after_while@20:
     pushint 96
     ==
     assert // Invalid public inputs length (expected 3 signals)
-    // smart_contracts/zkp_verifier/contract.algo.ts:110
+    // smart_contracts/zkp_verifier/contract.algo.ts:120
     // const isVerified = publicInputs.slice(0, 32)
     intc_0 // 0
     dig 1
@@ -691,12 +703,12 @@ verifyAndRegister_after_while@20:
     uncover 2
     dig 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:111
+    // smart_contracts/zkp_verifier/contract.algo.ts:121
     // assert(isVerified === Bytes.fromHex('0000000000000000000000000000000000000000000000000000000000000001'), 'User not verified by ZK circuit')
     pushbytes 0x0000000000000000000000000000000000000000000000000000000000000001
     ==
     assert // User not verified by ZK circuit
-    // smart_contracts/zkp_verifier/contract.algo.ts:114
+    // smart_contracts/zkp_verifier/contract.algo.ts:124
     // const nullifier = publicInputs.slice(32, 64)
     pushint 64
     dig 2
@@ -714,14 +726,14 @@ verifyAndRegister_after_while@20:
     pushbytes "n"
     swap
     concat
-    // smart_contracts/zkp_verifier/contract.algo.ts:115
+    // smart_contracts/zkp_verifier/contract.algo.ts:125
     // assert(!this.usedNullifiers(nullifier).exists, 'This identity has already registered a wallet')
     dup
     box_len
     bury 1
     !
     assert // This identity has already registered a wallet
-    // smart_contracts/zkp_verifier/contract.algo.ts:118
+    // smart_contracts/zkp_verifier/contract.algo.ts:128
     // const proofRoot = publicInputs.slice(64, 96)
     pushint 96
     dig 3
@@ -734,29 +746,29 @@ verifyAndRegister_after_while@20:
     uncover 3
     uncover 2
     substring3
-    // smart_contracts/zkp_verifier/contract.algo.ts:119
+    // smart_contracts/zkp_verifier/contract.algo.ts:129
     // assert(proofRoot === this.merkleRoot.value, 'Identity Merkle Root mismatch')
     intc_0 // 0
     // smart_contracts/zkp_verifier/contract.algo.ts:20
     // merkleRoot = GlobalState<bytes>({ key: 'mr' })
     bytec_3 // "mr"
-    // smart_contracts/zkp_verifier/contract.algo.ts:119
+    // smart_contracts/zkp_verifier/contract.algo.ts:129
     // assert(proofRoot === this.merkleRoot.value, 'Identity Merkle Root mismatch')
     app_global_get_ex
     assert // check GlobalState exists
     ==
     assert // Identity Merkle Root mismatch
-    // smart_contracts/zkp_verifier/contract.algo.ts:122
+    // smart_contracts/zkp_verifier/contract.algo.ts:132
     // this.usedNullifiers(nullifier).value = true
     intc_2 // 1
     itob
     box_put
-    // smart_contracts/zkp_verifier/contract.algo.ts:127
+    // smart_contracts/zkp_verifier/contract.algo.ts:137
     // assert(proof.length === Uint64(256), 'Invalid ZK proof length')
     intc 4 // 256
     ==
     assert // Invalid ZK proof length
-    // smart_contracts/zkp_verifier/contract.algo.ts:132-137
+    // smart_contracts/zkp_verifier/contract.algo.ts:142-147
     // itxn.applicationCall({
     //   appId: Application(this.registryAppId.value),
     //   appArgs: [selector, Txn.sender, Bytes(proofId)],
@@ -764,24 +776,24 @@ verifyAndRegister_after_while@20:
     //   fee: Uint64(0),
     // }).submit()
     itxn_begin
-    // smart_contracts/zkp_verifier/contract.algo.ts:133
+    // smart_contracts/zkp_verifier/contract.algo.ts:143
     // appId: Application(this.registryAppId.value),
     intc_0 // 0
     // smart_contracts/zkp_verifier/contract.algo.ts:23
     // registryAppId = GlobalState<uint64>({ key: 'rai' })
     bytec_2 // "rai"
-    // smart_contracts/zkp_verifier/contract.algo.ts:133
+    // smart_contracts/zkp_verifier/contract.algo.ts:143
     // appId: Application(this.registryAppId.value),
     app_global_get_ex
     assert // check GlobalState exists
-    // smart_contracts/zkp_verifier/contract.algo.ts:134
+    // smart_contracts/zkp_verifier/contract.algo.ts:144
     // appArgs: [selector, Txn.sender, Bytes(proofId)],
     txn Sender
-    // smart_contracts/zkp_verifier/contract.algo.ts:135
+    // smart_contracts/zkp_verifier/contract.algo.ts:145
     // accounts: [Txn.sender],
     dup
     itxn_field Accounts
-    // smart_contracts/zkp_verifier/contract.algo.ts:134
+    // smart_contracts/zkp_verifier/contract.algo.ts:144
     // appArgs: [selector, Txn.sender, Bytes(proofId)],
     pushbytes 0xcf1fce58 // method "registerVerification(account,string)void"
     itxn_field ApplicationArgs
@@ -789,7 +801,7 @@ verifyAndRegister_after_while@20:
     dig 19
     itxn_field ApplicationArgs
     itxn_field ApplicationID
-    // smart_contracts/zkp_verifier/contract.algo.ts:132-137
+    // smart_contracts/zkp_verifier/contract.algo.ts:142-147
     // itxn.applicationCall({
     //   appId: Application(this.registryAppId.value),
     //   appArgs: [selector, Txn.sender, Bytes(proofId)],
@@ -798,11 +810,11 @@ verifyAndRegister_after_while@20:
     // }).submit()
     pushint 6
     itxn_field TypeEnum
-    // smart_contracts/zkp_verifier/contract.algo.ts:136
+    // smart_contracts/zkp_verifier/contract.algo.ts:146
     // fee: Uint64(0),
     intc_0 // 0
     itxn_field Fee
-    // smart_contracts/zkp_verifier/contract.algo.ts:132-137
+    // smart_contracts/zkp_verifier/contract.algo.ts:142-147
     // itxn.applicationCall({
     //   appId: Application(this.registryAppId.value),
     //   appArgs: [selector, Txn.sender, Bytes(proofId)],
@@ -810,7 +822,7 @@ verifyAndRegister_after_while@20:
     //   fee: Uint64(0),
     // }).submit()
     itxn_submit
-    // smart_contracts/zkp_verifier/contract.algo.ts:66-73
+    // smart_contracts/zkp_verifier/contract.algo.ts:76-83
     // public verifyAndRegister(
     //   proof: bytes,
     //   publicInputs: bytes,
@@ -825,7 +837,7 @@ verifyAndRegister_after_while@20:
 
 // smart_contracts/zkp_verifier/contract.algo.ts::ZkpVerifier.updateMerkleRoot[routing]() -> void:
 updateMerkleRoot:
-    // smart_contracts/zkp_verifier/contract.algo.ts:145
+    // smart_contracts/zkp_verifier/contract.algo.ts:155
     // public updateMerkleRoot(newRoot: bytes): void {
     txna ApplicationArgs 1
     dup
@@ -838,13 +850,13 @@ updateMerkleRoot:
     ==
     assert // invalid number of bytes for arc4.dynamic_array<arc4.uint8>
     extract 2 0
-    // smart_contracts/zkp_verifier/contract.algo.ts:146
+    // smart_contracts/zkp_verifier/contract.algo.ts:156
     // assert(Txn.sender === Global.creatorAddress, 'Only creator can update Merkle root')
     txn Sender
     global CreatorAddress
     ==
     assert // Only creator can update Merkle root
-    // smart_contracts/zkp_verifier/contract.algo.ts:147
+    // smart_contracts/zkp_verifier/contract.algo.ts:157
     // assert(newRoot.length === Uint64(32), 'Merkle root must be 32 bytes')
     dup
     len
@@ -854,11 +866,11 @@ updateMerkleRoot:
     // smart_contracts/zkp_verifier/contract.algo.ts:20
     // merkleRoot = GlobalState<bytes>({ key: 'mr' })
     bytec_3 // "mr"
-    // smart_contracts/zkp_verifier/contract.algo.ts:148
+    // smart_contracts/zkp_verifier/contract.algo.ts:158
     // this.merkleRoot.value = newRoot
     swap
     app_global_put
-    // smart_contracts/zkp_verifier/contract.algo.ts:145
+    // smart_contracts/zkp_verifier/contract.algo.ts:155
     // public updateMerkleRoot(newRoot: bytes): void {
     intc_2 // 1
     return

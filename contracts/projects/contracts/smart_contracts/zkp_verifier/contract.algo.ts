@@ -48,9 +48,19 @@ export class ZkpVerifier extends Contract {
 
   /**
    * Sets the Registry App ID.
+   * Only the contract creator can call this.
    */
   public setRegistryAppId(appId: uint64): void {
+    assert(Txn.sender === Global.creatorAddress, 'Unrecognized admin')
     this.registryAppId.value = appId
+  }
+
+  /**
+   * No-op method to increase opcode budget.
+   * This is used for OpUp transactions in atomic groups.
+   */
+  public opUp(): void {
+    // No-op
   }
 
   /**
