@@ -307,7 +307,7 @@ export default function EndToEndKYC() {
         let appSecret = new Uint8Array(0);
         if (secState && secState.value && secState.value.bytes) {
            const rawSecret = secState.value.bytes;
-           appSecret = typeof rawSecret === "string" ? algosdk.base64ToBytes(rawSecret) : rawSecret;
+           appSecret = typeof rawSecret === "string" ? algosdk.base64ToBytes(rawSecret) : new Uint8Array(rawSecret);
         }
         const combined = new Uint8Array(walletBytes.length + appSecret.length);
         combined.set(walletBytes);
@@ -319,8 +319,22 @@ export default function EndToEndKYC() {
         registryBoxName.set(stealthKey, 1);
       }
 
-      // 3. Call Contract
-      const result = await client.send.verifyAndRegister({
+      // 3. Call Contract via Group to increase Opcode Budget
+      const composer = algorand.newGroup();
+
+      // We need ~3500 extra opcode budget for the Ed25519 pairing check.
+      // Add 5 dummy app calls to the same verifier app before the real call.
+      // Each inner app call adds 700 budget pool.
+      for (let i = 0; i < 5; i++) {
+        composer.addAppCall({
+          appId: BigInt(verifierAppId),
+          sender: address,
+          onComplete: algosdk.OnApplicationComplete.NoOpOC,
+          note: new TextEncoder().encode(`opup-${i}`)
+        });
+      }
+
+      const verifyCall = await client.params.verifyAndRegister({
         args: {
             proof: packedProof,
             publicInputs: packedSignals,
@@ -334,10 +348,13 @@ export default function EndToEndKYC() {
            { appId: BigInt(verifierAppId), name: new Uint8Array(nullifierBoxName) as any },
            ...(registryAppId ? [{ appId: BigInt(registryAppId), name: new Uint8Array(registryBoxName) as any }] : [])
         ],
-        extraFee: microAlgos(2000), // Cover inner txn fee
+        extraFee: microAlgos(2000 + 5000), // Cover inner txn fee + 5 dummy calls
       });
 
-      const txId = result.transaction.txID();
+      composer.addAppCallMethodCall(verifyCall);
+
+      const result = await composer.send();
+      const txId = result.transactions[result.transactions.length - 1].txID();
       setOnChainTxId(txId);
       
       // Update local storage with real Tx ID
