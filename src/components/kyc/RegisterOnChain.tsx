@@ -49,10 +49,43 @@ export default function RegisterOnChain() {
       if (!verifierAppIdStr) throw new Error("Verifier App ID not configured (checked NEXT_PUBLIC_ZKP_VERIFIER_APP_ID)");
 
       const parsed = proofData;
-      const packedProof = new Uint8Array(Object.values(parsed.proof));
-      // Support both layouts
-      const packedSignals = new Uint8Array(Object.values(parsed.publicSignals || parsed.publicInputs));
-      const nullifierHex = parsed.nullifier || (parsed.publicSignals ? BigInt(parsed.publicSignals[1]).toString(16).padStart(64, "0") : "");
+
+      // Helper to pad numeric strings to 32-byte BE Uint8Array
+      const padTo32Bytes = (val: string | bigint): Uint8Array => {
+        let hex = BigInt(val).toString(16);
+        if (hex.length % 2 !== 0) hex = '0' + hex;
+        const bytes = new Uint8Array(Buffer.from(hex, 'hex'));
+        const res = new Uint8Array(32);
+        res.set(bytes, 32 - bytes.length);
+        return res;
+      };
+
+      const pA = parsed.proof.pi_a;
+      const pB = parsed.proof.pi_b;
+      const pC = parsed.proof.pi_c;
+
+      // Pack proof A, B, C into 256 bytes
+      const packedProof = new Uint8Array(256);
+      packedProof.set(padTo32Bytes(pA[0]), 0);
+      packedProof.set(padTo32Bytes(pA[1]), 32);
+      packedProof.set(padTo32Bytes(pB[0][0]), 64);
+      packedProof.set(padTo32Bytes(pB[0][1]), 96);
+      packedProof.set(padTo32Bytes(pB[1][0]), 128);
+      packedProof.set(padTo32Bytes(pB[1][1]), 160);
+      packedProof.set(padTo32Bytes(pC[0]), 192);
+      packedProof.set(padTo32Bytes(pC[1]), 224);
+
+      const sigs = parsed.publicSignals || parsed.publicInputs;
+      const packedSignals = new Uint8Array(96);
+      if (sigs && sigs.length >= 3) {
+         packedSignals.set(padTo32Bytes(sigs[0]), 0);
+         packedSignals.set(padTo32Bytes(sigs[1]), 32);
+         packedSignals.set(padTo32Bytes(sigs[2]), 64);
+      } else {
+         throw new Error("Invalid public signals array.");
+      }
+
+      const nullifierHex = sigs ? BigInt(sigs[1]).toString(16).padStart(64, "0") : "";
       
       if (!nullifierHex) throw new Error("Nullifier not found in proof data.");
 
@@ -137,7 +170,7 @@ export default function RegisterOnChain() {
            { appId: BigInt(verifierAppIdStr), name: oracleBoxName },
            ...(registryAppIdStr ? [{ appId: BigInt(registryAppIdStr), name: registryBoxName }] : [])
         ],
-        extraFee: microAlgos(35000), // Provide enough fee for up to 35 OpUp inner transactions via ensureBudget
+        extraFee: microAlgos(80000), // Increased fee for up to 80 OpUp inner txns just to be absolutely safe
       });
 
       composer.addAppCallMethodCall(verifyCall);
