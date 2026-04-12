@@ -456,20 +456,21 @@ function ExplorerContent() {
               animate={{ opacity: 1, scale: 1, y: 0 }}
               exit={{ opacity: 0, scale: 0.95, y: 24 }}
               transition={{ type: "spring", damping: 28, stiffness: 300 }}
-              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl"
-              style={{ scrollbarWidth: "none" }}
+              className="relative w-full max-w-2xl max-h-[85vh] flex flex-col rounded-3xl"
             >
-              <GlowingCard glowColor="primary" className="p-[1px] shadow-[0_0_80px_rgba(52,211,153,0.15)]">
-                <div className="bg-zinc-950 rounded-3xl relative overflow-hidden">
-                  <div className="h-[2px] w-full bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
+              <GlowingCard glowColor="primary" className="p-[1px] shadow-[0_0_80px_rgba(52,211,153,0.15)] flex flex-col flex-1 overflow-hidden h-full rounded-3xl">
+                <div className="bg-zinc-950 rounded-3xl relative flex flex-col h-full overflow-hidden">
+                  <div className="h-[2px] flex-shrink-0 w-full bg-gradient-to-r from-transparent via-primary/60 to-transparent" />
 
-                  <div className="p-6 md:p-10">
-                    <button 
-                      onClick={() => setSelectedProof(null)}
-                      className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5 z-10"
-                    >
-                      <X className="h-4 w-4 text-zinc-400" />
-                    </button>
+                  <button 
+                    onClick={() => setSelectedProof(null)}
+                    className="absolute top-5 right-5 p-2 rounded-xl bg-white/5 hover:bg-white/10 transition-colors border border-white/5 z-50 flex-shrink-0"
+                  >
+                    <X className="h-4 w-4 text-zinc-400" />
+                  </button>
+
+                  <div className="flex-1 overflow-y-auto flex flex-col" style={{ scrollbarWidth: "none" }}>
+                    <div className="p-6 md:p-10 pb-20 md:pb-24 flex flex-col relative">
 
                     <div className="flex flex-col items-center text-center mb-8">
                       <div className="w-20 h-20 rounded-[1.75rem] bg-primary/10 flex items-center justify-center text-primary mb-5 border border-primary/20 shadow-[0_0_40px_rgba(52,211,153,0.2)]">
@@ -620,6 +621,7 @@ function ExplorerContent() {
                         </motion.div>
                       )}
                     </div>
+                  </div>
                   </div>
                 </div>
               </GlowingCard>

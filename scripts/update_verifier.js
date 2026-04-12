@@ -12,7 +12,7 @@ const ALGOD_PORT = 443;
 const ALGOD_TOKEN = "";
 
 const MNEMONIC = process.env.DEPLOYER_MNEMONIC;
-const APP_ID = 757722017;
+const APP_ID = parseInt(process.env.NEXT_PUBLIC_ZKP_VERIFIER_APP_ID || "757733134");
 
 const APPROVAL_PATH = "contracts/projects/contracts/smart_contracts/artifacts/zkp_verifier/ZkpVerifier.approval.teal";
 const CLEAR_PATH = "contracts/projects/contracts/smart_contracts/artifacts/zkp_verifier/ZkpVerifier.clear.teal";
@@ -31,20 +31,26 @@ async function main() {
     const clearCompiled = await client.compile(clear).do();
 
     const suggest = await client.getTransactionParams().do();
-    
-    const updateTxn = algosdk.makeApplicationUpdateTxnFromObject({
+    const atc = new algosdk.AtomicTransactionComposer();
+    const contract = new algosdk.ABIContract(JSON.parse(fs.readFileSync('contracts/projects/contracts/smart_contracts/artifacts/zkp_verifier/ZkpVerifier.arc32.json', 'utf8')).contract);
+    const updateMethod = contract.getMethodByName('update');
+
+    atc.addMethodCall({
+        appID: APP_ID,
+        method: updateMethod,
+        methodArgs: [],
         sender: account.addr,
-        appIndex: APP_ID,
+        signer: algosdk.makeBasicAccountTransactionSigner(account),
+        suggestedParams: suggest,
+        onComplete: algosdk.OnApplicationComplete.UpdateApplicationOC,
         approvalProgram: new Uint8Array(Buffer.from(approvalCompiled.result, 'base64')),
         clearProgram: new Uint8Array(Buffer.from(clearCompiled.result, 'base64')),
-        suggestedParams: suggest
     });
 
-    console.log("Sending update transaction...");
-    const signed = updateTxn.signTxn(account.sk);
-    const { txid } = await client.sendRawTransaction(signed).do();
-    console.log("Success! Update TxID:", txid);
-    console.log(`Verify: https://testnet.explorer.perawallet.app/tx/${txid}`);
+    console.log("Sending ABI update transaction...");
+    const result = await atc.execute(client, 4);
+    console.log("Success! Update TxID:", result.txIDs[0]);
+    console.log(`Verify: https://testnet.explorer.perawallet.app/tx/${result.txIDs[0]}`);
 }
 
 main().catch(console.error);

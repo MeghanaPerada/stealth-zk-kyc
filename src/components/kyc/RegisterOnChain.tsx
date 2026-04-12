@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 import React, { useState, useEffect } from "react";
 import { useWallet } from "@/hooks/useWallet";
@@ -118,17 +119,8 @@ export default function RegisterOnChain() {
         registryBoxName.set(stealthKey, 1);
       }
 
-      // 3. Call Contract via Group to increase Opcode Budget
+      // 3. Call Contract
       const composer = algorand.newGroup();
-
-      for (let i = 0; i < 15; i++) {
-        const opUpParams = await client.params.opUp({
-          sender: address,
-          args: [],
-          note: new Uint8Array(Buffer.from(`opup-${i}`))
-        });
-        composer.addAppCallMethodCall(opUpParams);
-      }
 
       const verifyCall = await client.params.verifyAndRegister({
         args: {
@@ -145,7 +137,7 @@ export default function RegisterOnChain() {
            { appId: BigInt(verifierAppIdStr), name: oracleBoxName },
            ...(registryAppIdStr ? [{ appId: BigInt(registryAppIdStr), name: registryBoxName }] : [])
         ],
-        extraFee: microAlgos(2000),
+        extraFee: microAlgos(35000), // Provide enough fee for up to 35 OpUp inner transactions via ensureBudget
       });
 
       composer.addAppCallMethodCall(verifyCall);

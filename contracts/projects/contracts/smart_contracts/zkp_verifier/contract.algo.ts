@@ -1,4 +1,4 @@
-import { Contract, GlobalState, Account, Txn, Uint64, uint64, assert, op, bytes, itxn, Application, Bytes, BigUint, biguint, Ec, arc4, BoxMap, Global } from '@algorandfoundation/algorand-typescript'
+import { Contract, GlobalState, Account, Txn, Uint64, uint64, assert, op, bytes, itxn, Application, Bytes, BigUint, biguint, Ec, arc4, BoxMap, Global, ensureBudget } from '@algorandfoundation/algorand-typescript'
 import { methodSelector } from '@algorandfoundation/algorand-typescript/arc4'
 
 /**
@@ -97,6 +97,9 @@ export class ZkpVerifier extends Contract {
     oracleSignatures: bytes[],
     proofId: string
   ): void {
+    // We need ~25000 opcode budget for BN254g1 4-pairing check and ed25519 verify
+    ensureBudget(Uint64(25000))
+
     // 1. Verify M-of-N Oracle Consensus
     assert(oraclePubKeys.length === oracleSignatures.length, 'PubKeys and Signatures count mismatch')
     assert(oracleSignatures.length >= this.minOracleConsensus.value, 'Not enough signatures provided')

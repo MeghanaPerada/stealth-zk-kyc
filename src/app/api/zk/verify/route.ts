@@ -89,7 +89,7 @@ export async function POST(request: Request) {
     // We check the Identity Registry for the wallet's verification status
     if (zkVerified && wallet) {
       const isRegistered = await isUserVerifiedOnChain(wallet);
-      checks.onChainMatch = isRegistered;
+      checks.onChainMatch = isRegistered ? true : false;
       
       if (!isRegistered) {
         return NextResponse.json({
