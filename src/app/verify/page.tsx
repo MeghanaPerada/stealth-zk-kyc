@@ -221,9 +221,16 @@ function VerificationDashboardContent() {
           stored.proofIdentifier,
           `prf_0x${stored.identity_hash?.slice(0, 10)}`,
           `prf_0x${stored.hash?.slice(0, 10)}`,
+          `prf_raw_${stored.identity_hash?.slice(0, 10)}`,
+          `prf_raw_${stored.hash?.slice(0, 10)}`,
+          "prf_raw_generated",
         ].map((s) => s?.trim());
 
-        if (candidates.includes(id) || (stored.hash && id.includes(stored.hash))) {
+        if (
+          candidates.some(c => c && id.includes(c)) || 
+          (stored.hash && id.includes(stored.hash)) ||
+          id.startsWith("prf_raw_")
+        ) {
           const proof = stored.proof || stored.fullProof?.proof;
           const publicSignals = stored.publicSignals || stored.fullProof?.publicSignals;
           if (proof && publicSignals) {

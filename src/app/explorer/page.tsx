@@ -150,7 +150,7 @@ function ExplorerContent() {
           // Only show local proof if it belongs to the connected wallet (or if no wallet connected)
           if (!address || (lp.wallet && lp.wallet.toLowerCase() === address.toLowerCase())) {
              localProofs.push({
-               id: `prf_raw_${(lp.hash || "").slice(0, 10) || "generated"}`,
+               id: `prf_0x${(lp.commitment || lp.hash || lp.identity_hash || "").slice(0, 10) || "generated"}`,
                wallet: lp.wallet ? `${lp.wallet.slice(0, 4)}...${lp.wallet.slice(-4)}` : "Unknown",
                fullWallet: lp.wallet || "Unknown",
                attribute: lp.proofTypeLabel?.toLowerCase().includes("kyc") ? "KYC Verified" : "Age ≥ 18",
