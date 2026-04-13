@@ -7,7 +7,14 @@ import '@txnlab/use-wallet-ui-react/dist/style.css';
 
 // Initialize WalletManager following the requested starter implementation
 const walletManager = new WalletManager({
-  wallets: [WalletId.PERA, WalletId.DEFLY, WalletId.LUTE],
+  wallets: [
+    WalletId.PERA,
+    WalletId.DEFLY,
+    {
+      id: WalletId.LUTE,
+      options: { siteName: "Stealth ZK-KYC" }
+    }
+  ],
   defaultNetwork: NetworkId.TESTNET,
 });
 

@@ -1,27 +1,33 @@
 import { NextResponse } from 'next/server';
 import path from 'path';
 import fs from 'fs';
-import crypto from 'crypto';
-import { isUserVerifiedOnChain } from '@/lib/algorand';
 
 const snarkjs = require('snarkjs');
 
-// In-memory revocation list (in production: store in DB or on-chain)
+// In-memory revocation list (stateless — resets on cold start, suitable for MVP)
 const revokedProofs = new Set<string>();
 
+/**
+ * ZK Proof Verification API
+ *
+ * This is a STATELESS server-side verifier used as a secondary verification layer.
+ * Primary verification runs client-side via snarkjs in the browser.
+ *
+ * Privacy guarantee: No personal data is received or stored by this endpoint.
+ * Only the ZK proof and public signals are passed — these contain zero identity info.
+ */
 export async function POST(request: Request) {
   try {
     const body = await request.json();
-    const { proof, publicSignals, proofHash, wallet, expiry, action, proofIdentifier } = body;
+    const { proof, publicSignals, proofHash, expiry, action } = body;
 
     // ── REVOKE action ──────────────────────────────────────────────────────────
     if (action === 'revoke' && proofHash) {
       revokedProofs.add(proofHash);
-      console.log(`[Verify] Proof revoked: ${proofHash}`);
       return NextResponse.json({ revoked: true, proofHash });
     }
 
-    // ── VERIFY action ─────────────────────────────────────────────────────────
+    // ── VERIFY action ──────────────────────────────────────────────────────────
     if (!proof || !publicSignals) {
       return NextResponse.json(
         { verified: false, error: 'Missing proof or publicSignals' },
@@ -36,11 +42,7 @@ export async function POST(request: Request) {
       const isExpired = Date.now() > expiry;
       checks.expired = isExpired;
       if (isExpired) {
-        return NextResponse.json({
-          verified: false,
-          reason: 'Proof has expired',
-          checks,
-        });
+        return NextResponse.json({ verified: false, reason: 'Proof has expired', checks });
       }
     }
     checks.expired = false;
@@ -55,61 +57,45 @@ export async function POST(request: Request) {
     }
     checks.revoked = false;
 
-    // 3. Proof Identifier check (Public Signals contain binding data)
-    // Circuit Output index 0 is 'isVerified' (Age check)
+    // 3. Circuit output check: index 0 is 'isVerified' (age constraint ≥ 18)
     const isAdultVerified = publicSignals[0] === '1';
     checks.isAdult = isAdultVerified;
     if (!isAdultVerified) {
       return NextResponse.json({
         verified: false,
-        reason: 'Age constraint not met in ZK Proof (Dob >= 20060101)',
-        checks
+        reason: 'Age constraint not satisfied in ZK proof (must be ≥ 18)',
+        checks,
       });
     }
 
-    const idValid = proofIdentifier ? publicSignals.includes(proofIdentifier) : true;
-    checks.identifier = idValid;
-
-    // 4. Cryptographic ZK verification
-    const zkPath = path.join(process.cwd(), 'public', 'zk');
-    const vKeyPath = path.join(zkPath, 'verification_key.json');
+    // 4. Cryptographic ZK verification via snarkjs (server-side fallback)
+    const vKeyPath = path.join(process.cwd(), 'public', 'zk', 'verification_key.json');
 
     let zkVerified = false;
     if (!fs.existsSync(vKeyPath)) {
-      // Demo mode: structural check if key is missing locally
-      zkVerified = proof && proof.pi_a?.length >= 2 && publicSignals?.length > 0;
-      checks.zkMath = 'simulated';
+      // Key file missing: accept structurally valid proofs (demo/dev mode)
+      zkVerified = !!(proof?.pi_a?.length >= 2 && publicSignals?.length > 0);
+      checks.zkMath = 'simulated (key file missing)';
     } else {
       const vKey = JSON.parse(fs.readFileSync(vKeyPath, 'utf8'));
       zkVerified = await snarkjs.groth16.verify(vKey, publicSignals, proof);
       checks.zkMath = zkVerified;
     }
 
-    // 5. MULTI-LAYER ENFORCEMENT: Final On-Chain Double Check
-    // We check the Identity Registry for the wallet's verification status
-    if (zkVerified && wallet) {
-      const isRegistered = await isUserVerifiedOnChain(wallet);
-      checks.onChainMatch = isRegistered ? true : false;
-      
-      if (!isRegistered) {
-        return NextResponse.json({
-          verified: false,
-          reason: 'Layer 2 Mismatch: ZK Proof is valid, but no corresponding entry found in the On-Chain Identity Registry.',
-          checks
-        });
-      }
-    }
+    // NOTE: No on-chain double-check here intentionally.
+    // The new hybrid model uses Algorand note-field anchoring for on-chain proof.
+    // The presence of a TxID (returned after /register flow) IS the on-chain record.
 
     return NextResponse.json({
       verified: zkVerified,
       message: zkVerified
-        ? 'Protocol Level Verification Success (ZK + On-Chain)'
+        ? 'ZK Proof verified (Groth16 — off-chain verification layer)'
         : 'ZK proof verification failed',
       checks,
       timestamp: new Date().toISOString(),
     });
   } catch (err: any) {
-    console.error('[Verify] Error:', err);
+    console.error('[api/zk/verify] Error:', err);
     return NextResponse.json(
       { verified: false, error: 'Internal verification error', details: err.message },
       { status: 500 }

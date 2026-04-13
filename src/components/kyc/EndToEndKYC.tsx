@@ -284,48 +284,54 @@ export default function EndToEndKYC() {
       {step === 4 ? (
         <motion.div 
           initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
-          className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start"
+          className="max-w-2xl mx-auto"
         >
-          <div className="lg:col-span-12">
-            <div className="glass-card rounded-3xl p-8 space-y-8 text-center">
-              <div className="flex flex-col items-center">
-                <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20">
-                  <Check className="w-10 h-10 text-emerald-400" />
-                </div>
-                <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-4">
-                  ZK Proof <span className="text-emerald-500">Generated</span>
-                </h2>
-                <p className="text-zinc-400 max-w-xl mx-auto font-bold uppercase tracking-tight mb-8">
-                  Your identity has been cryptographically verified. You can now anchor this proof on-chain to enable decentralized credit and verified access.
-                </p>
-                
-                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 w-full max-w-3xl mb-12">
-                   <div className="verify-stat-card">
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Method</p>
-                      <p className="text-xl font-black text-white tracking-tighter">ZK-SNARK</p>
-                   </div>
-                   <div className="verify-stat-card">
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Trust Score</p>
-                      <p className="text-xl font-black text-emerald-400 tracking-tighter">{oracleResult?.trustScore || 100}</p>
-                   </div>
-                   <div className="verify-stat-card">
-                      <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Network</p>
-                      <p className="text-xl font-black text-white tracking-tighter">ALGORAND</p>
-                   </div>
-                </div>
+          <div className="glass-card rounded-3xl p-8 space-y-8 text-center border border-emerald-500/20 shadow-[0_0_40px_rgba(52,211,153,0.08)]">
+            <div className="flex flex-col items-center">
+              <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20">
+                <Check className="w-10 h-10 text-emerald-400" />
+              </div>
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 text-[10px] font-black uppercase tracking-widest mb-4">
+                ✓ ZK Proof Generated
+              </div>
+              <h2 className="text-3xl font-black text-white tracking-tighter uppercase mb-3">
+                Proof <span className="text-emerald-500">Ready</span>
+              </h2>
+              <p className="text-zinc-400 max-w-md mx-auto font-bold uppercase tracking-tight mb-8 text-sm">
+                Your identity has been cryptographically verified off-chain.{" "}
+                Now anchor the commitment hash on Algorand to make it immutable and publicly verifiable.
+              </p>
+              
+              <div className="grid grid-cols-3 gap-3 w-full max-w-lg mb-8">
+                 <div className="verify-stat-card">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Method</p>
+                    <p className="text-sm font-black text-white tracking-tighter">ZK-SNARK</p>
+                 </div>
+                 <div className="verify-stat-card">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Trust Score</p>
+                    <p className="text-sm font-black text-emerald-400 tracking-tighter">{oracleResult?.trustScore || 100}</p>
+                 </div>
+                 <div className="verify-stat-card">
+                    <p className="text-[10px] font-black text-gray-500 uppercase tracking-widest mb-1">Network</p>
+                    <p className="text-sm font-black text-white tracking-tighter">ALGORAND</p>
+                 </div>
+              </div>
 
-                <div className="flex flex-col sm:flex-row gap-4 w-full max-w-xl">
-                   <Link href="/register" className="w-full">
-                      <button className="btn-premium btn-green w-full h-16 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3">
-                        <ShieldCheck className="w-6 h-6" /> Proceed to Registration
-                      </button>
-                   </Link>
-                   <Link href="/explorer" className="w-full">
-                      <button className="w-full h-16 rounded-2xl border border-zinc-800 flex items-center justify-center font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-all">
-                        View Log Explorer
-                      </button>
-                   </Link>
-                </div>
+              {/* Primary CTA — anchor on Algorand */}
+              <div className="flex flex-col gap-3 w-full max-w-md">
+                 <Link href="/register" className="w-full">
+                    <button className="btn-premium btn-green w-full h-16 rounded-2xl font-black uppercase tracking-widest flex items-center justify-center gap-3 shadow-[0_0_30px_rgba(52,211,153,0.3)] hover:shadow-[0_0_50px_rgba(52,211,153,0.5)] transition-all">
+                      <ShieldCheck className="w-6 h-6" /> Anchor on Algorand →
+                    </button>
+                 </Link>
+                 <p className="text-zinc-600 text-[10px] font-bold uppercase tracking-widest">
+                   Verify proof off-chain · Create commitment · Sign with wallet · Record on-chain
+                 </p>
+                 <Link href="/explorer" className="w-full">
+                    <button className="w-full h-12 rounded-2xl border border-zinc-800 flex items-center justify-center font-black uppercase tracking-widest text-zinc-500 hover:text-white hover:bg-white/5 transition-all text-xs">
+                      View Log Explorer
+                    </button>
+                 </Link>
               </div>
             </div>
           </div>

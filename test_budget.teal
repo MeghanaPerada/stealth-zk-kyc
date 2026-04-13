@@ -1,0 +1,5 @@
+#pragma version 9
+pushint 25010
+global OpcodeBudget
+>
+return
