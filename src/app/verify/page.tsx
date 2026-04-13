@@ -46,20 +46,6 @@ function VerificationDashboardContent() {
   const [verificationSteps, setVerificationSteps] = useState<string[]>([]);
   const [proofDetails, setProofDetails] = useState<any>(null);
 
-  // Auto-populate from localStorage if user just came from /register
-  useEffect(() => {
-    if (!initialId) {
-      const saved = localStorage.getItem("stealth_final_proof");
-      if (saved) {
-        try {
-          const parsed = JSON.parse(saved);
-          if (parsed.txId) setProofId(parsed.txId);
-          else if (parsed.hash) setProofId(parsed.hash);
-        } catch {}
-      }
-    }
-  }, [initialId]);
-
   const addStep = (msg: string) =>
     setVerificationSteps((prev) => [...prev, msg]);
 

@@ -38,6 +38,10 @@ import {
   Fingerprint,
   Loader2,
   Zap,
+  Copy,
+  Hash,
+  ChevronRight,
+  ArrowRight,
 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "sonner";
@@ -469,21 +473,47 @@ export default function RegisterOnChain() {
               ))}
             </div>
 
-            {/* TxID display */}
-            <div className="bg-black/40 rounded-2xl border border-white/5 p-5 text-left space-y-3">
-              <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest">
-                Transaction ID
-              </p>
-              <p className="font-mono text-emerald-400 text-xs break-all">{txId}</p>
+            {/* ID cards for copy pasting */}
+            <div className="space-y-3">
+               <div className="bg-black/40 rounded-2xl border border-white/5 p-4 flex items-center justify-between group hover:border-emerald-500/30 transition-all duration-300">
+                  <div className="flex flex-col gap-1 min-w-0 text-left">
+                     <span className="text-[8px] font-black uppercase tracking-widest text-zinc-600 group-hover:text-emerald-500/70 transition-colors">Algorand TxID</span>
+                     <span className="font-mono text-[10px] text-emerald-400/80 truncate">{txId}</span>
+                  </div>
+                  <button 
+                    onClick={() => {
+                        if (txId) {
+                           navigator.clipboard.writeText(txId);
+                           toast.success("Transaction ID copied!");
+                        }
+                    }}
+                    className="p-2.5 bg-white/5 hover:bg-emerald-500/20 rounded-xl text-zinc-500 hover:text-emerald-400 transition-all"
+                    title="Copy TxID"
+                  >
+                     <Copy className="w-4 h-4" />
+                  </button>
+               </div>
 
-              {commitment && (
-                <>
-                  <p className="text-[10px] text-zinc-500 uppercase font-black tracking-widest border-t border-white/5 pt-3">
-                    Commitment Hash (stored in note field)
-                  </p>
-                  <p className="font-mono text-zinc-400 text-[10px] break-all">{commitment}</p>
-                </>
-              )}
+               {commitment && (
+                 <div className="bg-black/40 rounded-2xl border border-white/5 p-4 flex items-center justify-between group hover:border-emerald-500/30 transition-all duration-300">
+                    <div className="flex flex-col gap-1 min-w-0 text-left">
+                       <span className="text-[8px] font-black uppercase tracking-widest text-zinc-600 group-hover:text-emerald-500/70 transition-colors">Commitment Hash</span>
+                       <span className="font-mono text-[10px] text-zinc-400 truncate">{commitment}</span>
+                    </div>
+                    <button 
+                      onClick={() => {
+                          if (commitment) {
+                             navigator.clipboard.writeText(commitment);
+                             toast.success("Commitment hash copied!");
+                          }
+                      }}
+                      className="p-2.5 bg-white/5 hover:bg-emerald-500/20 rounded-xl text-zinc-500 hover:text-emerald-400 transition-all"
+                      title="Copy Commitment"
+                    >
+                       <Copy className="w-4 h-4" />
+                    </button>
+                 </div>
+               )}
             </div>
 
             {/* Privacy explanation */}
