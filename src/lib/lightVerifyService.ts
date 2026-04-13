@@ -1,40 +1,4 @@
-/**
- * lightVerifyService.ts
- * 
- * SECURE FRONTEND-ONLY VERIFICATION
- * 
- * This module implements a privacy-preserving, replay-resistant verification
- * system for identity commitments. No backend or database is used.
- */
-
-export interface LightProof {
-  commitment: string;   // SHA-256(name + email + secret)
-  nullifier: string;    // SHA-256(secret + timestamp)
-  claim: string;        // e.g. "verified_user"
-  timestamp: number;    // UTC milliseconds
-}
-
-export interface VerificationResult {
-  success: boolean;
-  message: string;
-  proofHash?: string;
-}
-
-/**
- * SHA-256 helper (Web Crypto/Node fallback)
- */
-async function sha256Hex(input: string): Promise<string> {
-  const data = new TextEncoder().encode(input);
-  if (typeof window !== "undefined" && window.crypto?.subtle) {
-    const hashBuffer = await window.crypto.subtle.digest("SHA-256", data);
-    return Array.from(new Uint8Array(hashBuffer))
-      .map((b) => b.toString(16).padStart(2, "0"))
-      .join("");
-  } else {
-    const { createHash } = await import("crypto");
-    return createHash("sha256").update(input).digest("hex");
-  }
-}
+import { sha256Hex, type LightProof, type VerificationResult } from "@/lib/lightCryptoUtils";
 
 /**
  * verifyProof
