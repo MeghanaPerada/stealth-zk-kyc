@@ -229,12 +229,17 @@ function VerificationDashboardContent() {
         if (
           candidates.some(c => c && id.includes(c)) || 
           (stored.hash && id.includes(stored.hash)) ||
-          id.startsWith("prf_raw_")
+          id.startsWith("prf_raw_") ||
+          id.startsWith("prf_0x")
         ) {
           const proof = stored.proof || stored.fullProof?.proof;
           const publicSignals = stored.publicSignals || stored.fullProof?.publicSignals;
           if (proof && publicSignals) {
-            zkArtifacts = { proof, publicSignals };
+            zkArtifacts = { 
+              proof, 
+              publicSignals,
+              proofHash: stored.hash || stored.identity_hash || stored.identityHash
+            };
             addStep("Artifacts retrieved from local vault ✓");
           }
         }
@@ -256,7 +261,7 @@ function VerificationDashboardContent() {
         body: JSON.stringify({
           proof: zkArtifacts.proof,
           publicSignals: zkArtifacts.publicSignals,
-          proofHash: id,
+          proofHash: id.replace(/^prf_(0x|raw_)?/, ""), 
         }),
       });
 
