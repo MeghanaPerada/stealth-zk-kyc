@@ -7,12 +7,6 @@ import { ArrowRight, Shield, Lock, Zap, CheckCircle2, FileJson, Fingerprint, Dat
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { ZkVisualization } from "@/components/ui/zk-visualization";
 import PageWrapper from "@/components/layout/PageWrapper";
-import ProofExplorer from "@/components/ProofExplorer";
-import IdentityFlow from "@/components/IdentityFlow";
-import SybilSimulation from "@/components/SybilSimulation";
-
-
-
 
 export default function Home() {
   const containerVars = {
@@ -30,24 +24,7 @@ export default function Home() {
 
   return (
     <PageWrapper>
-      <div style={{padding: "20px", background: "#0f172a", minHeight: "100vh", color: "white"}}>
-        <h1 style={{fontSize: "2.5rem", fontWeight: "900", textAlign: "center", marginBottom: "30px", textTransform: "uppercase", letterSpacing: "2px"}}>
-          Identity Verification Module
-        </h1>
-        <IdentityFlow />
-        
-        <div className="mt-20">
-          <SybilSimulation />
-        </div>
-        
-        <div className="mt-20">
-          <ProofExplorer />
-        </div>
-
-      </div>
       {/* Hero Section */}
-
-
       <section className="relative pt-24 pb-24 md:pt-32 md:pb-24 overflow-hidden">
         <div className="container px-4 mx-auto relative z-10 text-center max-w-5xl">
           <motion.div 

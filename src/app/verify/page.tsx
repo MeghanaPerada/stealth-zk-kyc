@@ -20,7 +20,7 @@ import {
 import { GlowingCard } from "@/components/ui/glowing-card";
 import { useWallet } from "@/hooks/useWallet";
 import PageWrapper from "@/components/layout/PageWrapper";
-import ProofExplorer from "@/components/ProofExplorer";
+
 
 
 // ─── Local helpers ────────────────────────────────────────────────────────────
@@ -666,9 +666,7 @@ export default function VerificationDashboard() {
             </div>
           }
         >
-          <div className="mb-8">
-            <ProofExplorer />
-          </div>
+
           <VerificationDashboardContent />
 
         </Suspense>

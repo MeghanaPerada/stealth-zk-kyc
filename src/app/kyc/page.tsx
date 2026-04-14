@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect } from "react";
 import EndToEndKYC from "@/components/kyc/EndToEndKYC";
-import ProofExplorer from "@/components/ProofExplorer";
+
 import { motion } from "framer-motion";
 
 import { Shield, Lock, Fingerprint, Database } from "lucide-react";
@@ -20,7 +20,7 @@ export default function KYCPage() {
   return (
     <PageWrapper>
       <div className="relative z-10 container mx-auto px-4 py-12">
-        <ProofExplorer />
+
         <EndToEndKYC />
 
 
