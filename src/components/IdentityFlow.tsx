@@ -228,7 +228,8 @@ export default function IdentityFlow() {
             userSelect: "none",
             whiteSpace: "nowrap",
             zIndex: 0,
-            filter: "blur(0.5px)"
+            filter: "blur(0.5px)",
+            animation: "fadeIn 1.5s ease-in"
           }}>
             VERIFIED via STEALTH
           </div>
@@ -241,6 +242,12 @@ export default function IdentityFlow() {
             </p>
             <button style={{ ...primaryButtonStyle, marginTop: "30px" }} onClick={reset}>Restart</button>
           </div>
+          <style>{`
+            @keyframes fadeIn {
+              from { opacity: 0; }
+              to { opacity: 0.08; }
+            }
+          `}</style>
         </div>
       )}
 
