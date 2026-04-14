@@ -38,7 +38,9 @@ export default function DigiLockerMock() {
     inputOtp, 
     setInputOtp, 
     generatedOtp,
-    isGenerating, 
+    isGenerating,
+    isSendingEmail,
+    resendTimer,
     proof, 
     hasIdentity, 
     initiateOtp, 
@@ -136,39 +138,118 @@ export default function DigiLockerMock() {
             exit={{ opacity: 0, x: -20 }}
             className="space-y-8"
           >
-            <div className="bg-black/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] p-8 md:p-10 text-center space-y-8">
-               <div className="w-20 h-20 rounded-full bg-blue-500/10 border border-blue-500/20 flex items-center justify-center mx-auto text-blue-500">
-                  <Smartphone className="w-10 h-10 animate-bounce" />
-               </div>
+            <div className="bg-black/40 backdrop-blur-3xl border border-white/5 rounded-[2rem] p-8 md:p-10 text-center space-y-8 relative overflow-hidden">
+               
+               <AnimatePresence mode="wait">
+                  {isSendingEmail ? (
+                    <motion.div 
+                      key="sending"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                      className="py-12 space-y-6"
+                    >
+                       <div className="relative mx-auto w-20 h-20">
+                          <motion.div 
+                            animate={{ scale: [1, 1.5, 1], opacity: [0.5, 0, 0.5] }}
+                            transition={{ duration: 2, repeat: Infinity }}
+                            className="absolute inset-0 rounded-full bg-blue-500/20"
+                          />
+                          <div className="relative flex items-center justify-center w-20 h-20 rounded-full bg-blue-500/10 border border-blue-500/20 text-blue-500">
+                             <Mail className="w-10 h-10" />
+                          </div>
+                       </div>
+                       <div className="space-y-2">
+                          <h3 className="text-white text-xl font-black uppercase tracking-tighter">Sending Verification Email</h3>
+                          <p className="text-zinc-500 text-[10px] font-black uppercase tracking-[0.2em] animate-pulse">Establishing secure link...</p>
+                       </div>
+                    </motion.div>
+                  ) : (
+                    <motion.div
+                      key="input"
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      className="space-y-8"
+                    >
+                       {/* EMAIL PREVIEW CARD */}
+                       <div className="bg-white/5 border border-white/10 rounded-2xl p-6 text-left space-y-4 shadow-2xl relative group">
+                          <div className="flex items-center justify-between mb-2">
+                             <div className="flex items-center gap-2">
+                                <div className="w-8 h-8 rounded-lg bg-blue-600 flex items-center justify-center text-white">
+                                   <ShieldCheck className="w-4 h-4" />
+                                </div>
+                                <div>
+                                   <p className="text-[10px] font-black text-white leading-none">DigiLocker Verification</p>
+                                   <p className="text-[8px] text-zinc-500 font-bold uppercase tracking-widest">no-reply@digilocker.gov.in</p>
+                                </div>
+                             </div>
+                             <div className="text-[8px] font-black text-zinc-600 uppercase tracking-widest bg-white/5 px-2 py-1 rounded-md">
+                                External Email
+                             </div>
+                          </div>
+                          
+                          <div className="space-y-3">
+                             <p className="text-xs font-bold text-zinc-300">Your Verification Code</p>
+                             <div className="p-4 bg-black/40 rounded-xl border border-white/5 text-center">
+                                <p className="text-[9px] font-black text-zinc-500 uppercase tracking-widest mb-2 italic">Secure OTP Code:</p>
+                                <p className="text-2xl font-black text-blue-500 tracking-[0.3em] font-mono select-all">
+                                   {generatedOtp}
+                                </p>
+                             </div>
+                             <div className="flex items-center gap-2 text-[8px] font-black text-zinc-500 uppercase tracking-widest">
+                                <AlertTriangle className="w-3 h-3 text-amber-500" />
+                                This code will expire in 2 minutes
+                             </div>
+                          </div>
+                       </div>
 
-               <div className="space-y-2">
-                  <h3 className="text-white text-2xl font-black uppercase tracking-tighter">Enter Verification Code</h3>
-                  <p className="text-zinc-500 text-xs">An OTP has been sent to <span className="text-blue-400">{formData.email}</span></p>
-               </div>
+                       <div className="space-y-6">
+                         <div className="space-y-2">
+                            <h3 className="text-white text-2xl font-black uppercase tracking-tighter">Enter Code</h3>
+                            <p className="text-zinc-500 text-xs">Verify the code from your simulated inbox</p>
+                         </div>
 
-               <div className="relative max-w-[240px] mx-auto">
-                  <input 
-                    type="text" 
-                    maxLength={6}
-                    className="w-full h-20 bg-black/60 border-2 border-white/10 rounded-3xl text-center text-4xl font-black tracking-[0.5em] text-white focus:border-blue-500 transition-all outline-none"
-                    placeholder="000000"
-                    value={inputOtp}
-                    onChange={(e) => setInputOtp(e.target.value)}
-                  />
-                  <div className="absolute -bottom-10 left-0 right-0">
-                     <p className="text-[9px] font-black text-zinc-700 uppercase tracking-[0.2em]">Mock OTP: {generatedOtp}</p>
-                  </div>
-               </div>
+                         <div className="relative max-w-[240px] mx-auto">
+                            <input 
+                              type="text" 
+                              maxLength={6}
+                              className="w-full h-20 bg-black/60 border-2 border-white/10 rounded-3xl text-center text-4xl font-black tracking-[0.5em] text-white focus:border-blue-500 transition-all outline-none"
+                              placeholder="000000"
+                              value={inputOtp}
+                              onChange={(e) => setInputOtp(e.target.value)}
+                            />
+                         </div>
 
-               <div className="pt-8">
-                 <Button 
-                   onClick={verifyOtp}
-                   disabled={inputOtp.length < 6}
-                   className="w-full h-16 bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest rounded-3xl transition-all"
-                 >
-                   Verify & Anchor Identity
-                 </Button>
-               </div>
+                         <div className="pt-4 space-y-4">
+                           <Button 
+                             onClick={verifyOtp}
+                             disabled={inputOtp.length < 6}
+                             className="w-full h-16 bg-blue-600 hover:bg-blue-500 text-white font-black uppercase tracking-widest rounded-3xl transition-all shadow-lg shadow-blue-500/20"
+                           >
+                             Verify & Anchor Identity
+                           </Button>
+                           
+                           <div className="flex flex-col items-center gap-2">
+                              <button 
+                                onClick={initiateOtp}
+                                disabled={resendTimer > 0}
+                                className="text-[10px] font-black text-zinc-500 uppercase tracking-widest hover:text-blue-400 disabled:opacity-50 disabled:hover:text-zinc-500 transition-colors flex items-center gap-2"
+                              >
+                                {resendTimer > 0 ? (
+                                  <span className="flex items-center gap-2">
+                                     <RefreshCw className="w-3 h-3 animate-spin" />
+                                     Resend Code in {resendTimer}s
+                                  </span>
+                                ) : (
+                                  "Didn't receive code? Resend"
+                                )}
+                              </button>
+                           </div>
+                         </div>
+                       </div>
+                    </motion.div>
+                  )}
+               </AnimatePresence>
             </div>
           </motion.div>
         )}

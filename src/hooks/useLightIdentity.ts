@@ -16,6 +16,8 @@ export function useLightIdentity() {
   const [generatedOtp, setGeneratedOtp] = useState("");
   const [inputOtp, setInputOtp] = useState("");
   const [isGenerating, setIsGenerating] = useState(false);
+  const [isSendingEmail, setIsSendingEmail] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
   const [proof, setProof] = useState<any>(null);
 
   // Persistence: Check if already onboarded
@@ -30,17 +32,37 @@ export function useLightIdentity() {
     }
   }, []);
 
+  // Handle resend timer
+  useEffect(() => {
+    let interval: NodeJS.Timeout;
+    if (resendTimer > 0) {
+      interval = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(interval);
+  }, [resendTimer]);
+
   const initiateOtp = useCallback(() => {
     if (!formData.name || !formData.email) {
       toast.error("Please fill in all fields.");
       return;
     }
-    const otp = Math.floor(100000 + Math.random() * 900000).toString();
-    setGeneratedOtp(otp);
+
+    setIsSendingEmail(true);
     setStep("otp");
-    // Simulate sending OTP
-    console.log(`[MOCK DIGILOCKER] OTP sent to ${formData.email}: ${otp}`);
-    toast.info(`Simulated OTP sent to ${formData.email}`);
+    setInputOtp(""); // Clear previous input
+
+    // Simulate network delay
+    setTimeout(() => {
+      const otp = Math.floor(100000 + Math.random() * 900000).toString();
+      setGeneratedOtp(otp);
+      setIsSendingEmail(false);
+      setResendTimer(30); // 30 second cooldown
+      
+      console.log(`[MOCK DIGILOCKER] OTP sent to ${formData.email}: ${otp}`);
+      toast.info(`Simulated email sent to ${formData.email}`);
+    }, 2000);
   }, [formData]);
 
   const verifyOtp = useCallback(async () => {
@@ -111,8 +133,10 @@ export function useLightIdentity() {
     setFormData,
     inputOtp,
     setInputOtp,
-    generatedOtp, // For display in mock UI if needed
+    generatedOtp,
     isGenerating,
+    isSendingEmail,
+    resendTimer,
     proof,
     hasIdentity,
     initiateOtp,
