@@ -214,13 +214,33 @@ export default function IdentityFlow() {
       )}
 
       {step === "verified" && (
-        <div style={{ textAlign: "center", padding: "20px" }}>
-          <div style={{ fontSize: "4rem", marginBottom: "20px" }}>✅</div>
-          <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "10px" }}>Verification Successful</h3>
-          <p style={{ color: "#94a3b8" }}>
-            Secure verification successful via <strong>Stealth ZK-KYC</strong>. Your identity is now anchored.
-          </p>
-          <button style={{ ...primaryButtonStyle, marginTop: "30px" }} onClick={reset}>Restart</button>
+        <div style={{ textAlign: "center", padding: "20px", position: "relative", overflow: "hidden", minHeight: "300px", display: "flex", flexDirection: "column", justifyContent: "center", alignItems: "center" }}>
+          {/* WATERMARK */}
+          <div style={{
+            position: "absolute",
+            top: "50%",
+            left: "50%",
+            transform: "translate(-50%, -50%) rotate(-20deg)",
+            fontSize: "60px",
+            fontWeight: "bold",
+            color: "rgba(34, 197, 94, 0.08)",
+            pointerEvents: "none",
+            userSelect: "none",
+            whiteSpace: "nowrap",
+            zIndex: 0,
+            filter: "blur(0.5px)"
+          }}>
+            VERIFIED via STEALTH
+          </div>
+
+          <div style={{ position: "relative", zIndex: 1 }}>
+            <div style={{ fontSize: "4rem", marginBottom: "20px" }}>✅</div>
+            <h3 style={{ fontSize: "1.5rem", fontWeight: "bold", marginBottom: "10px" }}>Verification Successful</h3>
+            <p style={{ color: "#94a3b8" }}>
+              Secure verification successful via <strong>Stealth ZK-KYC</strong>. Your identity is now anchored.
+            </p>
+            <button style={{ ...primaryButtonStyle, marginTop: "30px" }} onClick={reset}>Restart</button>
+          </div>
         </div>
       )}
 

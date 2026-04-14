@@ -286,8 +286,13 @@ export default function EndToEndKYC() {
           initial={{ opacity: 0, scale: 0.9 }} animate={{ opacity: 1, scale: 1 }}
           className="max-w-2xl mx-auto"
         >
-          <div className="glass-card rounded-3xl p-8 space-y-8 text-center border border-emerald-500/20 shadow-[0_0_40px_rgba(52,211,153,0.08)]">
-            <div className="flex flex-col items-center">
+          <div className="glass-card rounded-3xl p-8 space-y-8 text-center border border-emerald-500/20 shadow-[0_0_40px_rgba(52,211,153,0.08)] relative overflow-hidden">
+            {/* CIRCULAR SEAL WATERMARK */}
+            <div className="absolute top-5 right-5 w-24 h-24 rounded-full border-2 border-dashed border-emerald-500/30 flex items-center justify-center text-[10px] font-black text-emerald-500/40 uppercase tracking-widest text-center rotate-[-15deg] pointer-events-none select-none z-0" style={{ filter: "blur(0.3px)" }}>
+              ✔ VERIFIED<br/>VIA STEALTH
+            </div>
+
+            <div className="flex flex-col items-center relative z-10">
               <div className="w-20 h-20 rounded-full bg-emerald-500/10 flex items-center justify-center mb-6 border border-emerald-500/20">
                 <Check className="w-10 h-10 text-emerald-400" />
               </div>
