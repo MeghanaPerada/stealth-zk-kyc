@@ -9,6 +9,8 @@ import { ZkVisualization } from "@/components/ui/zk-visualization";
 import PageWrapper from "@/components/layout/PageWrapper";
 import ProofExplorer from "@/components/ProofExplorer";
 import IdentityFlow from "@/components/IdentityFlow";
+import SybilSimulation from "@/components/SybilSimulation";
+
 
 
 
@@ -35,8 +37,13 @@ export default function Home() {
         <IdentityFlow />
         
         <div className="mt-20">
+          <SybilSimulation />
+        </div>
+        
+        <div className="mt-20">
           <ProofExplorer />
         </div>
+
       </div>
       {/* Hero Section */}
 
